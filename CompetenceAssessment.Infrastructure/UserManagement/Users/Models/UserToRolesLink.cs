@@ -1,19 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace CompetenceAssessment.Infrastructure.UserManagement;
 
-[Table("users_to_roles", Schema = "security")]
 public class UserToRolesLink
 {
-    //TODO составной PK
-    
-    [Required]
-    [ForeignKey("user_id")]
     public int UserId { get; set; }
     
-    [Required]
-    [ForeignKey("role_id")]
     public int RoleId { get; set; }
     
     public virtual User User { get; set; }
