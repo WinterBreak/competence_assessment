@@ -5,8 +5,8 @@ namespace CompetenceAssessment.Domain.Assessment;
 public enum ScaleType
 {
     [Description("Пятизначная шкала")]
-    FivePointScale = 1,
+    FivePointScale = 5,
     
     [Description("Десятизначная шкала")]
-    TenPointScale,
+    TenPointScale = 10,
 }
