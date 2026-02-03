@@ -9,6 +9,8 @@ public class AssessmentInspector
     public int UserId { get; set; }
     
     public virtual Assessment Assessment { get; set; }
+    
+    public virtual User User { get; set; }
 
     public AssessmentInspector(int assessmentId, int userId)
     {

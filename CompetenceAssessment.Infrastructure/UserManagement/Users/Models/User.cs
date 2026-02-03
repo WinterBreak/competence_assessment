@@ -1,3 +1,5 @@
+using CompetenceAssessment.Infrastructure.Assessment;
+
 namespace CompetenceAssessment.Infrastructure.UserManagement;
 
 public class User
@@ -27,6 +29,8 @@ public class User
     public virtual ICollection<User> Subordinates { get; set; } = [];
     
     public virtual ICollection<UserToRolesLink> RoleLinks { get; set; } = [];
+    
+    public virtual ICollection<AssessmentInspector> Inspections { get; set; } = [];
     
     public User(string email, string firstName, string secondName, string lastName
               , User boss, Position position, Department department)

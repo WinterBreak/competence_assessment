@@ -4,8 +4,7 @@ namespace CompetenceAssessment.Infrastructure.UserManagement;
 
 public class UserManagementContext: DbContext
 {
-    public UserManagementContext(DbContextOptions<UserManagementContext> options) : base(options)
-    {}
+    public UserManagementContext(DbContextOptions<UserManagementContext> options) : base(options) {}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,27 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CompetenceAssessment.Infrastructure.Assessment;
 
-[Table("assessment_result_detail", Schema = "assessment")]
 public class AssessmentResult
 {
-    //TODO cоставной PK
-    
-    [Required]
-    [ForeignKey("id_assessment_result")]
     public int AssessmentId { get; set; }
     
-    [Required]
-    [ForeignKey("task_id")]
     public int TaskId { get; set; }
     
-    [Column("comment")]
     public string Comment { get; set; }
     
-    [Column("answer")]
     public string Answer { get; set; }
     
-    [Required]
-    [Column("score")]
     public int Score { get; set; }
     
     public virtual Assessment Assessment { get; set; }
