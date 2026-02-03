@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CompetenceAssessment.Application\CompetenceAssessment.Application.csproj" />
+      <ProjectReference Include="..\CompetenceAssessment.Infrastructure\CompetenceAssessment.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
