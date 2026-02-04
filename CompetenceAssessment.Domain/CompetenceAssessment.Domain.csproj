@@ -7,7 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UserManagement\" />
+      <Folder Include="Assessment\Assessments\Models\" />
+      <Folder Include="Assessment\Competencies\Models\" />
+      <Folder Include="Assessment\Templates\Models\" />
+      <Folder Include="Export\" />
+      <Folder Include="UserManagement\Models\" />
     </ItemGroup>
 
 </Project>
