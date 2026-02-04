@@ -8,10 +8,14 @@
 
     <ItemGroup>
       <Folder Include="Assessment\Assessments\Models\" />
+      <Folder Include="Assessment\Assessments\Validations\" />
       <Folder Include="Assessment\Competencies\Models\" />
+      <Folder Include="Assessment\Competencies\Validations\" />
       <Folder Include="Assessment\Templates\Models\" />
+      <Folder Include="Assessment\Templates\Validations\" />
       <Folder Include="Export\" />
       <Folder Include="UserManagement\Models\" />
+      <Folder Include="UserManagement\Validations\" />
     </ItemGroup>
 
 </Project>
