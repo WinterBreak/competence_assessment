@@ -19,10 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Api\Assessment\" />
-      <Folder Include="Api\UserManagement\" />
-      <Folder Include="Controllers\" />
-      <Folder Include="Views\" />
+      <Folder Include="Api\Assessment\Models\Templates\" />
     </ItemGroup>
 
 </Project>
