@@ -14,4 +14,14 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Assessment\Assessments\Specifications\" />
+      <Folder Include="Assessment\Competencies\Specifications\" />
+      <Folder Include="Assessment\Configurations\Assessments\Specifications\" />
+      <Folder Include="Assessment\Configurations\Competencies\Specifications\" />
+      <Folder Include="Assessment\Configurations\Templates\Specifications\" />
+      <Folder Include="Assessment\Templates\Specifications\" />
+      <Folder Include="UserManagement\Users\Specifications\" />
+    </ItemGroup>
+
 </Project>
