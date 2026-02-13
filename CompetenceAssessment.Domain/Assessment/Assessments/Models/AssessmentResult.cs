@@ -1,4 +1,4 @@
-namespace CompetenceAssessment.Domain.Assessment.Assessments.Models;
+namespace CompetenceAssessment.Domain.Assessment;
 
 public class AssessmentResult
 {

@@ -1,6 +1,6 @@
 using CompetenceAssessment.Domain.UserManagement;
 
-namespace CompetenceAssessment.Domain.Assessment.Assessments.Models;
+namespace CompetenceAssessment.Domain.Assessment;
 
 public class Assessment
 {
