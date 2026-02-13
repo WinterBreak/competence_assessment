@@ -14,4 +14,8 @@
       <Folder Include="UserManagement\Validations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CompetenceAssessment.Core\CompetenceAssessment.Core.csproj" />
+    </ItemGroup>
+
 </Project>
