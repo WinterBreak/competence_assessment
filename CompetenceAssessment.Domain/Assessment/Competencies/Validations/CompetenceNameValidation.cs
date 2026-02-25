@@ -44,7 +44,7 @@ public class CompetenceNameValidation: IValidationRule<Competence>
         var query = new CompetenceQuery(name: name);
         var competencies = await _repository
             .GetCompetenciesAsync(query, cancellationToken);
-        if (competencies.Any())
+        if (competencies.Any(c => c.Name == name))
         {
             validationErrors.AddError(ERROR_NAME, ErrorsConfg.USING_NAME_ERROR);
         }
