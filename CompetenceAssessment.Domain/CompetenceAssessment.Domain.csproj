@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <Folder Include="Assessment\Assessments\Validations\" />
-      <Folder Include="Assessment\Competencies\Validations\" />
       <Folder Include="Assessment\Templates\Validations\" />
       <Folder Include="Export\" />
       <Folder Include="UserManagement\Validations\" />

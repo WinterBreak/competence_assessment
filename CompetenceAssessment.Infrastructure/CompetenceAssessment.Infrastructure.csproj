@@ -16,7 +16,6 @@
 
     <ItemGroup>
       <Folder Include="Assessment\Assessments\Specifications\" />
-      <Folder Include="Assessment\Competencies\Specifications\" />
       <Folder Include="Assessment\Configurations\Assessments\Specifications\" />
       <Folder Include="Assessment\Configurations\Competencies\Specifications\" />
       <Folder Include="Assessment\Configurations\Templates\Specifications\" />

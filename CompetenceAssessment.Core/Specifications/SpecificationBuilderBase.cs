@@ -8,6 +8,8 @@ public class SpecificationBuilderBase<T> where T : class
 
     protected SpecificationBuilderBase() { }
     
+    public SpecificationBase<T> Build() => _currentSpecification;
+    
     public SpecificationBuilderBase<T> And()
     {
         _isOrSpecification = false;

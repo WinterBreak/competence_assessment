@@ -6,7 +6,7 @@ public interface ICompetenceService
 {
     Task<Competence?> GetCompetenceAsync(CompetenceQuery query, CancellationToken cancellationToken = default);
     
-    Task<List<Competence>> GetCompetencesAsync(CompetenceQuery query, CancellationToken cancellationToken = default);
+    Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query, CancellationToken cancellationToken = default);
     
     Task<ValidationErrors> CreateCompetenceAsync(CreateCompetenceCommand command
         , CancellationToken cancellationToken = default);
