@@ -1,5 +1,4 @@
 using CompetenceAssessment.Application.Assessment;
-using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.Assessment;
 using Moq;
 using Xunit;
@@ -14,7 +13,13 @@ public class UpdateCompetenceTest
     public async Task Validate_Is_Valid(string name, string? description)
     {
         var command = new UpdateCompetenceCommand(1, name, description);
-        var service = CreateService();
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(name, CancellationToken.None))
+            .ReturnsAsync(false);
+        
+        var service = CreateService(command.Name, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(false, errors.HasErrors);
@@ -22,11 +27,33 @@ public class UpdateCompetenceTest
     
     [Theory]
     [InlineData("", null)]
-    [InlineData("Коммуникабельность", null)]
     public async Task Validate_Not_Valid(string name, string? description)
     {
         var command = new UpdateCompetenceCommand(1, name, description);
-        var service = CreateService();
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(name, CancellationToken.None))
+            .ReturnsAsync(false);
+        
+        var service = CreateService(command.Name, false);
+        var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
+        
+        Assert.Equal(true, errors.HasErrors);
+    }
+    
+    [Theory]
+    [InlineData("Коммуникабельность", null)]
+    public async Task Validate_NameIsTaken_NotValid(string name, string? description)
+    {
+        var command = new UpdateCompetenceCommand(1, name, description);
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(name, CancellationToken.None))
+            .ReturnsAsync(true);
+        
+        var service = CreateService(command.Name, true);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -36,7 +63,13 @@ public class UpdateCompetenceTest
     public async Task Validate_LongName_Not_Valid()
     {
         var command = new UpdateCompetenceCommand(1, new string('a', 256), null);
-        var service = CreateService();
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(command.Name, CancellationToken.None))
+            .ReturnsAsync(false);
+        
+        var service = CreateService(command.Name, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -46,13 +79,14 @@ public class UpdateCompetenceTest
     public async Task Validate_LongDescr_Not_Valid()
     {
         var command = new UpdateCompetenceCommand(1, "a", new string('a', 501));
-        var service = CreateService();
+        
+        var service = CreateService(command.Name, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private CompetenceService CreateService()
+    private CompetenceService CreateService(string name, bool queryResult)
     {
         var repoMoq = new Mock<ICompetenceRepository>();
         repoMoq.Setup(m => m
@@ -63,9 +97,13 @@ public class UpdateCompetenceTest
         repoMoq.Setup(m =>
                 m.GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
             .ReturnsAsync(competencies);
-
-        var errors = new ValidationErrors();
-        var validationService = new CompetenceValidationService(repoMoq.Object);
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(name, CancellationToken.None))
+            .ReturnsAsync(queryResult);
+        
+        var validationService = new CompetenceValidationService(queriesMoq.Object);
         
         return new CompetenceService(repoMoq.Object, validationService);
     }

@@ -2,19 +2,19 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ICompetenceRepository
 {
-    Task<Competence?> GetCompetenceAsync(CompetenceQuery query, CancellationToken cancellationToken = default);
+    Task<Competence?> GetCompetenceAsync(CompetenceQuery query, CancellationToken token = default);
     
-    Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query, CancellationToken cancellationToken = default);
+    Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query, CancellationToken token = default);
     
     // AddCompetenciesAsync - для импорта из файла
     
-    Task AddCompetenceAsync(Competence competence, CancellationToken cancellationToken = default);
+    Task AddCompetenceAsync(Competence competence, CancellationToken token = default);
     
-    Task UpdateCompetenceAsync(Competence competence, CancellationToken cancellationToken = default);
+    Task UpdateCompetenceAsync(Competence competence, CancellationToken token = default);
     
     // RemoveCompetenciesAsync - если на UI добавить чекбоксы для выбора
     
-    Task RemoveCompetenceAsync(int id, CancellationToken cancellationToken = default);
+    Task RemoveCompetenceAsync(int id, CancellationToken token = default);
     
-    Task SaveAllChangesAsync(CancellationToken cancellationToken = default);
+    Task SaveAllChangesAsync(CancellationToken token = default);
 }

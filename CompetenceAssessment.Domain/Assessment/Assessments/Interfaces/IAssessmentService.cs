@@ -4,13 +4,13 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface IAssessmentService
 {
-    Task<Assessment?> GetAssessmentAsync(AssessmentQuery query, CancellationToken cancellationToken = default);
+    Task<Assessment?> GetAssessmentAsync(AssessmentQuery query, CancellationToken token = default);
     
-    Task<List<Assessment>> GetAssessmentsAsync(AssessmentQuery query, CancellationToken cancellationToken = default);
+    Task<List<Assessment>> GetAssessmentsAsync(AssessmentQuery query, CancellationToken token = default);
     
     Task<ValidationErrors> CreateAssessmentAsync(CreateAssessmentCommand command
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<ValidationErrors> UpdateAssessmentAsync(UpdateAssessmentCommand command
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
  }

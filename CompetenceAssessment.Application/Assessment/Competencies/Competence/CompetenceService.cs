@@ -16,67 +16,67 @@ public class CompetenceService: ICompetenceService
     }
     
     public async Task<Competence?> GetCompetenceAsync(CompetenceQuery query
-        , CancellationToken cancellationToken = default)
-        => await _repository.GetCompetenceAsync(query, cancellationToken);
+        , CancellationToken token = default)
+        => await _repository.GetCompetenceAsync(query, token);
 
     public async Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query
-        , CancellationToken cancellationToken = default)
-        => await _repository.GetCompetenciesAsync(query, cancellationToken);
+        , CancellationToken token = default)
+        => await _repository.GetCompetenciesAsync(query, token);
 
     public async Task<ValidationErrors> CreateCompetenceAsync(CreateCompetenceCommand command
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         var newCompetence = command.Create();
         var errors = await _validationService
-            .ValidateCreatingCompetenceAsync(newCompetence, cancellationToken);
+            .ValidateCreatingCompetenceAsync(newCompetence, token);
 
         if (errors.HasErrors)
         {
             return errors;
         }
         
-        await _repository.AddCompetenceAsync(newCompetence, cancellationToken);
-        await _repository.SaveAllChangesAsync(cancellationToken);
+        await _repository.AddCompetenceAsync(newCompetence, token);
+        await _repository.SaveAllChangesAsync(token);
         return errors;
     }
 
     public async Task<ValidationErrors> UpdateCompetenceAsync(UpdateCompetenceCommand command
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         var query = new CompetenceQuery(id: command.Id);
-        var updatingCompetence = await _repository.GetCompetenceAsync(query, cancellationToken);
+        var updatingCompetence = await _repository.GetCompetenceAsync(query, token);
         ArgumentNullException.ThrowIfNull(updatingCompetence);
         
         command.Update(updatingCompetence);
         
         var errors = await _validationService
-            .ValidateUpdatingCompetenceAsync(updatingCompetence, cancellationToken);
+            .ValidateUpdatingCompetenceAsync(updatingCompetence, token);
         if (errors.HasErrors)
         {
             return errors;
         }
         
-        await _repository.UpdateCompetenceAsync(updatingCompetence, cancellationToken);
-        await _repository.SaveAllChangesAsync(cancellationToken);
+        await _repository.UpdateCompetenceAsync(updatingCompetence, token);
+        await _repository.SaveAllChangesAsync(token);
         return errors;
     }
 
     public async Task<ValidationErrors> DeleteCompetenceAsync(DeleteCompetenceCommand command
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         var query = new CompetenceQuery(id: command.Id);
-        var deletingCompetence = await _repository.GetCompetenceAsync(query, cancellationToken);
+        var deletingCompetence = await _repository.GetCompetenceAsync(query, token);
         ArgumentNullException.ThrowIfNull(deletingCompetence);
         
         var errors = await _validationService
-            .ValidateDeletingCompetenceAsync(deletingCompetence, cancellationToken);
+            .ValidateDeletingCompetenceAsync(deletingCompetence, token);
         if (errors.HasErrors)
         {
             return errors;
         }
         
-        await _repository.RemoveCompetenceAsync(command.Id, cancellationToken);
-        await _repository.SaveAllChangesAsync(cancellationToken);
+        await _repository.RemoveCompetenceAsync(command.Id, token);
+        await _repository.SaveAllChangesAsync(token);
         return errors;
     }
 }
