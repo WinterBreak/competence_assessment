@@ -2,16 +2,22 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public class CompetenceWeight
 {
-    public Competence Competence { get; set; }
+    public int ModelId { get; set; }
     
-    public ITask Task { get; set; }
+    public Competence Competence { get; set; }
     
     public decimal Weight { get; set; }
 
-    public CompetenceWeight(Competence competence, ITask task, decimal weight)
+    public CompetenceWeight(Competence competence, int modelId, decimal weight)
     {
         Competence = competence;
-        Task = task;
+        ModelId = modelId;
+        Weight = weight;
+    }
+    
+    public CompetenceWeight(Competence competence, decimal weight)
+    {
+        Competence = competence;
         Weight = weight;
     }
 }

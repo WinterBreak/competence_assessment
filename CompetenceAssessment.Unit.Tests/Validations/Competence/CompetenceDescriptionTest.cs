@@ -1,7 +1,6 @@
 using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.Assessment;
 using CompetenceAssessment.Domain.Assessment.Competencies.Validations;
-using Moq;
 using Xunit;
 
 namespace CompetenceAssessment.Unit.Tests.Validations;

@@ -3,16 +3,16 @@ namespace CompetenceAssessment.Domain.Assessment;
 public interface ICompetenceModelRepository
 {
     Task<CompetenceModel?> GetCompetenceModelAsync(CompetenceModelQuery query
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<List<CompetenceModel>> GetCompetenceModelsAsync(CompetenceModelQuery query
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
-    Task AddCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken cancellationToken = default);
+    Task AddCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);
     
-    Task UpdateCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken cancellationToken = default);
+    Task UpdateCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);
     
-    Task RemoveCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken cancellationToken = default);
+    Task RemoveCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);
     
-    Task SaveAllChangesAsync(CancellationToken cancellationToken = default);
+    Task SaveAllChangesAsync(CancellationToken token = default);
 }

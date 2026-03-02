@@ -16,7 +16,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence(CONST_NAME, null);
 
-        var rule = CreateRule();
+        var rule = CreateRule(competence.Name, false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(false, errors.HasErrors);
@@ -28,7 +28,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence("", null);
         
-        var rule = CreateRule();
+        var rule = CreateRule(competence.Name, false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -40,7 +40,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence(new string('a', 256), null);
         
-        var rule = CreateRule();
+        var rule = CreateRule(competence.Name, false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -51,31 +51,20 @@ public class CompetenceNameValidationTest
     {
         var errors = new ValidationErrors();
         var competence = new Competence("Коммуникабельность", null);
-        
-        var moq = new Mock<ICompetenceRepository>();
-        var competencies = CompetenciesWithTakenName().ToList();
-        moq.Setup(m => m
-                .GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
-            .ReturnsAsync(competencies);
-        var rule = new CompetenceNameValidation(moq.Object);
+
+        var rule = CreateRule(competence.Name, true);
         
         await rule.ValidateAsync(competence, errors);
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private IValidationRule<Competence> CreateRule()
+    private IValidationRule<Competence> CreateRule(string name, bool result)
     {
-        var moq = new Mock<ICompetenceRepository>();
+        var moq = new Mock<ICompetenceValidationQueries>();
         moq.Setup(m => m
-                .GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
-            .ReturnsAsync(new List<Competence> ());
+                .IsNameTakenAsync(name, CancellationToken.None))
+            .ReturnsAsync(result);
         
         return new CompetenceNameValidation(moq.Object);
-    }
-
-    private static IEnumerable<Competence> CompetenciesWithTakenName()
-    {
-        yield return new Competence("Коммуникабельность", null);
-        yield return new Competence("Стрессоустойчивость ", null);
     }
 }

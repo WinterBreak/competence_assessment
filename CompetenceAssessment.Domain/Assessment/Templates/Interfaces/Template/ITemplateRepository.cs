@@ -2,15 +2,15 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ITemplateRepository
 {
-    Task<ITemplate?> GetTemplateAsync(TemplateQuery query, CancellationToken cancellationToken = default);
+    Task<ITemplate?> GetTemplateAsync(TemplateQuery query, CancellationToken token = default);
     
-    Task<List<ITemplate>> GetTemplatesAsync(TemplateQuery query, CancellationToken cancellationToken = default);
+    Task<List<ITemplate>> GetTemplatesAsync(TemplateQuery query, CancellationToken token = default);
     
-    Task AddTemplateAsync(ITemplate template, CancellationToken cancellationToken = default);
+    Task AddTemplateAsync(ITemplate template, CancellationToken token = default);
     
-    Task UpdateTemplateAsync(ITemplate template, CancellationToken cancellationToken = default);
+    Task UpdateTemplateAsync(ITemplate template, CancellationToken token = default);
     
-    Task RemoveTemplateAsync(ITemplate template, CancellationToken cancellationToken = default);
+    Task RemoveTemplateAsync(ITemplate template, CancellationToken token = default);
     
-    Task SaveAllChanges(CancellationToken cancellationToken = default);
+    Task SaveAllChanges(CancellationToken token = default);
 }

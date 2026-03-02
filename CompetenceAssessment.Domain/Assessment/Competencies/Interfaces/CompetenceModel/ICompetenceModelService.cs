@@ -5,17 +5,17 @@ namespace CompetenceAssessment.Domain.Assessment;
 public interface ICompetenceModelService
 {
     Task<CompetenceModel?> GetCompetenceModelAsync(CompetenceModelQuery query
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<List<CompetenceModel>> GetCompetenceModelsAsync(CompetenceModelQuery query
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<ValidationErrors> CreateCompetenceModelAsync(CreateCompetenceModelCommand command
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<ValidationErrors> UpdateCompetenceModelAsync(UpdateCompetenceModelCommand command
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
     
     Task<ValidationErrors> DeleteCompetenceModelAsync(DeleteCompetenceModelCommand command
-        , CancellationToken cancellationToken = default);
+        , CancellationToken token = default);
 }

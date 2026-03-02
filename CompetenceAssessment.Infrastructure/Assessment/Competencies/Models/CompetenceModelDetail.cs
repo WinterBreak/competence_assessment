@@ -12,11 +12,11 @@ public class CompetenceModelDetail
     
     public virtual Competence Competence { get; set; }
 
-    public CompetenceModelDetail(CompetenceModel model, Competence competence
+    public CompetenceModelDetail(CompetenceModel model, int competenceId
         , decimal weight)
     {
         Model = model;
-        Competence = competence;
+        CompetenceId = competenceId;
         Weight = weight;
     }
 

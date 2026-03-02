@@ -15,14 +15,14 @@ public class CompetenceRepository: ICompetenceRepository
     }
     
     public async Task<Competence?> GetCompetenceAsync(CompetenceQuery query
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
-        var competencies = await GetCompetenciesAsync(query, cancellationToken);
+        var competencies = await GetCompetenciesAsync(query, token);
         return competencies.SingleOrDefault();
     }
 
     public async Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         var specification = new DAL.CompetenceSpecificationBuilder()
             .WithIds(query.Ids)
@@ -31,45 +31,45 @@ public class CompetenceRepository: ICompetenceRepository
         return await GetAllCompetences()
             .Where(specification)
             .Select(c => new Competence(c.Id, c.Name, c.Description))
-            .ToListAsync(cancellationToken);
+            .ToListAsync(token);
     }
 
     public async Task AddCompetenceAsync(Competence competence
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(competence);
         var newCompetence = new DAL.Competence(competence.Name, competence.Description);
-        await _context.Competences.AddAsync(newCompetence, cancellationToken);
+        await _context.Competences.AddAsync(newCompetence, token);
     }
 
     public async Task UpdateCompetenceAsync(Competence competence
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(competence);
         
-        var updatingCategory = await GetCompetenceByIdAsync(competence.Id, cancellationToken);
+        var updatingCategory = await GetCompetenceByIdAsync(competence.Id, token);
         
         updatingCategory.Name = competence.Name;
         updatingCategory.Description = competence.Description;
     }
 
     public async Task RemoveCompetenceAsync(int id
-        , CancellationToken cancellationToken = default)
+        , CancellationToken token = default)
     {
-        var removingCategory = await GetCompetenceByIdAsync(id, cancellationToken);
+        var removingCategory = await GetCompetenceByIdAsync(id, token);
         _context.Competences.Remove(removingCategory);
     }
 
-    public async Task SaveAllChangesAsync(CancellationToken cancellationToken = default)
-        => await _context.SaveChangesAsync(cancellationToken);
+    public async Task SaveAllChangesAsync(CancellationToken token = default)
+        => await _context.SaveChangesAsync(token);
     
     private IQueryable<DAL.Competence> GetAllCompetences() => _context.Competences;
 
-    private async Task<DAL.Competence> GetCompetenceByIdAsync(int id, CancellationToken cancellationToken = default)
+    private async Task<DAL.Competence> GetCompetenceByIdAsync(int id, CancellationToken token = default)
     {
         var specification = new DAL.CompetenceSpecificationBuilder().WithId(id).Build();
         return await GetAllCompetences()
             .Where(specification)
-            .SingleAsync(cancellationToken);
+            .SingleAsync(token);
     }
 }

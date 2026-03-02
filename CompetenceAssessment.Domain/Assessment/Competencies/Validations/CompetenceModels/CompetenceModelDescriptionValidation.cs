@@ -1,15 +1,15 @@
 using CompetenceAssessment.Core.Confings;
 using CompetenceAssessment.Core.Validations;
 
-namespace CompetenceAssessment.Domain.Assessment.Competencies.Validations;
+namespace CompetenceAssessment.Domain.Assessment;
 
-public class CompetenceDescriptionValidation: IValidationRule<Competence>
+public class CompetenceModelDescriptionValidation: IValidationRule<CompetenceModel>
 {
     private const string ERROR_NAME = "Description";
-    private const int MAX_LENGTH = 500;
+    private const int MAX_LENGTH = 1000;
     
-    public async Task ValidateAsync(Competence competence, ValidationErrors validationErrors
-        , CancellationToken cancellationToken = default)
+    public async Task ValidateAsync(CompetenceModel competence, ValidationErrors validationErrors
+        , CancellationToken token = default)
     {
         await Task.Run(() =>
         {
@@ -18,6 +18,6 @@ public class CompetenceDescriptionValidation: IValidationRule<Competence>
                 validationErrors.AddError(ERROR_NAME, ErrorsConfg.MAX_LENGHT_ERROR);
                 return;
             }
-        }, cancellationToken);
+        }, token);
     }
 }
