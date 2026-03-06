@@ -5,9 +5,9 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ITaskValidationService
 {
-    Task<ValidationErrors> ValidateCreatingTask(ITask task, CancellationToken token = default);
+    Task<ValidationErrors> ValidateCreatingTaskAsync(ITask task, CancellationToken token = default);
     
-    Task<ValidationErrors> ValidateUpdatingTask(ITask task, CancellationToken token = default);
+    Task<ValidationErrors> ValidateUpdatingTaskAsync(ITask task, CancellationToken token = default);
     
-    Task<ValidationErrors> ValidateDeletingTask(ITask task, CancellationToken token = default);
+    Task<ValidationErrors> ValidateDeletingTaskAsync(ITask task, CancellationToken token = default);
 }

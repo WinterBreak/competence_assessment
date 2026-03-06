@@ -19,7 +19,6 @@
       <Folder Include="Assessment\Configurations\Assessments\Specifications\" />
       <Folder Include="Assessment\Configurations\Competencies\Specifications\" />
       <Folder Include="Assessment\Configurations\Templates\Specifications\" />
-      <Folder Include="Assessment\Templates\Specifications\" />
       <Folder Include="UserManagement\Users\Specifications\" />
     </ItemGroup>
 
