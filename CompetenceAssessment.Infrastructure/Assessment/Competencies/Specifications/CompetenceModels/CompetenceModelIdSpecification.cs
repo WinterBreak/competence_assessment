@@ -19,6 +19,6 @@ public class CompetenceModelIdSpecification: SpecificationBase<CompetenceModel>
     }
     
     public override Expression<Func<CompetenceModel, bool>> Criteria 
-        => c => _ids.Contains(c.Id);
+        => c => _ids.Contains(c.Id) || !_ids.Any();
     
 }
