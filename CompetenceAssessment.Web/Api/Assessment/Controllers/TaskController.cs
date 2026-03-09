@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TaskAssessment.Web.Assessment;
 
+/// <summary>
+/// Задания
+/// </summary>
 [Route("api/tasks")]
 [ApiController]
 public class TaskController: ControllerBase

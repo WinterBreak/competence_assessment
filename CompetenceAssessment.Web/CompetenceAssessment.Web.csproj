@@ -18,8 +18,4 @@
       <ProjectReference Include="..\CompetenceAssessment.Infrastructure\CompetenceAssessment.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Api\Assessment\Models\Templates\" />
-    </ItemGroup>
-
 </Project>

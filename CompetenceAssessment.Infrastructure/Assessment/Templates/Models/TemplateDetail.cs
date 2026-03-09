@@ -18,11 +18,11 @@ public class TemplateDetail
     
     public virtual Task Task { get; set; }
 
-    public TemplateDetail(Template template, Task task, Competence competence, decimal weight)
+    public TemplateDetail(Template template, int taskId, int competenceId, decimal weight)
     {
         Template = template;
-        Task = task;
-        Competence = competence;
+        TaskId = taskId;
+        CompetenceId = competenceId;
         Weight = weight;
     }
     
