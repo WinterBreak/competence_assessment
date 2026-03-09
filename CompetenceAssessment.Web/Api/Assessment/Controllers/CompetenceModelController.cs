@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompetenceAssessment.Web.Assessment;
 
 /// <summary>
-/// Категории
+/// Модели компетенций
 /// </summary>
 [Route("api/competence_models")]
 [ApiController]
