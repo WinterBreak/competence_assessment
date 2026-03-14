@@ -9,4 +9,6 @@ public interface IUserService
     Task<List<User>> GetUsersAsync(UserQuery query, CancellationToken token = default);
     
     Task<ValidationErrors> UpdateUserAsync(UpdateUserCommand command, CancellationToken token = default);
+    
+    // TODO Delete
 }

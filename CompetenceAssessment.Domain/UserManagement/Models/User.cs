@@ -12,7 +12,7 @@ public class User
     
     public string Email { get; set; }
     
-    public User Boss { get; set; }
+    public int? BossId { get; set; }
     
     public int PositionId { get; set; }
     
@@ -25,14 +25,14 @@ public class User
     public User() {}
 
     public User(int id, string firstName, string? secondName, string lastName
-              , User user, string email, int positionId, int departmentId)
+              , int? bossId, string email, int positionId, int departmentId)
     {
         Id = id;
         FirstName = firstName;
         SecondName = secondName;
         LastName = lastName;
+        BossId = bossId;
         Email = email;
-        Boss = user;
         PositionId = positionId;
         DepartmentId = departmentId;
     }

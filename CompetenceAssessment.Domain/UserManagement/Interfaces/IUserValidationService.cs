@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using CompetenceAssessment.Core.Validations;
 
 namespace CompetenceAssessment.Domain.UserManagement;
 
 public interface IUserValidationService
 {
-    Task<ValidationResult> ValidateUpdatingUserAsync(User user, CancellationToken token = default);
+    Task<ValidationErrors> ValidateUpdatingUserAsync(User user, CancellationToken token = default);
 }

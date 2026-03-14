@@ -10,8 +10,4 @@
       <ProjectReference Include="..\CompetenceAssessment.Domain\CompetenceAssessment.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="UserManagement\" />
-    </ItemGroup>
-
 </Project>

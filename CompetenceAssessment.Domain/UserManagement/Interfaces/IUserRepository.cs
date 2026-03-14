@@ -6,7 +6,11 @@ public interface IUserRepository
     
     Task<List<User>> GetUsersAsync(UserQuery query, CancellationToken token = default);
     
-    Task UpdateUserAsync(UpdateUserCommand command, CancellationToken token = default);
+    Task AddUserAsync(User user, CancellationToken token = default);
+    
+    Task UpdateUserAsync(User user, CancellationToken token = default);
+    
+    Task RemoveUserAsync(int id, CancellationToken token = default);
     
     Task SaveAllChangesAsync(CancellationToken token = default);
 }
