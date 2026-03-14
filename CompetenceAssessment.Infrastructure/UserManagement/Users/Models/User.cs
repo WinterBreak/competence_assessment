@@ -14,11 +14,11 @@ public class User
     
     public string FirstName { get; set; }
     
-    public string SecondName { get; set; }
+    public string? SecondName { get; set; }
     
     public string LastName { get; set; }
     
-    public int BossId { get; set; }
+    public int? BossId { get; set; }
     
     public virtual User Boss { get; set; }
     
@@ -32,7 +32,7 @@ public class User
     
     public virtual ICollection<AssessmentInspector> Inspections { get; set; } = [];
     
-    public User(string email, string firstName, string secondName, string lastName
+    public User(string email, string firstName, string? secondName, string lastName
               , User boss, Position position, Department department)
     {
         Email = email;
@@ -44,8 +44,8 @@ public class User
         Department = department;
     }
     
-    public User(string email, string firstName, string secondName, string lastName
-        , int bossId, int positionId, int departmentId)
+    public User(string email, string firstName, string? secondName, string lastName
+        , int? bossId, int positionId, int departmentId)
     {
         Email = email;
         FirstName = firstName;
