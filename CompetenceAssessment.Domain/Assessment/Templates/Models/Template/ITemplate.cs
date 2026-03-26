@@ -16,6 +16,8 @@ public class ITemplate
     
     public List<TemplateWeight> Weights { get; set; }
     
+    public ITemplate() {}
+    
     public ITemplate(int id, string name, TemplateType type, ScaleType scale, DateTime creationDate
                    , int competenceModelId, List<TemplateWeight> weights)
     {

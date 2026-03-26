@@ -10,6 +10,8 @@ public class ITask
     
     public TaskType Type { get; set; } = TaskType.None;
 
+    public ITask() {}
+    
     public ITask(int id, string text, string? answer, TaskType type)
     {
         Id = id;

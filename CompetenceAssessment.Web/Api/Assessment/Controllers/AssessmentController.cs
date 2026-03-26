@@ -4,71 +4,55 @@ using Microsoft.AspNetCore.Mvc;
 namespace CompetenceAssessment.Web.Assessment;
 
 /// <summary>
-/// Шаблоны
+/// Оценки
 /// </summary>
 [ApiController]
-[Route("api/templates")]
+[Route("api/assessments")]
 public class AssessmentController: ControllerBase
 {
-    private readonly ITemplateService _templateService;
+    private readonly IAssessmentService _assessmentService;
 
-    public AssessmentController(ITemplateService templateService)
+    public AssessmentController(IAssessmentService assessmentService)
     {
-        _templateService = templateService;
+        _assessmentService = assessmentService;
     }
     
     /// <summary>
-    /// Получение шаблонов
+    /// Получение оценок
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetCompetenceModelsAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetAssessmentsAsync(CancellationToken token = default)
     {
-        var query = new TemplateQuery();
-        var competencies = await _templateService.GetTemplatesAsync(query, token);
+        var query = new AssessmentQuery();
+        var competencies = await _assessmentService.GetAssessmentsAsync(query, token);
         return Ok(competencies);
     }
 
     /// <summary>
-    /// Создание шаблона
+    /// Создание оценки
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> CreateCompetenceModelAsync(TemplateCreateRequest request
-                                                              , CancellationToken token = default)
+    public async Task<IActionResult> CreateAssessmentAsync(AssessmentCreateRequest request
+                                                         , CancellationToken token = default)
     {
-        var command = new CreateTemplateCommand(request.Name, (TemplateType)request.Type
-                                             , (ScaleType)request.Scale, request.CompetenceModelId
-                                             , request.Weights);
-        var errors = await _templateService.CreateTemplateAsync(command, token);
+        var command = new CreateAssessmentCommand(request.TemplateId, (AssessmentType)request.AssessmentTypeId
+                                                , request.CandidateId, request.InspectorsIds);
+        var errors = await _assessmentService.CreateAssessmentAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
             : Ok(errors);
     }
 
     /// <summary>
-    /// Изменение шаблона
+    /// Изменение оценки
     /// </summary>
     [HttpPatch]
-    public async Task<IActionResult> UpdateCompetenceModelAsync(TemplateUpdateRequest request
-                                                              , CancellationToken token = default)
+    public async Task<IActionResult> UpdateAssessmentAsync(AssessmentUpdateRequest request
+                                                         , CancellationToken token = default)
     {
-        var command = new UpdateTemplateCommand(request.Id, request.Name, (TemplateType)request.Type
-                                             , (ScaleType)request.Scale, request.CompetenceModelId
-                                             , request.Weights);
-        var errors = await _templateService.UpdateTemplateAsync(command, token);
-        return errors.HasErrors
-            ? BadRequest(errors)
-            : Ok(errors);
-    }
-
-    /// <summary>
-    /// Удаление шаблона
-    /// </summary>
-    [HttpDelete]
-    public async Task<IActionResult> DeleteCompetenceModelAsync(CompetenceModelDeleteRequest request
-                                                              , CancellationToken token = default)
-    {
-        var command = new DeleteTemplateCommand(request.Id);
-        var errors = await _templateService.DeleteTemplateAsync(command, token);
+        var command = new UpdateAssessmentCommand(request.AssessmentId, request.Answers, request.Scores
+                                                , request.Comments, request.Comment);
+        var errors = await _assessmentService.UpdateAssessmentAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
             : Ok(errors);

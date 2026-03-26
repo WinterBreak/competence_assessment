@@ -26,4 +26,14 @@ public class AssessmentResult
         Answer = answer;
         Score = score;
     }
+    
+    public AssessmentResult(int assessmentId, ITask task, string comment
+                          , string answer, int score)
+    {
+        AssessmentId = assessmentId;
+        Task = task;
+        Comment = comment;
+        Answer = answer;
+        Score = score;
+    }
 }

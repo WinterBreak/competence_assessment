@@ -5,6 +5,8 @@ namespace CompetenceAssessment.Infrastructure.Assessment;
 
 public class AssessmentResult
 {
+    public int Id { get; set; }
+    
     public int AssessmentId { get; set; }
     
     public int TaskId { get; set; }

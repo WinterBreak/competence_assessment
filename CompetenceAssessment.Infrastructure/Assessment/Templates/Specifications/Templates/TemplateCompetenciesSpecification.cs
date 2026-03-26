@@ -7,9 +7,9 @@ public class TemplateCompetenciesSpecification: SpecificationBase<Template>
 {
     private readonly List<int> _competenceIds = new();
 
-    public TemplateCompetenciesSpecification(int taskId)
+    public TemplateCompetenciesSpecification(int competenceId)
     {
-        _competenceIds.Add(taskId);
+        _competenceIds.Add(competenceId);
     }
 
     public TemplateCompetenciesSpecification(IEnumerable<int> competenceIds)
