@@ -4,6 +4,9 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public enum AssessmentType
 {
+    [Description("Все")]
+    None = 0,
+    
     [Description("Тестирование")]
     Testing = 1,
     

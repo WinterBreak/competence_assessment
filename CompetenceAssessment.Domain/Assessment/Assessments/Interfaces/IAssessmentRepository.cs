@@ -10,7 +10,7 @@ public interface IAssessmentRepository
     
     Task UpdateAssessmentAsync(Assessment assessment, CancellationToken token = default);
     
-    Task RemoveAssessmentAsync(Assessment assessment, CancellationToken token = default);
+    Task RemoveAssessmentAsync(int id, CancellationToken token = default);
     
     Task SaveAllChangesAsync(CancellationToken token = default);
 }

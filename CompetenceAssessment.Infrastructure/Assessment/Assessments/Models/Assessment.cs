@@ -24,7 +24,7 @@ public class Assessment
     
     public virtual ICollection<AssessmentResult> Results { get; set; } = [];
 
-    public Assessment(int templateId, int typeId, int userId, DateTime startDate, DateTime endDate
+    public Assessment(int templateId, int typeId, int userId, DateTime startDate, DateTime? endDate
         , bool isFinished = false)
     {
         TemplateId = templateId;

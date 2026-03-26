@@ -12,7 +12,7 @@ public class CompetenceModelDetailConfiguration: IEntityTypeConfiguration<Compet
         
         
         builder.Property(x => x.CompetenceModelId)
-            .HasColumnName("competence_model_id")
+            .HasColumnName("model_id")
             .IsRequired();
 
         builder.Property(x => x.CompetenceId)

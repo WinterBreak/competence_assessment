@@ -8,7 +8,7 @@ public class AssessmentResultConfiguration: IEntityTypeConfiguration<AssessmentR
 {
     public void Configure(EntityTypeBuilder<AssessmentResult> builder)
     {
-        builder.ToTable("assessment_result_detail");
+        builder.ToTable("assessment_result");
         builder.HasKey(x => new { x.AssessmentId, x.TaskId });
         
         
