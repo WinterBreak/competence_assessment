@@ -5,6 +5,8 @@ namespace CompetenceAssessment.Infrastructure.Assessment;
 
 public class AssessmentResult
 {
+    public int Id { get; set; }
+    
     public int AssessmentId { get; set; }
     
     public int TaskId { get; set; }
@@ -19,6 +21,8 @@ public class AssessmentResult
     
     public virtual Task Task { get; set; }
 
+    public AssessmentResult() { }
+    
     public AssessmentResult(string comment, string answer, int score
                           , Assessment assessment, Task task)
     {

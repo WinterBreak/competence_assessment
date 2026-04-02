@@ -12,6 +12,8 @@ public class AssessmentInspector
     
     public virtual User User { get; set; }
 
+    public AssessmentInspector() {}
+    
     public AssessmentInspector(int assessmentId, int userId)
     {
         AssessmentId = assessmentId;

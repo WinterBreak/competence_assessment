@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="UserManagement\" />
+      <Folder Include="Export\" />
+      <Folder Include="UserManagement\Validations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CompetenceAssessment.Core\CompetenceAssessment.Core.csproj" />
     </ItemGroup>
 
 </Project>

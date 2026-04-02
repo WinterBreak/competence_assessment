@@ -10,6 +10,8 @@ public class Position
 
     public virtual ICollection<User> Employees { get; set; } = [];
     
+    public Position() {}
+    
     public Position(Guid code, string name)
     {
         Code = code;
