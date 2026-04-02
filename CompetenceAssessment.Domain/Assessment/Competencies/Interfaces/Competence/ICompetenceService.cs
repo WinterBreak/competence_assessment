@@ -4,7 +4,7 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ICompetenceService
 {
-    Task<Competence?> GetCompetenceAsync(CompetenceQuery query, CancellationToken token = default);
+    Task<Competence?> GetCompetenceAsync(int id, CancellationToken token = default);
     
     Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query, CancellationToken token = default);
     

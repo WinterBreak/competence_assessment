@@ -12,10 +12,13 @@ public class AssessmentValidationQueries: IAssessmentValidationQueries
         _context = context;
     }
     
-    public async Task<bool> IsAssessmentStarted(int candidateId, int templateId, AssessmentType type
+    public async Task<bool> IsAssessmentStartedAsync(int candidateId, int templateId, AssessmentType type
                                               , CancellationToken token = default)
         => await _context.Assessments.AnyAsync(a => a.UserId == candidateId 
                                                            && a.AssessmentTypeId == (int)type
                                                            && a.IsFinished == false
                                                            && a.TemplateId == templateId, token);
+
+    public async Task<bool> IsExistAsync(int id, CancellationToken token = default)
+        => await _context.Assessments.AnyAsync(a => a.Id == id, token);
 }

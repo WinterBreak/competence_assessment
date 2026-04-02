@@ -11,12 +11,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FluentMigrator" Version="8.0.1" />
+      <PackageReference Include="FluentMigrator.Runner.Postgres" Version="8.0.1" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Assessment\Configurations\Assessments\Specifications\" />
-      <Folder Include="Assessment\Configurations\Templates\Specifications\" />
     </ItemGroup>
 
 </Project>

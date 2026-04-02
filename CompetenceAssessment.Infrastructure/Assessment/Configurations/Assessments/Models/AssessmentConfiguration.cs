@@ -7,12 +7,19 @@ public class AssessmentConfiguration: IEntityTypeConfiguration<Assessment.Assess
 {
     public void Configure(EntityTypeBuilder<Assessment.Assessment> builder)
     {
-        builder.ToTable("assessment_result");
+        builder.ToTable("assessment");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
         
         builder.Property(x => x.UserId)
             .HasColumnName("id_user")
+            .IsRequired();
+        
+        builder.Property(x => x.TemplateId)
+            .HasColumnName("id_template")
             .IsRequired();
         
         builder.Property(x => x.StartDate)
@@ -41,5 +48,9 @@ public class AssessmentConfiguration: IEntityTypeConfiguration<Assessment.Assess
         builder.HasMany(x => x.Results)
             .WithOne(x => x.Assessment)
             .HasForeignKey(x => x.AssessmentId);
+        
+        builder.HasOne(x => x.Template)
+            .WithMany()
+            .HasForeignKey(x => x.TemplateId);
     }
 }

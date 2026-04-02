@@ -42,13 +42,18 @@ public class CompetenceModelService: ICompetenceModelService
     public async Task<ValidationErrors> UpdateCompetenceModelAsync(UpdateCompetenceModelCommand command
         , CancellationToken token = default)
     {
+        var errors = await _validationService.ValidateExistence(command.Id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         var query = new CompetenceModelQuery(id: command.Id);
         var updatingModel = await _repository.GetCompetenceModelAsync(query, token);
-        ArgumentNullException.ThrowIfNull(updatingModel);
         
         command.Update(updatingModel);
         
-        var errors = await _validationService.ValidateUpdatingCompetenceModelAsync(updatingModel, token);
+        errors = await _validationService.ValidateUpdatingCompetenceModelAsync(updatingModel, token);
         if (errors.HasErrors)
         {
             return errors;
@@ -62,17 +67,13 @@ public class CompetenceModelService: ICompetenceModelService
     public async Task<ValidationErrors> DeleteCompetenceModelAsync(DeleteCompetenceModelCommand command
         , CancellationToken token = default)
     {
-        var query = new CompetenceModelQuery(id: command.Id);
-        var deletingModel = await _repository.GetCompetenceModelAsync(query, token);
-        ArgumentNullException.ThrowIfNull(deletingModel);
-        
-        var errors = await _validationService.ValidateDeletingCompetenceModelAsync(deletingModel, token);
+        var errors = await _validationService.ValidateDeletingCompetenceModelAsync(command.Id, token);
         if (errors.HasErrors)
         {
             return errors;
         }
         
-        await _repository.RemoveCompetenceModelAsync(deletingModel, token);
+        await _repository.RemoveCompetenceModelAsync(command.Id, token);
         await _repository.SaveAllChangesAsync(token);
         return errors;
     }

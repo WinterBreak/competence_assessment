@@ -17,7 +17,7 @@ public class UpdateTemplateCommand
     public Dictionary<int, List<int>> CompetenciesToTasks { get; }
     
     public UpdateTemplateCommand(int id, string name, TemplateType type, ScaleType scale, int competenceModelId
-                               , Dictionary<int, decimal> weights)
+                               , Dictionary<int, decimal> weights, Dictionary<int, List<int>> competenciesToTasks)
     {
         Id = id;
         Name = name;
@@ -25,6 +25,7 @@ public class UpdateTemplateCommand
         Scale = scale;
         CompetenceModelId = competenceModelId;
         Weights = weights;
+        CompetenciesToTasks = competenciesToTasks;
     }
 
     public void Update(ITemplate template, List<ITask> tasks)

@@ -9,8 +9,10 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.14" />
         <PackageReference Include="Nabs.Aspire.ServiceDefaults" Version="9.0.89" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>

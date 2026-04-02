@@ -5,7 +5,8 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public class CompetenceModelWeightValidation: IValidationRule<CompetenceModel>
 {
-    // TODO минимальное количество? диапазон значений весов?
+    public const decimal MIN_WEIGHT = 0;
+    public const decimal MAX_WEIGHT = 1;
     
     public async Task ValidateAsync(CompetenceModel model, ValidationErrors validationErrors,
         CancellationToken token = default)
@@ -22,6 +23,13 @@ public class CompetenceModelWeightValidation: IValidationRule<CompetenceModel>
             if (hasDublicates)
             {
                 validationErrors.AddError(ErrorsConfg.REPEATING_ERROR, ErrorsConfg.REPEATING_ENTITY_ERROR);
+            }
+            
+            var hasWrongWeight = model.Competencies.Any(c => c.Weight < MIN_WEIGHT 
+                                                                          || c.Weight > MAX_WEIGHT);
+            if (hasWrongWeight)
+            {
+                validationErrors.AddError(ErrorsConfg.VALUE_RANGE_ERROR, ErrorsConfg.OUT_OF_RANGE_ERROR);
             }
         });
     }

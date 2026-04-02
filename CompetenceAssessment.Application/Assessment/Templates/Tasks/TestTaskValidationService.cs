@@ -11,10 +11,24 @@ public class TestTaskValidationService(ITaskValidationQueries queries): ITaskVal
     public async Task<ValidationErrors> ValidateUpdatingTaskAsync(ITask task, CancellationToken token = default)
         => await ValidateAsync(task, token);
 
-    public async Task<ValidationErrors> ValidateDeletingTaskAsync(ITask task, CancellationToken token = default)
+    public async Task<ValidationErrors> ValidateDeletingTaskAsync(int id, CancellationToken token = default)
+    {
+        var errors = await ValidateExistenceAsync(id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
+        var task = new ITask { Id = id };
+        await new TaskInTemplateValidation(queries).ValidateAsync(task, errors, token);
+        return errors;
+    }
+
+    public async Task<ValidationErrors> ValidateExistenceAsync(int id, CancellationToken token = default)
     {
         var errors = new ValidationErrors();
-        await new TaskInTemplateValidation(queries).ValidateAsync(task, errors, token);
+        var task = new ITask { Id = id };
+        await new TaskExistenceValidation(queries).ValidateAsync(task, errors, token);
         return errors;
     }
 

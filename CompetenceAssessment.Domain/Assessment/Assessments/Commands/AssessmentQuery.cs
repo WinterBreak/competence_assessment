@@ -19,7 +19,11 @@ public class AssessmentQuery
     
     public AssessmentQuery(int id = default, AssessmentType type = AssessmentType.None, bool isFinished = false)
     {
-        Ids.Add(id);
+        if (id != default)
+        {
+            Ids.Add(id);
+        }
+        
         Type = type;
         IsFinished = isFinished;
     }

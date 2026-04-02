@@ -14,10 +14,13 @@ public class CompetenceService: ICompetenceService
         _repository = repository;
         _validationService = validationService;
     }
-    
-    public async Task<Competence?> GetCompetenceAsync(CompetenceQuery query
+
+    public async Task<Competence?> GetCompetenceAsync(int id
         , CancellationToken token = default)
-        => await _repository.GetCompetenceAsync(query, token);
+    {
+        var query = new CompetenceQuery(id: id);
+        return await _repository.GetCompetenceAsync(query, token);
+    } 
 
     public async Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query
         , CancellationToken token = default)
@@ -43,13 +46,18 @@ public class CompetenceService: ICompetenceService
     public async Task<ValidationErrors> UpdateCompetenceAsync(UpdateCompetenceCommand command
         , CancellationToken token = default)
     {
+        var errors = await _validationService.ValidateExistenceAsync(command.Id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         var query = new CompetenceQuery(id: command.Id);
         var updatingCompetence = await _repository.GetCompetenceAsync(query, token);
-        ArgumentNullException.ThrowIfNull(updatingCompetence);
         
         command.Update(updatingCompetence);
         
-        var errors = await _validationService
+        errors = await _validationService
             .ValidateUpdatingCompetenceAsync(updatingCompetence, token);
         if (errors.HasErrors)
         {
@@ -64,12 +72,7 @@ public class CompetenceService: ICompetenceService
     public async Task<ValidationErrors> DeleteCompetenceAsync(DeleteCompetenceCommand command
         , CancellationToken token = default)
     {
-        var query = new CompetenceQuery(id: command.Id);
-        var deletingCompetence = await _repository.GetCompetenceAsync(query, token);
-        ArgumentNullException.ThrowIfNull(deletingCompetence);
-        
-        var errors = await _validationService
-            .ValidateDeletingCompetenceAsync(deletingCompetence, token);
+        var errors = await _validationService.ValidateDeletingCompetenceAsync(command.Id, token);
         if (errors.HasErrors)
         {
             return errors;

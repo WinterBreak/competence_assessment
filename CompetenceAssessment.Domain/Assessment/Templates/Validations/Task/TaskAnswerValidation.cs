@@ -11,9 +11,9 @@ public class TaskAnswerValidation: IValidationRule<ITask>
         ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(validationErrors);
 
-        if (task.Type != TaskType.TestQuestion)
+        if (task.Type != TaskType.TestQuestion && task.Answer != null)
         {
-            return;
+            validationErrors.AddError(ErrorsConfg.TASK_ERROR, ErrorsConfg.ANSWER_FOR_WRONG_TASK_TYPE);
         }
         
         var answer = task.Answer?.Trim();

@@ -12,6 +12,8 @@ public class CompetenceModelDetail
     
     public virtual Competence Competence { get; set; }
 
+    public CompetenceModelDetail() { }
+    
     public CompetenceModelDetail(CompetenceModel model, int competenceId
         , decimal weight)
     {

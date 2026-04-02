@@ -14,7 +14,7 @@ public class CreateCompetenceModelTest
     {
         var command = new CreateCompetenceModelCommand(name, WeightDict(), description);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, null, false);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(false, errors.HasErrors);
@@ -26,7 +26,7 @@ public class CreateCompetenceModelTest
     {
         var command = new CreateCompetenceModelCommand(name, WeightDict(), description);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, null, false);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -38,7 +38,7 @@ public class CreateCompetenceModelTest
     {
         var command = new CreateCompetenceModelCommand(name, WeightDict(), description);
         
-        var service = CreateService(command.Name, true);
+        var service = CreateService(command.Name, null, true);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -50,7 +50,7 @@ public class CreateCompetenceModelTest
         var command = new CreateCompetenceModelCommand(new string('a', 256)
             ,  WeightDict(), null);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, null, false);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -62,7 +62,7 @@ public class CreateCompetenceModelTest
         var command = new CreateCompetenceModelCommand("a", WeightDict()
             , new string('a', 1001));
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name,  null,false);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -74,13 +74,13 @@ public class CreateCompetenceModelTest
         var command = new CreateCompetenceModelCommand("a", new Dictionary<int, decimal>()
             , new string('a', 500));
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, null, false);
         var errors = await service.CreateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private CompetenceModelService CreateService(string name, bool queryResult)
+    private CompetenceModelService CreateService(string name, int? id, bool queryResult)
     {
         var repoMoq = new Mock<ICompetenceModelRepository>();
         repoMoq.Setup(m => m
@@ -89,7 +89,7 @@ public class CreateCompetenceModelTest
         
         var queriesMoq = new Mock<ICompetenceModelValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, id, CancellationToken.None))
             .ReturnsAsync(queryResult);
         
         var validationService = new CompetenceModelValidationService(queriesMoq.Object);

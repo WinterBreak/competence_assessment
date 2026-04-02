@@ -2,17 +2,17 @@ namespace CompetenceAssessment.Web.Assessment;
 
 public class TemplateUpdateRequest
 {
-    public int Id { get; }
+    public int Id { get; set; }
     
-    public string Name { get; }
+    public string Name { get; set; }
     
-    public int Type { get; }
+    public int Type { get; set; }
     
-    public int Scale { get; }
+    public int Scale { get; set; }
     
-    public int CompetenceModelId { get;  }
+    public int CompetenceModelId { get; set; }
     
-    public Dictionary<int, decimal> Weights { get; }
+    public Dictionary<int, decimal> Weights { get; set; }
     
-    public Dictionary<int, List<int>> CompetenciesToTasks { get; }
+    public Dictionary<int, List<int>> CompetenciesToTasks { get; set; }
 }

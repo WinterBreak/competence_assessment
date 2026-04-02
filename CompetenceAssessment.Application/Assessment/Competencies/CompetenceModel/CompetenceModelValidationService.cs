@@ -19,15 +19,29 @@ public class CompetenceModelValidationService: ICompetenceModelValidationService
     public async Task<ValidationErrors> ValidateUpdatingCompetenceModelAsync(CompetenceModel model,
         CancellationToken token = default)
         => await ValidateAsync(model, token);
-
-    public async Task<ValidationErrors> ValidateDeletingCompetenceModelAsync(CompetenceModel model,
-        CancellationToken token = default)
+    
+    public async Task<ValidationErrors> ValidateDeletingCompetenceModelAsync(int id
+        , CancellationToken token = default)
     {
-        var errors = new ValidationErrors();
+        var model = new CompetenceModel { Id = id };
+        var errors = await ValidateAsync(model, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         await new CompetenceModelInTemplateValidation(_queries).ValidateAsync(model, errors, token);
         return errors;
     }
-    
+
+    public async Task<ValidationErrors> ValidateExistence(int id, CancellationToken token = default)
+    {
+        var errors = new ValidationErrors();
+        var model = new CompetenceModel{Id = id};
+        await new CompetenceModelExistValidation(_queries).ValidateAsync(model, errors, token);
+        return errors;
+    }
+
     private async Task<ValidationErrors> ValidateAsync(CompetenceModel model
         , CancellationToken token = default)
     {

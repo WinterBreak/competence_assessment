@@ -15,8 +15,8 @@ public class AssessmentStartedValidation: IValidationRule<Assessment>
     public async Task ValidateAsync(Assessment assessment, ValidationErrors validationErrors
                                   , CancellationToken token = default)
     {
-        var isStarted = await _queries.IsAssessmentStarted(assessment.Candidate.Id, assessment.Template.Id,
-                                                           assessment.Type, token);
+        var isStarted = await _queries.IsAssessmentStartedAsync(assessment.Candidate.Id, assessment.Template.Id,
+                                                                assessment.Type, token);
         if (isStarted)
         {
             validationErrors.AddError("AssessmentStarted", "Сотрудник уже проходит оценку");

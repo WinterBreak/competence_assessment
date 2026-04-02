@@ -13,11 +13,24 @@ public class TemplateValidationService(ITemplateValidationQueries queries): ITem
                                                                     , CancellationToken token = default)
         => await ValidateAsync(template, token);
 
-    public async Task<ValidationErrors> ValidateDeletingTemplateAsync(ITemplate template
-                                                                    , CancellationToken token = default)
+    public async Task<ValidationErrors> ValidateDeletingTemplateAsync(int id, CancellationToken token = default)
+    {
+        var errors = await ValidateExistenceAsync(id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
+        var template = new ITemplate { Id = id };
+        await new TemplateInAssessmentValidation(queries).ValidateAsync(template, errors, token);
+        return errors;
+    }
+
+    public async Task<ValidationErrors> ValidateExistenceAsync(int id, CancellationToken token = default)
     {
         var errors = new ValidationErrors();
-        await new TemplateInAssessmentValidation(queries).ValidateAsync(template, errors, token);
+        var template = new ITemplate{ Id = id };
+        await new TemplateExistenceValidation(queries).ValidateAsync(template, errors, token);
         return errors;
     }
     

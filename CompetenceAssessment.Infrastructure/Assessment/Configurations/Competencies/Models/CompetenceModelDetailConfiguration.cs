@@ -12,7 +12,7 @@ public class CompetenceModelDetailConfiguration: IEntityTypeConfiguration<Compet
         
         
         builder.Property(x => x.CompetenceModelId)
-            .HasColumnName("model_id")
+            .HasColumnName("competence_model_id")
             .IsRequired();
 
         builder.Property(x => x.CompetenceId)
@@ -23,13 +23,13 @@ public class CompetenceModelDetailConfiguration: IEntityTypeConfiguration<Compet
             .HasColumnName("weight")
             .IsRequired();
 
-
-        builder.HasOne(x => x.Competence)
-            .WithMany(x => x.CompetenceModelDetails)
-            .HasForeignKey(x => x.CompetenceId);
         
         builder.HasOne(x => x.Model)
             .WithMany(x => x.Weights)
             .HasForeignKey(x => x.CompetenceModelId);
+        
+        builder.HasOne(x => x.Competence)
+            .WithMany(x => x.CompetenceModelDetails)
+            .HasForeignKey(x => x.CompetenceId);
     }
 }

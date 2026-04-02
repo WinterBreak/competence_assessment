@@ -10,6 +10,9 @@ public class TemplateConfiguration: IEntityTypeConfiguration<Template>
         builder.ToTable("template");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
         
         builder.Property(x => x.CompetenceModelId)
             .HasColumnName("id_competence_model")

@@ -10,6 +10,13 @@ public class TemplateDetailConfiguration: IEntityTypeConfiguration<TemplateDetai
         builder.ToTable("template_detail");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
+        
+        builder.Property(x => x.CompetenceId)
+            .HasColumnName("id_competence")
+            .IsRequired();
         
         builder.Property(x => x.TemplateId)
             .HasColumnName("id_template")
@@ -31,5 +38,10 @@ public class TemplateDetailConfiguration: IEntityTypeConfiguration<TemplateDetai
         builder.HasOne(x => x.Task)
             .WithMany(x => x.TemplateDetails)
             .HasForeignKey(x => x.TaskId);
+        
+        builder.HasOne(x => x.Competence)
+            .WithMany()
+            .HasForeignKey(x => x.CompetenceId);
+            
     }
 }

@@ -17,7 +17,7 @@ public class CompetenceModelNameValidationTest
         var model = new CompetenceModel(name, null, DateTime.UtcNow
             , new List<CompetenceWeight>());
 
-        var rule = CreateRule(model.Name, false);
+        var rule = CreateRule(model.Name, null, false);
         await rule.ValidateAsync(model, errors);
         
         Assert.Equal(false, errors.HasErrors);
@@ -30,7 +30,7 @@ public class CompetenceModelNameValidationTest
         var model = new CompetenceModel(string.Empty, null, DateTime.UtcNow
             , new List<CompetenceWeight>());
         
-        var rule = CreateRule(model.Name, false);
+        var rule = CreateRule(model.Name, null, false);
         await rule.ValidateAsync(model, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -43,7 +43,7 @@ public class CompetenceModelNameValidationTest
         var model = new CompetenceModel(new string('a', 256), null, DateTime.UtcNow
             , new List<CompetenceWeight>());
         
-        var rule = CreateRule(model.Name, false);
+        var rule = CreateRule(model.Name, null, false);
         await rule.ValidateAsync(model, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -56,17 +56,17 @@ public class CompetenceModelNameValidationTest
         var model = new CompetenceModel("name", null, DateTime.UtcNow
             , new List<CompetenceWeight>());
 
-        var rule = CreateRule(model.Name, true);
+        var rule = CreateRule(model.Name, null, true);
         
         await rule.ValidateAsync(model, errors);
         Assert.Equal(true, errors.HasErrors);
     }
     
-    private IValidationRule<CompetenceModel> CreateRule(string name, bool result)
+    private IValidationRule<CompetenceModel> CreateRule(string name, int? id, bool result)
     {
         var moq = new Mock<ICompetenceModelValidationQueries>();
         moq.Setup(m => m
-                .IsNameTakenAsync(name, CancellationToken.None))
+                .IsNameTakenAsync(name, id, CancellationToken.None))
             .ReturnsAsync(result);
         
         return new CompetenceModelNameValidation(moq.Object);

@@ -17,7 +17,7 @@ public class CreateCompetenceTest
 
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-            => q.IsNameTakenAsync(name, CancellationToken.None))
+            => q.IsNameTakenAsync(name, null, CancellationToken.None))
             .ReturnsAsync(false);
         
         var service = CreateService(command.Name, false);
@@ -57,7 +57,7 @@ public class CreateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(command.Name, CancellationToken.None))
+                => q.IsNameTakenAsync(command.Name, null, CancellationToken.None))
             .ReturnsAsync(false);
         
         var service = CreateService(command.Name, false);
@@ -73,7 +73,7 @@ public class CreateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(command.Name, CancellationToken.None))
+                => q.IsNameTakenAsync(command.Name, null, CancellationToken.None))
             .ReturnsAsync(false);
         
         var service = CreateService(command.Name, false);
@@ -92,7 +92,7 @@ public class CreateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, null, CancellationToken.None))
             .ReturnsAsync(queryResult);
         
         var validationService = new CompetenceValidationService(queriesMoq.Object);

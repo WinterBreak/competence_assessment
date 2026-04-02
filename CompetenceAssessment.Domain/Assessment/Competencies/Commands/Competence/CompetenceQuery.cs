@@ -12,16 +12,27 @@ public class CompetenceQuery
 
     public CompetenceQuery(int id = default, string name = default, string? description = null)
     {
-        Ids.Add(id);
-        Names.Add(name);
-        Descriptions.Add(description);
+        if (id != null && id > 0)
+        {
+            Ids.Add(id);
+        }
+
+        if (name != default)
+        {
+            Names.Add(name);
+        }
+
+        if (description != default)
+        {
+            Descriptions.Add(description);
+        }
     }
 
     public CompetenceQuery(IEnumerable<int> ids = default, IEnumerable<string> names = default
-        , IEnumerable<string?> descriptions = null)
+        , IEnumerable<string> descriptions = default)
     {
-        Ids = ids.ToList();
-        Names = names.ToList();
-        Descriptions = descriptions.ToList();
+        Ids = ids?.ToList() ?? new List<int>();
+        Names = names?.ToList() ?? new List<string>();
+        Descriptions = descriptions?.ToList() ?? new List<string>();
     }
 }

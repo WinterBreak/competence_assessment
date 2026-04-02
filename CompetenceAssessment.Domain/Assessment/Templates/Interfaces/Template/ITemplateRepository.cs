@@ -10,7 +10,7 @@ public interface ITemplateRepository
     
     Task UpdateTemplateAsync(ITemplate template, CancellationToken token = default);
     
-    Task RemoveTemplateAsync(ITemplate template, CancellationToken token = default);
+    Task RemoveTemplateAsync(int id, CancellationToken token = default);
     
     Task SaveAllChanges(CancellationToken token = default);
 }

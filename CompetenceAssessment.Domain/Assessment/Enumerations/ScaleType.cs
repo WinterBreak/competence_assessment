@@ -7,6 +7,6 @@ public enum ScaleType
     [Description("Пятизначная шкала")]
     FivePointScale = 5,
     
-    [Description("Десятизначная шкала")]
+    [Description("")]
     TenPointScale = 10,
 }

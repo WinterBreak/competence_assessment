@@ -10,6 +10,8 @@ public class UserToRolesLink
     
     public virtual Role Role { get; set; }
     
+    public UserToRolesLink() {}
+    
     public UserToRolesLink(int userId, int roleId)
     {
         UserId = userId;

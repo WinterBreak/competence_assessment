@@ -28,6 +28,7 @@ public class CompetenceRepository: ICompetenceRepository
             .WithIds(query.Ids)
             .WithNames(query.Names)
             .Build();
+        
         return await GetAllCompetences()
             .Where(specification)
             .Select(c => new Competence(c.Id, c.Name, c.Description))

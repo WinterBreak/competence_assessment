@@ -43,14 +43,19 @@ public class TaskService: ITaskService
     public async Task<ValidationErrors> UpdateTaskAsync(UpdateTaskCommand command
                                                       , CancellationToken token = default)
     {
+        var validationService = _validationFactory.Create(command.Type);
+        var errors = await validationService.ValidateExistenceAsync(command.Id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+            
         var query = new TaskQuery(id: command.Id);
         var updatingTask = await _repository.GetTaskAsync(query, token);
-        ArgumentNullException.ThrowIfNull(updatingTask);
         
         command.Update(updatingTask);
         
-        var validationService = _validationFactory.Create(updatingTask.Type);
-        var errors = await validationService.ValidateUpdatingTaskAsync(updatingTask, token);
+        errors = await validationService.ValidateUpdatingTaskAsync(updatingTask, token);
         if (errors.HasErrors)
         {
             return errors;
@@ -64,12 +69,8 @@ public class TaskService: ITaskService
     public async Task<ValidationErrors> DeleteTaskAsync(DeleteTaskCommand command
                                                       , CancellationToken token = default)
     {
-        var query = new TaskQuery(id: command.Id);
-        var deletingTask = await _repository.GetTaskAsync(query, token);
-        ArgumentNullException.ThrowIfNull(deletingTask);
-        
-        var validationService = _validationFactory.Create(deletingTask.Type);
-        var errors = await validationService.ValidateDeletingTaskAsync(deletingTask, token);
+        var validationService = _validationFactory.Create(TaskType.None);
+        var errors = await validationService.ValidateDeletingTaskAsync(command.Id, token);
         if (errors.HasErrors)
         {
             return errors;
