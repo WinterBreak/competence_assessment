@@ -16,7 +16,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence(CONST_NAME, null);
 
-        var rule = CreateRule(competence.Name, false);
+        var rule = CreateRule(competence.Name, null, false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(false, errors.HasErrors);
@@ -28,7 +28,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence("", null);
         
-        var rule = CreateRule(competence.Name, false);
+        var rule = CreateRule(competence.Name, null, false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -40,7 +40,7 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence(new string('a', 256), null);
         
-        var rule = CreateRule(competence.Name, false);
+        var rule = CreateRule(competence.Name,null,false);
         await rule.ValidateAsync(competence, errors);
         
         Assert.Equal(true, errors.HasErrors);
@@ -52,17 +52,17 @@ public class CompetenceNameValidationTest
         var errors = new ValidationErrors();
         var competence = new Competence("Коммуникабельность", null);
 
-        var rule = CreateRule(competence.Name, true);
+        var rule = CreateRule(competence.Name, null, true);
         
         await rule.ValidateAsync(competence, errors);
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private IValidationRule<Competence> CreateRule(string name, bool result)
+    private IValidationRule<Competence> CreateRule(string name, int? id, bool result)
     {
         var moq = new Mock<ICompetenceValidationQueries>();
         moq.Setup(m => m
-                .IsNameTakenAsync(name, CancellationToken.None))
+                .IsNameTakenAsync(name, id, CancellationToken.None))
             .ReturnsAsync(result);
         
         return new CompetenceNameValidation(moq.Object);

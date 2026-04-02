@@ -16,7 +16,11 @@ public class TaskQuery
 
     public TaskQuery(int id = default, TaskType taskType = TaskType.None)
     {
-        Ids.Add(id);
+        if (id != null && id > 0)
+        {
+            Ids.Add(id);
+        }
+        
         Type = taskType;
     }
 }

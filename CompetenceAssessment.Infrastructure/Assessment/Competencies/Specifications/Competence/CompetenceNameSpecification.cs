@@ -18,5 +18,15 @@ public class CompetenceNameSpecification: SpecificationBase<Competence>
     }
 
     public override Expression<Func<Competence, bool>> Criteria
-     => c => _names.Contains(c.Name);
+    {
+        get
+        {
+            if (!_names.Any())
+            {
+                return c => true;
+            }
+
+            return c => _names.Contains(c.Name);
+        }
+    }
 }

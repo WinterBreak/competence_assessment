@@ -14,13 +14,13 @@ public class CompetenceModelNameValidation: IValidationRule<CompetenceModel>
         _queries = queries;
     }
     
-    public async Task ValidateAsync(CompetenceModel competence, ValidationErrors validationErrors
+    public async Task ValidateAsync(CompetenceModel model, ValidationErrors validationErrors
         , CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(competence);
+        ArgumentNullException.ThrowIfNull(model);
         ArgumentNullException.ThrowIfNull(validationErrors);
         
-        var name = competence.Name?.Trim();
+        var name = model.Name?.Trim();
         
         if (string.IsNullOrEmpty(name))
         {
@@ -34,7 +34,7 @@ public class CompetenceModelNameValidation: IValidationRule<CompetenceModel>
             return;
         }
         
-        var isNameTaken = await _queries.IsNameTakenAsync(name, token);
+        var isNameTaken = await _queries.IsNameTakenAsync(name, model.Id, token);
         if (isNameTaken)
         {
             validationErrors.AddError(ErrorsConfg.NAME_ERROR, ErrorsConfg.USING_NAME_ERROR);

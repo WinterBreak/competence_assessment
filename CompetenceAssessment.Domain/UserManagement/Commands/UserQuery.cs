@@ -19,18 +19,43 @@ public class UserQuery
     {
         Ids = ids;
         RolesIds = rolesId;
-        PositionId = positionId;
-        DepartmentId = departmentId;
+        
+        if (positionId != default)
+        {
+            PositionId = positionId;
+        }
+        
+        if (departmentId != default)
+        {
+            DepartmentId = departmentId;
+        }
+        
         BossId = bossId;
     }
     
     public UserQuery(int id = default, int roleId = default, int positionId = default
         , int departmentId = default, int? bossId = default)
     {
-        Ids.Add(id);
-        RolesIds.Add(roleId);
-        PositionId = positionId;
-        DepartmentId = departmentId;
+        if (id != default)
+        {
+            Ids.Add(id);
+        }
+
+        if (roleId != default)
+        {
+            RolesIds.Add(roleId);
+        }
+
+        if (positionId != default)
+        {
+            PositionId = positionId;
+        }
+
+        if (departmentId != default)
+        {
+            DepartmentId = departmentId;
+        }
+
         BossId = bossId;
     }
 }

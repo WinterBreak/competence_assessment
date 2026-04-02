@@ -34,7 +34,7 @@ public class TemplateNameValidation: IValidationRule<ITemplate>
             return;
         }
         
-        var isNameTaken = await _queries.IsNameTakenAsync(name, token);
+        var isNameTaken = await _queries.IsNameTakenAsync(name, template.Id, token);
         if (isNameTaken)
         {
             validationErrors.AddError(ErrorsConfg.NAME_ERROR, ErrorsConfg.USING_NAME_ERROR);

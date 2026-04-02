@@ -128,6 +128,6 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
         var inspectorIdsToRemove = updatingInspectorIds.Except(inspectorIdsToAdd).ToList();
         var inspectorsToRemove = updating.Inspectors
             .Where(i => inspectorIdsToRemove.Contains(i.UserId)).ToList();
-        _context.RemoveRange(inspectorIdsToRemove);
+        _context.RemoveRange(inspectorsToRemove);
     }
 }

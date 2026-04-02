@@ -14,7 +14,7 @@ public class Assessment
     
     public DateTime? EndDate { get; set; }
     
-    public string Comment { get; set; }
+    public string? Comment { get; set; }
     
     public bool IsFinished { get; set; }
     
@@ -24,6 +24,8 @@ public class Assessment
     
     public virtual ICollection<AssessmentResult> Results { get; set; } = [];
 
+    public Assessment() {}
+    
     public Assessment(int templateId, int typeId, int userId, DateTime startDate, DateTime? endDate
         , bool isFinished = false)
     {

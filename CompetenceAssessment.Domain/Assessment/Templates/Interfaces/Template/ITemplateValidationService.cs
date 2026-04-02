@@ -8,5 +8,7 @@ public interface ITemplateValidationService
     
     Task<ValidationErrors> ValidateUpdatingTemplateAsync(ITemplate template, CancellationToken token = default);
     
-    Task<ValidationErrors> ValidateDeletingTemplateAsync(ITemplate template, CancellationToken token = default);
+    Task<ValidationErrors> ValidateDeletingTemplateAsync(int id, CancellationToken token = default);
+
+    Task<ValidationErrors> ValidateExistenceAsync(int id, CancellationToken token = default);
 }

@@ -6,6 +6,11 @@ namespace CompetenceAssessment.Application.Assessment;
 public class AssessmentValidationService: IAssessmentValidationService
 {
     private readonly IAssessmentValidationQueries _queries;
+
+    public AssessmentValidationService(IAssessmentValidationQueries queries)
+    {
+        _queries = queries;
+    }
     
     public async Task<ValidationErrors> ValidateCreatingAssessmentAsync(
         Domain.Assessment.Assessment assessment, CancellationToken token = default)
@@ -26,6 +31,14 @@ public class AssessmentValidationService: IAssessmentValidationService
     {
         var errors = new ValidationErrors();
         await new AssessmentResultValidation().ValidateAsync(assessment, errors, token);
+        return errors;
+    }
+
+    public async Task<ValidationErrors> ValidateExistenceAsync(int id, CancellationToken token = default)
+    {
+        var errors = new ValidationErrors();
+        var assessment = new Domain.Assessment.Assessment{ Id = id };
+        await new AssessmentExistenceValidation(_queries).ValidateAsync(assessment, errors, token);
         return errors;
     }
     

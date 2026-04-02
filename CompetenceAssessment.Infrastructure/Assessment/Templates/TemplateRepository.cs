@@ -63,15 +63,13 @@ public class TemplateRepository: ITemplateRepository
         updatingTemplate.TemplateTypeId = (int)template.Type;
         updatingTemplate.ScaleId = (int)template.Scale;
         updatingTemplate.CompetenceModelId = template.CompetenceModelId;
-        await UpdateWeights(template.Weights, updatingTemplate.TemplateDetails.ToList(), token);
+        await UpdateWeights(template.Weights, updatingTemplate.TemplateDetails.ToList(), template.Id, token);
     }
 
-    public async A.Task RemoveTemplateAsync(ITemplate template, CancellationToken token = default)
+    public async A.Task RemoveTemplateAsync(int id, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(template);
-        
         var deletingModel = await _context.Templates.Include(t => t.TemplateDetails)
-            .SingleAsync(t => t.Id == template.Id, token);
+            .SingleAsync(t => t.Id == id, token);
         _context.Templates.Remove(deletingModel);
         _context.TemplateDetails.RemoveRange(deletingModel.TemplateDetails);
     }
@@ -90,28 +88,36 @@ public class TemplateRepository: ITemplateRepository
     }
     
     private async A.Task UpdateWeights(List<TemplateWeight> updatedWeights
-        , List<TemplateDetail> details, CancellationToken token = default)
+        , List<TemplateDetail> details, int templateId, CancellationToken token = default)
     {
         if (updatedWeights is null || !updatedWeights.Any())
         {
             return;
         }
-
-        var weightTaskIds = updatedWeights.Select(w => w.Task.Id).ToList();
-        var weightsToUpdate = details.Where(uw => weightTaskIds.Contains(uw.TaskId)).ToList();
-        UpdateWeights(weightsToUpdate, updatedWeights);
         
-        var weightToAddOrRemoveIds = details.Except(weightsToUpdate).Select(w => w.TaskId).ToList();
+        var existingDetailsDict = details.ToDictionary(d => d.TaskId);
+        var updatedWeightsDict = updatedWeights.ToDictionary(w => w.Task.Id);
         
-        var weightToAddIds = weightTaskIds.Where(id => !weightToAddOrRemoveIds.Contains(id)).ToList();
-        var weightsToAdd = details.Where(uw => weightToAddIds.Contains(uw.TaskId)).ToList();
+        foreach (var existingDetail in details)
+        {
+            if (updatedWeightsDict.TryGetValue(existingDetail.TaskId, out var updatedWeight))
+            {
+                existingDetail.Weight = updatedWeight.Weight;
+                existingDetail.CompetenceId = updatedWeight.CompetenceId;
+            }
+        }
+        
+        var weightsToAdd = updatedWeights
+            .Where(w => !existingDetailsDict.ContainsKey(w.Task.Id))
+            .Select(w => new TemplateDetail(templateId, w.Task.Id, w.CompetenceId, w.Weight))
+            .ToList();
         await _context.TemplateDetails.AddRangeAsync(weightsToAdd, token);
         
         var weightsToRemove = details
-            .Except(weightsToAdd)
-            .Except(weightsToUpdate)
+            .Where(d => !updatedWeightsDict.ContainsKey(d.TaskId))
             .ToList();
-        _context.TemplateDetails.RemoveRange(weightsToRemove);
+    
+         _context.TemplateDetails.RemoveRange(weightsToRemove);
     }
     
     private void UpdateWeights(List<TemplateDetail> updatingWeights

@@ -19,8 +19,7 @@ public class UserRepository: BLL.IUserRepository
         return users.SingleOrDefault();
     }
 
-    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query
-                                                                    , CancellationToken token = default)
+    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default)
     {
         var specification = new UserSpecificationBuilder().WithQuery(query).Build();
         return await _context.Users.Where(specification).Select(u 

@@ -8,12 +8,12 @@ public class AssessmentInspectorConfiguration: IEntityTypeConfiguration<Assessme
 {
     public void Configure(EntityTypeBuilder<AssessmentInspector> builder)
     {
-        builder.ToTable("assessment_inspectors");
+        builder.ToTable("assessment_inspector");
         builder.HasKey(x => new { x.AssessmentId, x.UserId });
         
         
         builder.Property(x => x.AssessmentId)
-            .HasColumnName("id_assessment")
+            .HasColumnName("assessment_id")
             .IsRequired();
         
         builder.Property(x => x.UserId)

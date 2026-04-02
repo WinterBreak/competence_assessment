@@ -12,11 +12,16 @@ public class CompetenceValidationQueries: ICompetenceValidationQueries
         _context = context;
     }
     
-    public async Task<bool> IsNameTakenAsync(string name, CancellationToken token = default)
-        => await _context.Competences.AnyAsync(c => c.Name == name, token);
+    public async Task<bool> IsNameTakenAsync(string name, int? id = null, CancellationToken token = default)
+        => await _context.Competences.AnyAsync(c => ((id == null || id == default(int)) 
+                                                            || (id != null && id != default(int) && c.Id != id))
+                                                            && c.Name == name, token);
 
     public async Task<bool> IsUsedInModelsAsync(int competenceId, CancellationToken token = default)
         => await _context.CompetenceModelDetails
             .AsNoTracking()
             .AnyAsync(d => d.CompetenceId == competenceId, token);
+
+    public async Task<bool> IsCompetenceExistsAsync(int competenceId, CancellationToken token = default)
+        => await _context.Competences.AnyAsync(c => c.Id == competenceId, token);
 }

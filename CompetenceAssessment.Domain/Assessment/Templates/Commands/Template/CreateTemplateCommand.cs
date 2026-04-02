@@ -15,13 +15,14 @@ public class CreateTemplateCommand
     public Dictionary<int, List<int>> CompetenciesToTasks { get; }
 
     public CreateTemplateCommand(string name, TemplateType type, ScaleType scale, int competenceModelId
-                               , Dictionary<int, decimal> weights)
+                               , Dictionary<int, decimal> weights, Dictionary<int, List<int>> competenciesToTasks)
     {
         Name = name;
         Type = type;
         Scale = scale;
         CompetenceModelId = competenceModelId;
         Weights = weights;
+        CompetenciesToTasks = competenciesToTasks;
     }
 
     public ITemplate Create(List<ITask> tasks)

@@ -10,6 +10,9 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
         builder.ToTable("user");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
         
         builder.Property(x => x.Email)
             .HasColumnName("email")

@@ -8,8 +8,11 @@ public class CompetenceConfiguration: IEntityTypeConfiguration<Competence>
     public void Configure(EntityTypeBuilder<Competence> builder)
     {
         builder.ToTable("competence");
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => x.Id).HasName("id");
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
         
         builder.Property(x => x.Name)
             .HasColumnName("name")

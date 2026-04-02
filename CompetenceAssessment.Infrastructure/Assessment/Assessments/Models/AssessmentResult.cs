@@ -21,6 +21,8 @@ public class AssessmentResult
     
     public virtual Task Task { get; set; }
 
+    public AssessmentResult() { }
+    
     public AssessmentResult(string comment, string answer, int score
                           , Assessment assessment, Task task)
     {

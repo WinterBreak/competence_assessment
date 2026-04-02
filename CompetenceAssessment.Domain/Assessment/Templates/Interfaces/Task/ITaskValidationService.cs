@@ -9,5 +9,7 @@ public interface ITaskValidationService
     
     Task<ValidationErrors> ValidateUpdatingTaskAsync(ITask task, CancellationToken token = default);
     
-    Task<ValidationErrors> ValidateDeletingTaskAsync(ITask task, CancellationToken token = default);
+    Task<ValidationErrors> ValidateDeletingTaskAsync(int id, CancellationToken token = default);
+    
+    Task<ValidationErrors> ValidateExistenceAsync(int id, CancellationToken token = default);
 }

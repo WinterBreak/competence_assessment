@@ -63,15 +63,12 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
         updatingModel.Name = competenceModel.Name;
         updatingModel.Description = competenceModel.Description;
         
-        await UpdateWeights(competenceModel.Competencies, token);
+        await UpdateWeights(competenceModel.Id, competenceModel.Competencies, token);
     }
 
-    public async A.Task RemoveCompetenceModelAsync(BLL.CompetenceModel competenceModel
-        , CancellationToken token = default)
+    public async A.Task RemoveCompetenceModelAsync(int id, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(competenceModel);
-        
-        var deletingModel = await GetModelByIdAsync(competenceModel.Id, token);
+        var deletingModel = await GetModelByIdAsync(id, token);
         _context.CompetenceModels.Remove(deletingModel);
         _context.CompetenceModelDetails.RemoveRange(deletingModel.Weights);
     }
@@ -91,7 +88,7 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
             .Where(d => modelIds.Contains(d.CompetenceModelId))
             .ToListAsync(token);
         var competenceIds = dalWeights.Select(d => d.CompetenceId).Distinct().ToList();
-        var competenceQuery = new BLL.CompetenceQuery(competenceIds);
+        var competenceQuery = new BLL.CompetenceQuery(ids: competenceIds);
         var competencies = await _competenceRepository
             .GetCompetenciesAsync(competenceQuery, token);
         
@@ -110,11 +107,11 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
     {
         var newWeights = weights
             .Select(w => new CompetenceModelDetail(model, w.Competence.Id, w.Weight))
-            .ToList();
-       await  _context.CompetenceModelDetails.AddRangeAsync(newWeights, token);
+            .ToList(); 
+        await  _context.CompetenceModelDetails.AddRangeAsync(newWeights, token);
     }
     
-    private async A.Task UpdateWeights(List<BLL.CompetenceWeight> weights
+    private async A.Task UpdateWeights(int modelId, List<BLL.CompetenceWeight> weights
         , CancellationToken token = default)
     {
         if (weights is null || !weights.Any())
@@ -122,28 +119,26 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
             return;
         }
         
-        var modelId = weights.Select(w => w.ModelId).First();
-        var updatingWeights = await GetWeightsByModelIdAsync(modelId, token);
+        var existingWeights = await GetWeightsByModelIdAsync(modelId, token);
+        var existingWeightDict = existingWeights.ToDictionary(w => w.CompetenceId);
+        
+        var inputWeightDict = weights.ToDictionary(w => w.Competence.Id);
+        foreach (var existingWeight in existingWeights)
+        {
+            if (inputWeightDict.TryGetValue(existingWeight.CompetenceId, out var inputWeight))
+            {
+                existingWeight.Weight = inputWeight.Weight;
+            }
+        }
 
-        var weightCompetenceIds = weights.Select(w => w.Competence.Id).ToList();
-        var weightsToUpdate = updatingWeights
-            .Where(uw => weightCompetenceIds.Contains(uw.CompetenceId))
-            .ToList();
-        UpdateWeights(weightsToUpdate, weights);
-        
-        var weightToAddOrRemoveIds = updatingWeights.Except(weightsToUpdate)
-            .Select(w => w.CompetenceId).
-            ToList();
-        
-        var weightToAddIds = weightCompetenceIds.Where(id => !weightToAddOrRemoveIds.Contains(id)).ToList();
-        var weightsToAdd = updatingWeights
-            .Where(uw => weightToAddIds.Contains(uw.CompetenceId))
+        var weightsToAdd = weights
+            .Where(w => !existingWeightDict.ContainsKey(w.Competence.Id))
+            .Select(w => new CompetenceModelDetail(modelId, w.Competence.Id, w.Weight))
             .ToList();
         await _context.CompetenceModelDetails.AddRangeAsync(weightsToAdd, token);
         
-        var weightsToRemove = updatingWeights
-            .Except(weightsToAdd)
-            .Except(weightsToUpdate)
+        var weightsToRemove = existingWeights
+            .Where(w => !inputWeightDict.ContainsKey(w.CompetenceId))
             .ToList();
         _context.CompetenceModelDetails.RemoveRange(weightsToRemove);
     }
@@ -151,10 +146,20 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
     private void UpdateWeights(List<CompetenceModelDetail> updatingWeights
         , List<BLL.CompetenceWeight> weights)
     {
+        if (!updatingWeights.Any())
+        {
+            return;
+        }
+        
         foreach (var weight in weights)
         {
             var updatingWeight = updatingWeights
-                .Single(w => w.CompetenceId == weight.Competence.Id);
+                .SingleOrDefault(w => w.CompetenceId == weight.Competence.Id);
+            
+            if (updatingWeight is null)
+            {
+                continue;
+            }
             
             updatingWeight.Weight = weight.Weight;
         }
@@ -163,7 +168,7 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
     private async Task<List<CompetenceModelDetail>> GetWeightsByModelIdAsync(int modelId
         , CancellationToken token = default)
         => await _context.CompetenceModelDetails
-            .Where(cm => cm.CompetenceId == modelId)
+            .Where(cm => cm.CompetenceModelId == modelId)
             .ToListAsync(token);
 
     private async Task<CompetenceModel> GetModelByIdAsync(int id, CancellationToken token = default)

@@ -44,14 +44,19 @@ public class TemplateService: ITemplateService
     public async Task<ValidationErrors> UpdateTemplateAsync(UpdateTemplateCommand command
                                                           , CancellationToken token = default)
     {
+        var errors = await _validationService.ValidateExistenceAsync(command.Id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         var query = new TemplateQuery(id: command.Id);
         var updatingTemplate = await _repository.GetTemplateAsync(query, token);
-        ArgumentNullException.ThrowIfNull(updatingTemplate);
         
         var tasks = await GetTasks(command.Weights.Keys.ToList(), token);
         command.Update(updatingTemplate, tasks);
         
-        var errors = await _validationService.ValidateUpdatingTemplateAsync(updatingTemplate, token);
+        errors = await _validationService.ValidateUpdatingTemplateAsync(updatingTemplate, token);
         if (errors.HasErrors)
         {
             return errors;
@@ -65,17 +70,13 @@ public class TemplateService: ITemplateService
     public async Task<ValidationErrors> DeleteTemplateAsync(DeleteTemplateCommand command
                                                           , CancellationToken token = default)
     {
-        var query = new TemplateQuery(id: command.Id);
-        var deletingTemplate = await _repository.GetTemplateAsync(query, token);
-        ArgumentNullException.ThrowIfNull(deletingTemplate);
-        
-        var errors = await _validationService.ValidateDeletingTemplateAsync(deletingTemplate, token);
+        var errors = await _validationService.ValidateDeletingTemplateAsync(command.Id, token);
         if (errors.HasErrors)
         {
             return errors;
         }
         
-        await _repository.RemoveTemplateAsync(deletingTemplate, token);
+        await _repository.RemoveTemplateAsync(command.Id, token);
         await _repository.SaveAllChanges(token);
         return errors;
     }

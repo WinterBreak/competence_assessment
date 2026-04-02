@@ -10,6 +10,10 @@ public class DepartmentConfiguration: IEntityTypeConfiguration<Department>
         builder.ToTable("department");
         builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
+        
         builder.Property(x => x.Code)
             .HasColumnName("code")
             .IsRequired();

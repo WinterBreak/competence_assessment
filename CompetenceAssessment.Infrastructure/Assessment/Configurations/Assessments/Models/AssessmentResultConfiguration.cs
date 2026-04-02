@@ -9,11 +9,14 @@ public class AssessmentResultConfiguration: IEntityTypeConfiguration<AssessmentR
     public void Configure(EntityTypeBuilder<AssessmentResult> builder)
     {
         builder.ToTable("assessment_result");
-        builder.HasKey(x => new { x.AssessmentId, x.TaskId });
+        builder.HasKey(x => x.Id);
         
+        builder.Property(x => x.Id)
+            .HasColumnName("assessment_result_id")
+            .IsRequired();
         
         builder.Property(x => x.AssessmentId)
-            .HasColumnName("id_assessment_result")
+            .HasColumnName("id_assessment")
             .IsRequired();
         
         builder.Property(x => x.TaskId)

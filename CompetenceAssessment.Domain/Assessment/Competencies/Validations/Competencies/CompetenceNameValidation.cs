@@ -34,13 +34,13 @@ public class CompetenceNameValidation: IValidationRule<Competence>
             return;
         }
         
-        await CheckIfNameIsTaken(name, validationErrors, token);
+        await CheckIfNameIsTaken(name, competence.Id, validationErrors, token);
     }
 
-    private async Task CheckIfNameIsTaken(string name, ValidationErrors validationErrors
+    private async Task CheckIfNameIsTaken(string name, int? id, ValidationErrors validationErrors
         , CancellationToken token = default)
     {
-        var isNameTaken = await _validationQueries.IsNameTakenAsync(name, token);
+        var isNameTaken = await _validationQueries.IsNameTakenAsync(name, id, token);
         if (isNameTaken)
         {
             validationErrors.AddError(ErrorsConfg.USING_NAME_ERROR, ErrorsConfg.ENTITY_USING_ERROR);

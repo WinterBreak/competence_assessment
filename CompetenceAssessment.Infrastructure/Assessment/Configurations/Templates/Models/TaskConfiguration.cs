@@ -10,6 +10,9 @@ public class TaskConfiguration: IEntityTypeConfiguration<Task>
         builder.ToTable("task");
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.Id)
+            .HasColumnName("id")
+            .IsRequired();
 
         builder.Property(x => x.TaskTypeId)
             .HasColumnName("id_task_type")

@@ -17,10 +17,10 @@ public class TaskTextValidation(ITaskValidationQueries queries): IValidationRule
             validationErrors.AddError(ErrorsConfg.NAME_ERROR, ErrorsConfg.EMPTY_FIELD_ERROR);
         }
         
-        var isExist = await queries.IsTaskExistAsync(task.Text, task.Type, token);
+        var isExist = await queries.IsTaskExistAsync(task.Text, task.Type, task.Id, token);
         if (isExist)
         {
-            validationErrors.AddError(ErrorsConfg.NAME_ERROR, ErrorsConfg.EMPTY_FIELD_ERROR);
+            validationErrors.AddError(ErrorsConfg.ENTITY_USING_ERROR, ErrorsConfg.USING_NAME_ERROR);
         }
     }
 }

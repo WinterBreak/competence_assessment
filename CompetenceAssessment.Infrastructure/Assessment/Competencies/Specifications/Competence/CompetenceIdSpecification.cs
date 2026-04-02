@@ -16,7 +16,17 @@ public class CompetenceIdSpecification: SpecificationBase<Competence>
     {
         _ids = ids?.ToList() ?? _ids;
     }
-    
-    public override Expression<Func<Competence, bool>> Criteria 
-        => c => _ids.Contains(c.Id) || !_ids.Any();
+
+    public override Expression<Func<Competence, bool>> Criteria
+    {
+        get
+        {
+            if (!_ids.Any())
+            {
+                return c => true;
+            }
+
+            return c => _ids.Contains(c.Id);
+        }
+    }
 }

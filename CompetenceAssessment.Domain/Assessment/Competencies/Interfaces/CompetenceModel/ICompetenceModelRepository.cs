@@ -12,7 +12,7 @@ public interface ICompetenceModelRepository
     
     Task UpdateCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);
     
-    Task RemoveCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);
+    Task RemoveCompetenceModelAsync(int id, CancellationToken token = default);
     
     Task SaveAllChangesAsync(CancellationToken token = default);
 }

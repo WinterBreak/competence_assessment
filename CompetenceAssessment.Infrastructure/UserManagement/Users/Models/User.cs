@@ -32,6 +32,8 @@ public class User
     
     public virtual ICollection<AssessmentInspector> Inspections { get; set; } = [];
     
+    public User() {}
+    
     public User(string email, string firstName, string? secondName, string lastName
               , User boss, Position position, Department department)
     {

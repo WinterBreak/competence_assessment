@@ -50,7 +50,7 @@ public class TaskController: ControllerBase
     public async Task<IActionResult> UpdateTaskAsync(TaskUpdateRequest request
         , CancellationToken token = default)
     {
-        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answer, (TaskType)request.TypeId);
+        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answer, (TaskType)request.Type);
         var errors = await _competenceService.UpdateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

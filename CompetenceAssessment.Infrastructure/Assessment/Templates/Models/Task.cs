@@ -14,6 +14,8 @@ public class Task
     
     public virtual ICollection<TemplateDetail> TemplateDetails { get; set; } = [];
 
+    public Task() {}
+    
     public Task(int typeId, string text, string? answer)
     {
         TaskTypeId = typeId;

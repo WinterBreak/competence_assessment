@@ -10,9 +10,11 @@ public class CompetenceModel
     
     public DateTime CreationDate { get; set; }
 
-    public virtual ICollection<CompetenceModelDetail> Weights { get; set; } = [];
+    public virtual ICollection<CompetenceModelDetail> Weights { get; set; } = new List<CompetenceModelDetail>();
     
-    public virtual ICollection<Template> Templates { get; set; } = [];
+    public virtual ICollection<Template> Templates { get; set; } = new List<Template>();
+    
+    public CompetenceModel() {}
     
     public CompetenceModel(string name, string description
                          , DateTime creationDate)

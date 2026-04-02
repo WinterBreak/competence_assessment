@@ -10,6 +10,8 @@ public class Role
 
     public virtual ICollection<UserToRolesLink> UserLinks { get; set; } = [];
     
+    public Role() {}
+    
     public Role(string description, string name)
     {
         Description = description;

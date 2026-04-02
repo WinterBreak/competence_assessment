@@ -16,10 +16,10 @@ public class UpdateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, command.Id, CancellationToken.None))
             .ReturnsAsync(false);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, command.Id, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(false, errors.HasErrors);
@@ -33,10 +33,10 @@ public class UpdateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, command.Id, CancellationToken.None))
             .ReturnsAsync(false);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, command.Id, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -50,10 +50,10 @@ public class UpdateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, command.Id, CancellationToken.None))
             .ReturnsAsync(true);
         
-        var service = CreateService(command.Name, true);
+        var service = CreateService(command.Name, command.Id, true);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -66,10 +66,10 @@ public class UpdateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(command.Name, CancellationToken.None))
+                => q.IsNameTakenAsync(command.Name, command.Id, CancellationToken.None))
             .ReturnsAsync(false);
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, command.Id, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -80,13 +80,13 @@ public class UpdateCompetenceTest
     {
         var command = new UpdateCompetenceCommand(1, "a", new string('a', 501));
         
-        var service = CreateService(command.Name, false);
+        var service = CreateService(command.Name, command.Id, false);
         var errors = await service.UpdateCompetenceAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private CompetenceService CreateService(string name, bool queryResult)
+    private CompetenceService CreateService(string name, int? id, bool queryResult)
     {
         var repoMoq = new Mock<ICompetenceRepository>();
         repoMoq.Setup(m => m
@@ -100,7 +100,7 @@ public class UpdateCompetenceTest
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, CancellationToken.None))
+                => q.IsNameTakenAsync(name, id, CancellationToken.None))
             .ReturnsAsync(queryResult);
         
         var validationService = new CompetenceValidationService(queriesMoq.Object);

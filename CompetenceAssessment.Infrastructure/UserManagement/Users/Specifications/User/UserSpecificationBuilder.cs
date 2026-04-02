@@ -10,8 +10,8 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
         return WithIds(query.Ids)
             .WithRoles(query.RolesIds)
             .WithPosition(query.PositionId)
-            .WithDepartment(query.DepartmentId)
-            .WithBoss(query.BossId);
+            .WithDepartment(query.DepartmentId);
+        // .WithBoss(query.BossId);
     }
     
     public UserSpecificationBuilder WithIds(IEnumerable<int> ids)
@@ -40,7 +40,7 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
 
     public UserSpecificationBuilder WithPosition(int positionId)
     {
-        if (positionId == null)
+        if (positionId == null || positionId == default(int))
         {
             return this;
         }
@@ -52,7 +52,7 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
     
     public UserSpecificationBuilder WithDepartment(int departmentId)
     {
-        if (departmentId == null)
+        if (departmentId == null || departmentId == default(int))
         {
             return this;
         }
@@ -62,10 +62,10 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
         return this;
     }
     
-    public UserSpecificationBuilder WithBoss(int? bossId)
-    {
-        var specification = new UserBossSpecification(bossId);
-        AppendSpecification(specification);
-        return this;
-    }
+    // public UserSpecificationBuilder WithBoss(int? bossId)
+    // {
+    //     var specification = new UserBossSpecification(bossId);
+    //     AppendSpecification(specification);
+    //     return this;
+    // }
 }

@@ -21,8 +21,16 @@ public class TemplateQuery
     public TemplateQuery(int id = default, int competenceId = default
         , TemplateType type = TemplateType.None)
     {
-        Ids.Add(id);
-        CompetenceIds.Add(competenceId);
+        if (id != default)
+        {
+            Ids.Add(id);
+        }
+
+        if (competenceId != default)
+        {
+            CompetenceIds.Add(competenceId);
+        }
+        
         Type = type;
     }
 }

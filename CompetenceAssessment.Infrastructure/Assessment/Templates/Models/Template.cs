@@ -18,6 +18,8 @@ public class Template
     
     public virtual ICollection<TemplateDetail> TemplateDetails { get; set; }
     
+    public Template() {}
+    
     public Template(CompetenceModel competenceModel, int typeId
         , int scaleId, string name, DateTime creationDate)
     {

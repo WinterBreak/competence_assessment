@@ -43,12 +43,18 @@ public class AssessmentService: IAssessmentService
     public async Task<ValidationErrors> UpdateAssessmentAsync(UpdateAssessmentCommand command
                                                             , CancellationToken token = default)
     {
+        var errors = await _validationService.ValidateExistenceAsync(command.AssessmentId, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         var query = new AssessmentQuery(id: command.AssessmentId);
         var updatingAssessment = await _repository.GetAssessmentAsync(query, token);
-        ArgumentNullException.ThrowIfNull(updatingAssessment);
         
         var updatedAssessment = command.Update(updatingAssessment);
-        var errors = await _validationService.ValidateUpdatingAssessmentAsync(updatedAssessment, token);
+        
+        errors = await _validationService.ValidateUpdatingAssessmentAsync(updatedAssessment, token);
         if (errors.HasErrors)
         {
             return errors;

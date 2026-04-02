@@ -14,9 +14,20 @@ public class CompetenceModelQuery
     
     public CompetenceModelQuery(int id = default, string name = default, int competenceId = default)
     {
-        Ids.Add(id);
-        Names.Add(name);
-        CompetenceIds.Add(competenceId);
+        if (id != default)
+        {
+            Ids.Add(id);
+        }
+
+        if (name != default)
+        {
+            Names.Add(name);
+        }
+
+        if (competenceId != default)
+        {
+            CompetenceIds.Add(competenceId);
+        }
     }
 
     public CompetenceModelQuery(IEnumerable<int> ids = default, IEnumerable<string> names = default

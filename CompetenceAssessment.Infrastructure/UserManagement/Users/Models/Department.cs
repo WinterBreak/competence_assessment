@@ -10,6 +10,8 @@ public class Department
 
     public virtual ICollection<User> Employees { get; set; } = [];
 
+    public Department() {}
+    
     public Department(Guid code, string name)
     {
         Code = code;

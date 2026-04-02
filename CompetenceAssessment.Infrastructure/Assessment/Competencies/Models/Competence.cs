@@ -10,6 +10,8 @@ public class Competence
 
     public virtual ICollection<CompetenceModelDetail> CompetenceModelDetails { get; set; }
     
+    public Competence() {}
+    
     public Competence(string name, string description)
     {
         Name = name;

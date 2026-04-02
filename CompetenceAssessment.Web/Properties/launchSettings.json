@@ -1,10 +1,15 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
+    "Run Migrations": {
+      "commandName": "Project",
+      "commandLineArgs": "Host=localhost;Port=5432;Database=competence_assessment_вум;Username=postgres;Password=957562"
+    },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
+      "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5173",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
