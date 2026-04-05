@@ -79,7 +79,7 @@ ALTER TABLE assessment.task OWNER TO postgres;
 
 CREATE TABLE assessment.task_type (
                                      id smallint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-                                     code varchar(50) NOT NULL,
+                                     code smallint NOT NULL,
                                      name varchar(255) NOT NULL,
                                      CONSTRAINT task_type_pk PRIMARY KEY (id)
 );
@@ -88,7 +88,6 @@ ALTER TABLE assessment.task_type OWNER TO postgres;
 
 CREATE TABLE assessment.scale (
                                  id smallint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-                                 min_score smallint NOT NULL,
                                  max_score smallint NOT NULL,
                                  code smallint NOT NULL,
                                  CONSTRAINT scale_id_pk PRIMARY KEY (id)

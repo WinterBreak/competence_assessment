@@ -59,11 +59,12 @@ public class CompetenceController: ControllerBase
     /// <summary>
     /// Удаление компетенции
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCompetenceAsync(CompetenceDeleteRequest request
+    public async Task<IActionResult> DeleteCompetenceAsync(int id
         , CancellationToken token = default)
     {
-        var command = new DeleteCompetenceCommand(request.Id);
+        var command = new DeleteCompetenceCommand(id);
         var errors = await _competenceService.DeleteCompetenceAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
