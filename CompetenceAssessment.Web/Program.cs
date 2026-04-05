@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo 
     { 
-        Title = "Competence Assessment", 
+        Title = "Competence assessment", 
         Version = "v1" 
     }));
 
@@ -21,6 +21,11 @@ builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "client/build";
+});
 
 var assemblies = new[]
 {
@@ -46,7 +51,6 @@ builder.Services.AddDbContext<AssessmentContext>(options =>
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
-
 app.MapDefaultEndpoints();
 
 if (!app.Environment.IsDevelopment())
@@ -60,12 +64,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => 
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence Assessment V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence assessment V1");
         c.RoutePrefix = "swagger";
     });
 }
 
 app.UseStaticFiles();
+app.UseSpaStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -75,5 +80,17 @@ app.MapControllerRoute(
     pattern: "{controller=Categories}/{action=Index}/{id?}");
     
 app.MapControllers();
+
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "client";
+    app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+    {
+        appBuilder.UseSpa(spa =>
+        {
+            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+        });
+    });
+});
 
 app.Run();
