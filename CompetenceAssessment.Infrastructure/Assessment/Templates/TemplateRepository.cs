@@ -8,12 +8,15 @@ public class TemplateRepository: ITemplateRepository
 {
     private readonly AssessmentContext _context;
     private readonly ITaskRepository _taskRepository;
+    private readonly ICompetenceModelRepository _competenceModelRepository;
 
     public TemplateRepository(AssessmentContext context
-                            , ITaskRepository taskRepository)
+                            , ITaskRepository taskRepository
+                            , ICompetenceModelRepository competenceModelRepository)
     {
         _context = context;
         _taskRepository = taskRepository;
+        _competenceModelRepository = competenceModelRepository;
     }
 
     public async Task<ITemplate?> GetTemplateAsync(TemplateQuery query, CancellationToken token = default)
@@ -32,13 +35,17 @@ public class TemplateRepository: ITemplateRepository
         
         var details = templates.SelectMany(t => t.TemplateDetails).ToList();
         var weights = await GetWeights(details, token);
+        var modelIds = templates.Select(t => t.CompetenceModelId).Distinct().ToList();
+        var modelQuery = new CompetenceModelQuery(ids: modelIds);
+        var models =  await _competenceModelRepository.GetCompetenceModelsAsync(modelQuery, token);
         
         return templates
             .Select(t =>
             {
                 var templateWeights = weights.Where(w => w.TemplateId == t.Id).ToList();
+                var model = models.Single(m => m.Id == t.CompetenceModelId);
                 return new ITemplate(t.Id, t.Name, (TemplateType)t.TemplateTypeId, (ScaleType)t.ScaleId, t.CreationDate
-                                   , t.CompetenceModelId, templateWeights);
+                                   , model, templateWeights);
             })
             .ToList();
     }

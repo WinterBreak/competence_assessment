@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
     DataTable,
     Table,
@@ -23,15 +23,22 @@ import {
 import { observer } from 'mobx-react-lite';
 import { Edit, TrashCan, Add } from '@carbon/react/icons';
 import { taskStore } from './stores/taskStore';
+import {TaskModal} from "../tasks/components/TaskModal";
+import {Task} from "./types/task.types";
+import {CreateTaskDto, UpdateTaskDto} from "../tasks/types/task.types";
 
 export const Tasks: React.FC = observer(() => {
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+    
     useEffect(() => {
         taskStore.loadTasks();
     }, []);
 
     const handleEdit = (id: string) => {
-        console.log('Edit:', id);
+        let task = taskStore.tasks.find(c => c.id.toString() === id) ?? null;
+        setEditingTask(task);
+        setIsModalOpen(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -39,7 +46,34 @@ export const Tasks: React.FC = observer(() => {
     };
 
     const handleAdd = () => {
-        console.log('Add');
+        setEditingTask(null);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = async (data: { id?: string; text: string; type: string; answer?: string | null }) => {
+        if (editingTask) {
+            let editDto: UpdateTaskDto = {
+                id: Number(data.id),
+                text: data.text,
+                type: Number(data.type),
+                answer: data.answer ?? ''
+            };
+            await taskStore.updateTask(editDto);
+        } else {
+            let createDto: CreateTaskDto = {
+                text: data.text,
+                type: Number(data.type),
+                answer: data.answer ?? ''
+            };
+            await taskStore.createTask(createDto);
+        }
+        setIsModalOpen(false);
+        setEditingTask(null);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setEditingTask(null);
     };
 
     const handleExport = async () => {
@@ -201,6 +235,14 @@ export const Tasks: React.FC = observer(() => {
                         taskStore.setCurrentPage(page);
                     }
                 }}
+            />
+            
+            <TaskModal
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                onSubmit={handleModalSubmit}
+                initialData={editingTask || undefined}
+                mode={editingTask ? 'edit' : 'create'}
             />
         </div>
     );

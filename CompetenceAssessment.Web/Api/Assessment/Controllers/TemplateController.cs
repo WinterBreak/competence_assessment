@@ -24,8 +24,9 @@ public class TemplateController: ControllerBase
     public async Task<IActionResult> GetTemplatesAsync(CancellationToken token = default)
     {
         var query = new TemplateQuery();
-        var competencies = await _assessmentService.GetTemplatesAsync(query, token);
-        return Ok(competencies);
+        var templates = await _assessmentService.GetTemplatesAsync(query, token);
+        var dtos = templates.Select(template => new TemplateDto(template)).ToList();
+        return Ok(dtos);
     }
 
     /// <summary>
@@ -62,11 +63,11 @@ public class TemplateController: ControllerBase
     /// <summary>
     /// Удаление шаблона
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteTemplateAsync(TemplateDeleteRequest request
-        , CancellationToken token = default)
+    public async Task<IActionResult> DeleteTemplateAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteTemplateCommand(request.Id);
+        var command = new DeleteTemplateCommand(id);
         var errors = await _assessmentService.DeleteTemplateAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

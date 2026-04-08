@@ -15,15 +15,6 @@ export interface UpdateCompetencyDto {
     description?: string;
 }
 
-export interface DeleteCompetenceDto {
-    id: number;
-}
-
-export interface ApiResponse {
-    hasErrors: boolean;
-    errors?: [];
-}
-
 export interface PaginatedResponse<T> {
     items: T[];
     total: number;

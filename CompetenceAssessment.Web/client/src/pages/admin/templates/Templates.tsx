@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     DataTable,
     Table,
@@ -18,28 +18,98 @@ import {
     TableToolbarAction,
     TableToolbarSearch,
     Loading,
-    ToastNotification
+    ToastNotification,
+    Modal
 } from '@carbon/react';
 import { observer } from 'mobx-react-lite';
 import { Edit, TrashCan, Add } from '@carbon/react/icons';
 import { templateStore } from './stores/templateStore';
+import { TemplateModal } from "./components/TemplateModal";
+import { Template } from "./types/template.types";
 
 export const Templates: React.FC = observer(() => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         templateStore.loadTemplates();
     }, []);
 
     const handleEdit = (id: string) => {
-        console.log('Edit:', id);
+        const template = templateStore.templates.find(t => t.id.toString() === id);
+        if (template) {
+            setEditingTemplate(template);
+            setIsModalOpen(true);
+        }
     };
 
-    const handleDelete = async (id: string) => {
-        await templateStore.deleteTemplate(id);
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (itemToDelete) {
+            await templateStore.deleteTemplate(itemToDelete);
+            setItemToDelete(null);
+        }
+        setIsDeleteModalOpen(false);
     };
 
     const handleAdd = () => {
-        console.log('Add');
+        setEditingTemplate(null);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = async (data: {
+        id?: string;
+        name: string;
+        description?: string;
+        type: string;
+        scale: number;
+        competenceModelId?: string;
+        tasks: Array<{ taskId: string; weight: number; competenceId: string }>;
+    }) => {
+        const weights: Record<number, number> = {};
+        data.tasks.forEach(task => {
+            weights[Number(task.taskId)] = task.weight;
+        });
+        
+        const competenciesToTasks: Record<number, number[]> = {};
+        data.tasks.forEach(task => {
+            const competenceId = Number(task.competenceId);
+            const taskId = Number(task.taskId);
+
+            if (!competenciesToTasks[competenceId]) {
+                competenciesToTasks[competenceId] = [];
+            }
+            competenciesToTasks[competenceId].push(taskId);
+        });
+
+        if (editingTemplate) {
+            await templateStore.updateTemplate({
+                id: editingTemplate.id,
+                name: data.name,
+                type: data.type,
+                scale: data.scale,
+                competenceModelId: data.competenceModelId || '',
+                weights: weights,
+                competenciesToTasks: competenciesToTasks
+            });
+        } else {
+            await templateStore.createTemplate({
+                name: data.name,
+                type: data.type,
+                scale: data.scale,
+                competenceModelId: data.competenceModelId || '',
+                weights: weights,
+                competenciesToTasks: competenciesToTasks
+            });
+        }
+        setIsModalOpen(false);
+        setEditingTemplate(null);
     };
 
     const handleExport = async () => {
@@ -50,9 +120,8 @@ export const Templates: React.FC = observer(() => {
             templateStore.templates.map(t => ({
                 id: String(t.id),
                 name: t.name,
-                type: t.type,
-                
-                creation_date: t.creationDate.toString(),
+                type: t.type === '1' ? 'Анкета' : 'Тестирование',
+                creation_date: t.creationDate ? new Date(t.creationDate).toLocaleDateString('ru-RU') : '',
             })),
         [templateStore.templates]);
 
@@ -75,6 +144,7 @@ export const Templates: React.FC = observer(() => {
                     title="Ошибка"
                     subtitle={templateStore.error}
                     onClose={() => templateStore.clearError()}
+                    style={{ marginBottom: '1rem' }}
                 />
             )}
 
@@ -96,7 +166,8 @@ export const Templates: React.FC = observer(() => {
 
                     return (
                         <TableContainer
-                            title="Модели компетенций"
+                            title="Шаблоны"
+                            description="Управление шаблонами"
                             {...getTableContainerProps()}
                         >
                             <TableToolbar {...getToolbarProps()}>
@@ -106,6 +177,7 @@ export const Templates: React.FC = observer(() => {
                                             onInputChange(e);
                                             templateStore.setSearchTerm(e.toString());
                                         }}
+                                        placeholder="Поиск шаблонов..."
                                     />
 
                                     <TableToolbarMenu>
@@ -157,22 +229,24 @@ export const Templates: React.FC = observer(() => {
                                                 if (cell.info.header === 'actions') {
                                                     return (
                                                         <TableCell key={cell.id}>
-                                                            <Button
-                                                                kind="ghost"
-                                                                size="sm"
-                                                                iconDescription="Редактировать"
-                                                                onClick={() => handleEdit(row.id)}
-                                                                renderIcon={Edit}
-                                                                hasIconOnly
-                                                            />
-                                                            <Button
-                                                                kind="ghost"
-                                                                size="sm"
-                                                                iconDescription="Удалить"
-                                                                onClick={() => handleDelete(row.id)}
-                                                                renderIcon={TrashCan}
-                                                                hasIconOnly
-                                                            />
+                                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                                <Button
+                                                                    kind="ghost"
+                                                                    size="sm"
+                                                                    iconDescription="Редактировать"
+                                                                    onClick={() => handleEdit(row.id)}
+                                                                    renderIcon={Edit}
+                                                                    hasIconOnly
+                                                                />
+                                                                <Button
+                                                                    kind="ghost"
+                                                                    size="sm"
+                                                                    iconDescription="Удалить"
+                                                                    onClick={() => handleDeleteClick(row.id)}
+                                                                    renderIcon={TrashCan}
+                                                                    hasIconOnly
+                                                                />
+                                                            </div>
                                                         </TableCell>
                                                     );
                                                 }
@@ -205,6 +279,39 @@ export const Templates: React.FC = observer(() => {
                     }
                 }}
             />
+
+            <TemplateModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingTemplate(null);
+                }}
+                onSubmit={handleSubmit}
+                initialData={editingTemplate ? {
+                    id: editingTemplate.id,
+                    name: editingTemplate.name,
+                    type: editingTemplate.type,
+                    scale: editingTemplate.scale,
+                    competenceModel: editingTemplate.competenceModel,
+                    tasks: editingTemplate.tasks
+                } : undefined}
+                mode={editingTemplate ? 'edit' : 'create'}
+            />
+
+            <Modal
+                open={isDeleteModalOpen}
+                modalHeading="Подтверждение удаления"
+                primaryButtonText="Удалить"
+                secondaryButtonText="Отмена"
+                danger
+                onRequestClose={() => setIsDeleteModalOpen(false)}
+                onRequestSubmit={confirmDelete}
+            >
+                <p>Вы уверены, что хотите удалить этот шаблон?</p>
+                <p style={{ marginTop: '0.5rem', color: '#da1e28' }}>
+                    Это действие невозможно отменить.
+                </p>
+            </Modal>
         </div>
     );
 });

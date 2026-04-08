@@ -3,28 +3,44 @@ import {Task} from "../../tasks/types/task.types";
 
 export interface Template {
     id: string;
-    competenceModelId: number;
+    competenceModel: TemplateCompetenceModel;
     name: string;
     type: string;
-    scale: string;
+    scale: number;
     creationDate: Date;
     tasks: TemplateWeight[];
 }
 
 export interface TemplateWeight {
-    template_id: number;
-    task: Task;
-    competence_id: number;
+    templateId: string;
+    taskId: string;
+    taskText: string;
+    competenceId: string;
     weight: number;
+}
+
+export interface TemplateCompetenceModel {
+    modelId: string;
+    name: string;
+    description?: string;
+    competencies: Record<string, string>;
 }
 
 export interface CreateTemplateDto {
     name: string;
-    description: string;
+    type: string;
+    scale: number;
+    competenceModelId: string;
+    weights: Record<number, number>;
+    competenciesToTasks: Record<number, number[]>;
 }
 
 export interface UpdateTemplateDto {
-    id: number;
-    name?: string;
-    description?: string;
+    id: string;
+    name: string;
+    type: string;
+    scale: number;
+    competenceModelId: string;
+    weights: Record<number, number>;
+    competenciesToTasks: Record<number, number[]>;
 }

@@ -4,6 +4,7 @@ import {
     CreateCompetenceModelDto,
     UpdateCompetenceModelDto,
 } from '../types/model.types';
+import {ApiResponse} from "../../../../types/common.types";
 
 class CompetenceModelService {
     private api: AxiosInstance;
@@ -15,7 +16,7 @@ class CompetenceModelService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            timeout: 10000, // 10 секунд таймаут
+            timeout: 100000, // 10 секунд таймаут
         });
 
         // Интерсептор для добавления токена авторизации
@@ -67,7 +68,7 @@ class CompetenceModelService {
     }
 
     // Создание компетенции
-    async createCompetenceModel(data: CreateCompetenceModelDto): Promise<CompetenceModel> {
+    async createCompetenceModel(data: CreateCompetenceModelDto): Promise<ApiResponse> {
         try {
             const response = await this.api.post('/competence_models', data);
             return response.data;
@@ -77,9 +78,9 @@ class CompetenceModelService {
     }
 
     // Обновление компетенции
-    async updateCompetenceModel(id: string, data: UpdateCompetenceModelDto): Promise<CompetenceModel> {
+    async updateCompetenceModel(data: UpdateCompetenceModelDto): Promise<ApiResponse> {
         try {
-            const response = await this.api.patch(`/competence_models/${id}`, data);
+            const response = await this.api.patch(`/competence_models`, data);
             return response.data;
         } catch (error) {
             throw this.handleError(error);
@@ -87,9 +88,10 @@ class CompetenceModelService {
     }
 
     // Удаление компетенции
-    async deleteCompetenceModel(id: string): Promise<void> {
+    async deleteCompetenceModel(id: string): Promise<ApiResponse> {
         try {
-            await this.api.delete(`/competence_models/${id}`);
+            const response = await this.api.delete(`/competence_models/${id}`);
+            return response.data;
         } catch (error) {
             throw this.handleError(error);
         }

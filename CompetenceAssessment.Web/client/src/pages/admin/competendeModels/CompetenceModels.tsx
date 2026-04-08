@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+// src/pages/CompetenceModels/CompetenceModels.tsx
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     DataTable,
     Table,
@@ -18,28 +19,78 @@ import {
     TableToolbarAction,
     TableToolbarSearch,
     Loading,
-    ToastNotification
+    ToastNotification,
+    Modal,
 } from '@carbon/react';
 import { observer } from 'mobx-react-lite';
 import { Edit, TrashCan, Add } from '@carbon/react/icons';
 import { competenceModelStore } from './stores/competenceModelStore';
+import { CompetenceModelModal } from "./components/CompetenceModelModal";
+import {CompetenceModel } from "./types/model.types";
 
 export const CompetenceModels: React.FC = observer(() => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingCompetenceModel, setEditingCompetenceModel] = useState<CompetenceModel | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         competenceModelStore.loadCompetenceModels();
     }, []);
 
     const handleEdit = (id: string) => {
-        console.log('Edit:', id);
+        const model = competenceModelStore.competenceModels.find(m => m.id.toString() === id);
+        if (model) {
+            setEditingCompetenceModel(model);
+            setIsModalOpen(true);
+        }
     };
 
-    const handleDelete = async (id: string) => {
-        await competenceModelStore.deleteCompetenceModel(id);
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (itemToDelete) {
+            await competenceModelStore.deleteCompetenceModel(itemToDelete);
+            setItemToDelete(null);
+        }
+        setIsDeleteModalOpen(false);
     };
 
     const handleAdd = () => {
-        console.log('Add');
+        setEditingCompetenceModel(null);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = async (data: {
+        id?: string;
+        name: string;
+        description?: string;
+        competencies: Array<{ competenceId: string; weight: number }>;
+    }) => {
+        const weights: Record<string, number> = {};
+        data.competencies.forEach(item => {
+            weights[item.competenceId] = item.weight;
+        });
+
+        if (editingCompetenceModel) {
+            await competenceModelStore.updateCompetenceModel({
+                id: Number(editingCompetenceModel.id),
+                name: data.name,
+                description: data.description,
+                weights: weights
+            });
+        } else {
+            await competenceModelStore.createCompetenceModel({
+                name: data.name,
+                description: data.description,
+                weights: weights
+            });
+        }
+        setIsModalOpen(false);
+        setEditingCompetenceModel(null);
     };
 
     const handleExport = async () => {
@@ -50,10 +101,11 @@ export const CompetenceModels: React.FC = observer(() => {
             competenceModelStore.competenceModels.map(cm => ({
                 id: String(cm.id),
                 name: cm.name,
-                description: cm.description,
-                creation_date: cm.creationDate.toString(),
+                description: cm.description || '',
+                creation_date: cm.creationDate ? new Date(cm.creationDate).toLocaleDateString('ru-RU') : '',
             })),
-        [competenceModelStore.competenceModels]);
+        [competenceModelStore.competenceModels]
+    );
 
     if (competenceModelStore.isLoading && competenceModelStore.competenceModels.length === 0) {
         return <Loading description="Загрузка..." withOverlay />;
@@ -74,6 +126,7 @@ export const CompetenceModels: React.FC = observer(() => {
                     title="Ошибка"
                     subtitle={competenceModelStore.error}
                     onClose={() => competenceModelStore.clearError()}
+                    style={{ marginBottom: '1rem' }}
                 />
             )}
 
@@ -90,12 +143,12 @@ export const CompetenceModels: React.FC = observer(() => {
                       getToolbarProps,
                       onInputChange,
                   }) => {
-
                     const selectedIds = selectedRows.map(r => r.id);
 
                     return (
                         <TableContainer
                             title="Модели компетенций"
+                            description="Управление моделями компетенций"
                             {...getTableContainerProps()}
                         >
                             <TableToolbar {...getToolbarProps()}>
@@ -105,6 +158,7 @@ export const CompetenceModels: React.FC = observer(() => {
                                             onInputChange(e);
                                             competenceModelStore.setSearchTerm(e.toString());
                                         }}
+                                        placeholder="Поиск моделей..."
                                     />
 
                                     <TableToolbarMenu>
@@ -156,22 +210,24 @@ export const CompetenceModels: React.FC = observer(() => {
                                                 if (cell.info.header === 'actions') {
                                                     return (
                                                         <TableCell key={cell.id}>
-                                                            <Button
-                                                                kind="ghost"
-                                                                size="sm"
-                                                                iconDescription="Редактировать"
-                                                                onClick={() => handleEdit(row.id)}
-                                                                renderIcon={Edit}
-                                                                hasIconOnly
-                                                            />
-                                                            <Button
-                                                                kind="ghost"
-                                                                size="sm"
-                                                                iconDescription="Удалить"
-                                                                onClick={() => handleDelete(row.id)}
-                                                                renderIcon={TrashCan}
-                                                                hasIconOnly
-                                                            />
+                                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                                <Button
+                                                                    kind="ghost"
+                                                                    size="sm"
+                                                                    iconDescription="Редактировать"
+                                                                    onClick={() => handleEdit(row.id)}
+                                                                    renderIcon={Edit}
+                                                                    hasIconOnly
+                                                                />
+                                                                <Button
+                                                                    kind="ghost"
+                                                                    size="sm"
+                                                                    iconDescription="Удалить"
+                                                                    onClick={() => handleDeleteClick(row.id)}
+                                                                    renderIcon={TrashCan}
+                                                                    hasIconOnly
+                                                                />
+                                                            </div>
                                                         </TableCell>
                                                     );
                                                 }
@@ -204,6 +260,32 @@ export const CompetenceModels: React.FC = observer(() => {
                     }
                 }}
             />
+            
+            <CompetenceModelModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingCompetenceModel(null);
+                }}
+                onSubmit={handleSubmit}
+                initialData={editingCompetenceModel || undefined}
+                mode={editingCompetenceModel ? 'edit' : 'create'}
+            />
+            
+            <Modal
+                open={isDeleteModalOpen}
+                modalHeading="Подтверждение удаления"
+                primaryButtonText="Удалить"
+                secondaryButtonText="Отмена"
+                danger
+                onRequestClose={() => setIsDeleteModalOpen(false)}
+                onRequestSubmit={confirmDelete}
+            >
+                <p>Вы уверены, что хотите удалить эту модель компетенций?</p>
+                <p style={{ marginTop: '0.5rem', color: '#da1e28' }}>
+                    Это действие невозможно отменить.
+                </p>
+            </Modal>
         </div>
     );
 });
