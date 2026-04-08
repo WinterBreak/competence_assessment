@@ -16,11 +16,11 @@ function App() {
           <Routes>
               <Route path="/" element={<Layout />}>
                   <Route index element={<StartAssessment />} />
-                  <Route path="/templates" element={<Templates />} />
-                  <Route path="/competence_models" element={<CompetenceModels />} />
-                  <Route path="/competencies" element={<Competencies />} />
-                  <Route path="/tasks" element={<Tasks />} />
-                  <Route path="/users" element={<Users />} />
+                  <Route path="admin/templates" element={<Templates />} />
+                  <Route path="admin/competence_models" element={<CompetenceModels />} />
+                  <Route path="admin/competencies" element={<Competencies />} />
+                  <Route path="admin/tasks" element={<Tasks />} />
+                  <Route path="admin/users" element={<Users />} />
                   {/*<Route path="users/:id" element={<UserDetail />} />*/}
                   {/* 404 страница */}
                   <Route path="*" element={<Navigate to="/" replace />} />
