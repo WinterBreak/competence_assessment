@@ -3,9 +3,9 @@ import {
     Competence,
     CreateCompetencyDto,
     UpdateCompetencyDto,
-    ApiResponse,
-    PaginatedResponse, DeleteCompetenceDto
+    PaginatedResponse
 } from '../types/competence.types';
+import { ApiResponse} from "../../../../types/common.types";
 
 class CompetenceService {
     private api: AxiosInstance;

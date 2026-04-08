@@ -34,7 +34,7 @@ public class CompetenceModelQuery
         , IEnumerable<int> competenceIds = default)
     {
         Ids = ids.ToList();
-        Names = names.ToList();
-        CompetenceIds = competenceIds.ToList();
+        Names = names?.ToList();
+        CompetenceIds = competenceIds?.ToList();
     }
 }

@@ -6,12 +6,14 @@ export interface Task {
 }
 
 export interface CreateTaskDto {
-    name: string;
-    description: string;
+    text: string;
+    type: number;
+    answer?: string;
 }
 
 export interface UpdateTaskDto {
     id: number;
-    name?: string;
-    description?: string;
+    text: string;
+    type: number;
+    answer?: string;
 }

@@ -4,6 +4,7 @@ import {
     CreateTemplateDto,
     UpdateTemplateDto,
 } from '../types/template.types';
+import {ApiResponse} from "../../../../types/common.types";
 
 class TemplateService {
     private api: AxiosInstance;
@@ -14,7 +15,7 @@ class TemplateService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            timeout: 10000,
+            timeout: 100000,
         });
 
         // Интерсептор для добавления токена авторизации
@@ -63,7 +64,7 @@ class TemplateService {
         }
     }
     
-    async createTemplate(data: CreateTemplateDto): Promise<Template> {
+    async createTemplate(data: CreateTemplateDto): Promise<ApiResponse> {
         try {
             const response = await this.api.post('/templates', data);
             return response.data;
@@ -72,18 +73,19 @@ class TemplateService {
         }
     }
     
-    async updateTemplate(id: string, data: UpdateTemplateDto): Promise<Template> {
+    async updateTemplate(data: UpdateTemplateDto): Promise<ApiResponse> {
         try {
-            const response = await this.api.patch(`/templates/${id}`, data);
+            const response = await this.api.patch(`/templates`, data);
             return response.data;
         } catch (error) {
             throw this.handleError(error);
         }
     }
     
-    async deleteTemplate(id: string): Promise<void> {
+    async deleteTemplate(id: string): Promise<ApiResponse> {
         try {
-            await this.api.delete(`/templates/${id}`);
+            const response = await this.api.delete(`/templates/${id}`);
+            return response.data;
         } catch (error) {
             throw this.handleError(error);
         }

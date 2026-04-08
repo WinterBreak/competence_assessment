@@ -24,8 +24,9 @@ public class CompetenceModelController: ControllerBase
     public async Task<IActionResult> GetCompetenceModelsAsync(CancellationToken token = default)
     {
         var query = new CompetenceModelQuery();
-        var competencies = await _competenceService.GetCompetenceModelsAsync(query, token);
-        return Ok(competencies);
+        var models = await _competenceService.GetCompetenceModelsAsync(query, token);
+        var dtos = models.Select(m => new CompetenceModelGetDto(m)).ToList();
+        return Ok(dtos);
     }
 
     /// <summary>
@@ -59,11 +60,11 @@ public class CompetenceModelController: ControllerBase
     /// <summary>
     /// Удаление модели компетенций
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCompetenceModelAsync(CompetenceModelDeleteRequest request
-        , CancellationToken token = default)
+    public async Task<IActionResult> DeleteCompetenceModelAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteCompetenceModelCommand(request.Id);
+        var command = new DeleteCompetenceModelCommand(id);
         var errors = await _competenceService.DeleteCompetenceModelAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

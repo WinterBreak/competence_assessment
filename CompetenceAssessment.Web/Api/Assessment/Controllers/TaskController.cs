@@ -36,7 +36,7 @@ public class TaskController: ControllerBase
     public async Task<IActionResult> CreateTaskAsync(TaskCreateRequest request
         , CancellationToken token = default)
     {
-        var command = new CreateTaskCommand(request.Text, (TaskType)request.TypeId, request.Answer);
+        var command = new CreateTaskCommand(request.Text, (TaskType)request.Type, request.Answer);
         var errors = await _competenceService.CreateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
@@ -60,11 +60,11 @@ public class TaskController: ControllerBase
     /// <summary>
     /// Удаление заданий
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteTaskAsync(TaskDeleteRequest request
-        , CancellationToken token = default)
+    public async Task<IActionResult> DeleteTaskAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteTaskCommand(request.Id);
+        var command = new DeleteTaskCommand(id);
         var errors = await _competenceService.DeleteTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

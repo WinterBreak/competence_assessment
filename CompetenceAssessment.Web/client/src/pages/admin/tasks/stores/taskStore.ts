@@ -1,6 +1,7 @@
 import {makeAutoObservable, runInAction } from 'mobx';
 import { Task, CreateTaskDto, UpdateTaskDto } from '../types/task.types';
 import { taskService } from '../services/taskService';
+import {competenceService} from "../../competencies/services/competenceService";
 
 export class TaskStore {
     tasks: Task[] = [];
@@ -65,9 +66,12 @@ export class TaskStore {
         this.error = null;
 
         try {
-            const newTask = await taskService.createTask(data);
-            runInAction(() => {
-                this.tasks.unshift(newTask);
+            const result = await taskService.createTask(data);
+            runInAction(async () => {
+                if (!result.hasErrors)
+                {
+                    await this.loadTasks();
+                }
                 this.totalItems++;
                 this.isLoading = false;
             });
@@ -81,16 +85,16 @@ export class TaskStore {
         }
     }
 
-    async updateTask(id: string, data: UpdateTaskDto): Promise<boolean> {
+    async updateTask(data: UpdateTaskDto): Promise<boolean> {
         this.isLoading = true;
         this.error = null;
 
         try {
-            const updated = await taskService.updateTask(id, data);
-            runInAction(() => {
-                const index = this.tasks.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.tasks[index] = updated;
+            const updated = await taskService.updateTask(data);
+            runInAction( async () => {
+                const index = this.tasks.findIndex(c => c.id === data.id.toString());
+                if (!updated.hasErrors) {
+                    await this.loadTasks();
                 }
                 this.isLoading = false;
             });
@@ -110,8 +114,8 @@ export class TaskStore {
 
         try {
             await taskService.deleteTask(id);
-            runInAction(() => {
-                this.tasks = this.tasks.filter(c => c.id !== id);
+            runInAction( async () => {
+                await this.loadTasks();
                 this.totalItems--;
                 this.isLoading = false;
             });

@@ -65,9 +65,11 @@ export class TemplateStore {
         this.error = null;
 
         try {
-            const newTemplate = await templateService.createTemplate(data);
-            runInAction(() => {
-                this.templates.unshift(newTemplate);
+            const result = await templateService.createTemplate(data);
+            runInAction( async () => {
+                if (result.hasErrors){
+                    await this.loadTemplates();
+                }
                 this.totalItems++;
                 this.isLoading = false;
             });
@@ -81,16 +83,15 @@ export class TemplateStore {
         }
     }
 
-    async updateTemplate(id: string, data: UpdateTemplateDto): Promise<boolean> {
+    async updateTemplate(data: UpdateTemplateDto): Promise<boolean> {
         this.isLoading = true;
         this.error = null;
 
         try {
-            const updated = await templateService.updateTemplate(id, data);
-            runInAction(() => {
-                const index = this.templates.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.templates[index] = updated;
+            const result = await templateService.updateTemplate(data);
+            runInAction( async() => {
+                if (result.hasErrors){
+                    await this.loadTemplates();
                 }
                 this.isLoading = false;
             });
@@ -109,9 +110,11 @@ export class TemplateStore {
         this.error = null;
 
         try {
-            await templateService.deleteTemplate(id);
-            runInAction(() => {
-                this.templates = this.templates.filter(c => c.id !== id);
+            const result = await templateService.deleteTemplate(id);
+            runInAction( async () => {
+                if (result.hasErrors){
+                    await this.loadTemplates();
+                }
                 this.totalItems--;
                 this.isLoading = false;
             });

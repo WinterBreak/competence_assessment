@@ -4,6 +4,7 @@ import {
     CreateTaskDto,
     UpdateTaskDto,
 } from '../types/task.types';
+import { ApiResponse} from "../../../../types/common.types";
 
 class TaskService {
     private api: AxiosInstance;
@@ -15,7 +16,7 @@ class TaskService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            timeout: 10000, // 10 секунд таймаут
+            timeout: 100000, // 10 секунд таймаут
         });
 
         // Интерсептор для добавления токена авторизации
@@ -42,8 +43,7 @@ class TaskService {
         //     }
         // );
     }
-
-    // Получение списка компетенций с пагинацией
+    
     async getTasks(params?: {
         page?: number;
         pageSize?: number;
@@ -55,8 +55,7 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Получение одной компетенции
+    
     async getTaskById(id: string): Promise<Task> {
         try {
             const response = await this.api.get(`/tasks/${id}`);
@@ -65,9 +64,8 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Создание компетенции
-    async createTask(data: CreateTaskDto): Promise<Task> {
+    
+    async createTask(data: CreateTaskDto): Promise<ApiResponse> {
         try {
             const response = await this.api.post('/tasks', data);
             return response.data;
@@ -75,18 +73,16 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Обновление компетенции
-    async updateTask(id: string, data: UpdateTaskDto): Promise<Task> {
+    
+    async updateTask(data: UpdateTaskDto): Promise<ApiResponse> {
         try {
-            const response = await this.api.patch(`/tasks/${id}`, data);
+            const response = await this.api.patch(`/tasks`, data);
             return response.data;
         } catch (error) {
             throw this.handleError(error);
         }
     }
-
-    // Удаление компетенции
+    
     async deleteTask(id: string): Promise<void> {
         try {
             await this.api.delete(`/tasks/${id}`);
@@ -94,8 +90,7 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Массовое удаление
+    
     async deleteManyTasks(ids: string[]): Promise<void> {
         try {
             await this.api.post('/tasks/delete-many', { ids });
@@ -103,8 +98,7 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Экспорт данных
+    
     async exportTasks(): Promise<Blob> {
         try {
             const response = await this.api.get('/tasks/export', {
@@ -115,8 +109,7 @@ class TaskService {
             throw this.handleError(error);
         }
     }
-
-    // Обработка ошибок
+    
     private handleError(error: unknown): Error {
         if (error instanceof AxiosError) {
             const message = error.response?.data?.message || error.message;

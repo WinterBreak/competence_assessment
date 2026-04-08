@@ -65,9 +65,11 @@ export class CompetenceModelStore {
         this.error = null;
 
         try {
-            const newCompetenceModel = await competenceModelService.createCompetenceModel(data);
-            runInAction(() => {
-                this.competenceModels.unshift(newCompetenceModel);
+            const result = await competenceModelService.createCompetenceModel(data);
+            runInAction(async () => {
+                if (result.hasErrors){
+                    await this.loadCompetenceModels();
+                }
                 this.totalItems++;
                 this.isLoading = false;
             });
@@ -81,16 +83,15 @@ export class CompetenceModelStore {
         }
     }
 
-    async updateCompetenceModel(id: string, data: UpdateCompetenceModelDto): Promise<boolean> {
+    async updateCompetenceModel(data: UpdateCompetenceModelDto): Promise<boolean> {
         this.isLoading = true;
         this.error = null;
 
         try {
-            const updated = await competenceModelService.updateCompetenceModel(id, data);
-            runInAction(() => {
-                const index = this.competenceModels.findIndex(c => c.id === id);
-                if (index !== -1) {
-                    this.competenceModels[index] = updated;
+            const result = await competenceModelService.updateCompetenceModel(data);
+            runInAction( async () => {
+                if (result.hasErrors){
+                    await this.loadCompetenceModels();
                 }
                 this.isLoading = false;
             });
@@ -109,9 +110,11 @@ export class CompetenceModelStore {
         this.error = null;
 
         try {
-            await competenceModelService.deleteCompetenceModel(id);
-            runInAction(() => {
-                this.competenceModels = this.competenceModels.filter(c => c.id !== id);
+            const result = await competenceModelService.deleteCompetenceModel(id);
+            runInAction(async () => {
+                if (result.hasErrors){
+                    await this.loadCompetenceModels();
+                }
                 this.totalItems--;
                 this.isLoading = false;
             });

@@ -12,6 +12,8 @@ public class ITemplate
     
     public DateTime CreationDate { get; set; }
     
+    public CompetenceModel Model { get; set; }
+    
     public int CompetenceModelId { get; set; }
     
     public List<TemplateWeight> Weights { get; set; }
@@ -19,14 +21,15 @@ public class ITemplate
     public ITemplate() {}
     
     public ITemplate(int id, string name, TemplateType type, ScaleType scale, DateTime creationDate
-                   , int competenceModelId, List<TemplateWeight> weights)
+                   , CompetenceModel model, List<TemplateWeight> weights)
     {
         this.Id = id;
         this.Name = name;
         this.Type = type;
         this.Scale = scale;
         this.CreationDate = creationDate;
-        this.CompetenceModelId = competenceModelId;
+        this.Model = model;
+        this.CompetenceModelId = model.Id;
         this.Weights = weights;
     }
     

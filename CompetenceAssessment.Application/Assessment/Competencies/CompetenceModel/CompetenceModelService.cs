@@ -67,7 +67,16 @@ public class CompetenceModelService: ICompetenceModelService
     public async Task<ValidationErrors> DeleteCompetenceModelAsync(DeleteCompetenceModelCommand command
         , CancellationToken token = default)
     {
-        var errors = await _validationService.ValidateDeletingCompetenceModelAsync(command.Id, token);
+        var errors = await _validationService.ValidateExistence(command.Id, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
+        var query = new CompetenceModelQuery(id: command.Id);
+        var updatingModel = await _repository.GetCompetenceModelAsync(query, token);
+        
+        await _validationService.ValidateDeletingCompetenceModelAsync(updatingModel, token);
         if (errors.HasErrors)
         {
             return errors;
