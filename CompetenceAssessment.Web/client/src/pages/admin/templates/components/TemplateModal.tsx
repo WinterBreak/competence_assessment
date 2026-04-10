@@ -110,6 +110,7 @@ export const TemplateModal: React.FC<TemplateModalProps> = ({
         const newItems: TemplateWeight[] = newTasks.map(task => ({
             templateId: initialData?.id || '',
             taskId: task.id,
+            type: task.type,
             taskText: task.text,
             competenceId: currentCompetenceId,
             weight: 0.5

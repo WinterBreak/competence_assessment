@@ -1,6 +1,3 @@
-import { CompetenceModel } from "../../competendeModels/types/model.types";
-import {Task} from "../../tasks/types/task.types";
-
 export interface Template {
     id: string;
     competenceModel: TemplateCompetenceModel;
@@ -14,6 +11,7 @@ export interface Template {
 export interface TemplateWeight {
     templateId: string;
     taskId: string;
+    type: string;
     taskText: string;
     competenceId: string;
     weight: number;

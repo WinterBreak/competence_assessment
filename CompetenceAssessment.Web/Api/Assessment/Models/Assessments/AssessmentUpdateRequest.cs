@@ -8,7 +8,7 @@ public class AssessmentUpdateRequest
     
     public Dictionary<int, int> Scores { get; set; }
     
-    public Dictionary<int, string> Comments { get; set; }
+    public Dictionary<int, string> Comments { get; set; } // TODO перемменоввать тут и на фронте. непонятно, чем отличается от comment
     
     public string Comment { get; set; }
 }
