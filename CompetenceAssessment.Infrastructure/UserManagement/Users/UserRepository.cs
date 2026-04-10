@@ -19,13 +19,19 @@ public class UserRepository: BLL.IUserRepository
         return users.SingleOrDefault();
     }
 
-    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default)
+    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default) // TODO надо дерево строить
     {
         var specification = new UserSpecificationBuilder().WithQuery(query).Build();
-        return await _context.Users.Where(specification).Select(u 
-                => new BLL.User(u.Id, u.FirstName, u.SecondName, u.LastName, u.BossId
-                              , u.Email, u.PositionId, u.DepartmentId))
-            .ToListAsync(token);
+        var users =  GetAllUsersWithData().Where(specification).ToList();
+        
+        return users.Select(u =>
+        {
+            var bossName = u.Boss is null
+                ? string.Empty
+                : $"{u.Boss.LastName} {u.Boss.FirstName} {u.Boss.SecondName}";
+            return new BLL.User(u.Id, u.FirstName, u.SecondName, u.LastName, u.BossId
+                , u.Email, u.PositionId, u.Position.Name, u.DepartmentId, u.Department.Name, bossName);
+        }).ToList();
     }
 
     public async Task AddUserAsync(BLL.User user, CancellationToken token = default)
@@ -60,4 +66,13 @@ public class UserRepository: BLL.IUserRepository
 
     public async Task SaveAllChangesAsync(CancellationToken token = default)
         => await _context.SaveChangesAsync(token);
+
+    private IQueryable<User> GetAllUsersWithData()
+    {
+        return _context.Users
+            .Include(u => u.Department)
+            .Include(u => u.Position)
+            .Include(u => u.Boss)
+            .Include(u => u.RoleLinks);
+    }
 }

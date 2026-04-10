@@ -1,4 +1,4 @@
 export interface ApiResponse {
     hasErrors: boolean;
-    errors?: [];
+    errorValues?: Record<string, string>;
 }

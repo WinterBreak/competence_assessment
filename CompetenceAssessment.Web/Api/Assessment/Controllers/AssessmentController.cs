@@ -20,12 +20,24 @@ public class AssessmentController: ControllerBase
     /// <summary>
     /// Получение оценок
     /// </summary>
+    [Route("{id}")]
+    [HttpGet]
+    public async Task<IActionResult> GetAssessmentsAsync(int id, CancellationToken token = default)
+    {
+        var assessment = await _assessmentService.GetAssessmentAsync(id, token);
+        var dto = new AssessmentDto(assessment);
+        return Ok(dto);
+    }
+    
+    /// Получение оценки по id
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAssessmentsAsync(CancellationToken token = default)
     {
         var query = new AssessmentQuery();
-        var competencies = await _assessmentService.GetAssessmentsAsync(query, token);
-        return Ok(competencies);
+        var assessments = await _assessmentService.GetAssessmentsAsync(query, token);
+        var dtos = assessments.Select(a => new AssessmentDto(a)).ToList();
+        return Ok(dtos);
     }
 
     /// <summary>
@@ -35,12 +47,10 @@ public class AssessmentController: ControllerBase
     public async Task<IActionResult> CreateAssessmentAsync(AssessmentCreateRequest request
                                                          , CancellationToken token = default)
     {
-        var command = new CreateAssessmentCommand(request.TemplateId, (AssessmentType)request.AssessmentTypeId
+        var command = new CreateAssessmentCommand(request.TemplateId, (AssessmentType)request.Type
                                                 , request.CandidateId, request.InspectorsIds);
         var errors = await _assessmentService.CreateAssessmentAsync(command, token);
-        return errors.HasErrors
-            ? BadRequest(errors)
-            : Ok(errors);
+        return Ok(errors); // TODO написать стандартные модели ответов: успех и ошибка
     }
 
     /// <summary>

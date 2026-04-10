@@ -14,10 +14,13 @@ public class AssessmentService: IAssessmentService
         _repository = repository;
         _validationService = validationService;
     }
-    
-    public async Task<Domain.Assessment.Assessment?> GetAssessmentAsync(AssessmentQuery query
-                                                                      , CancellationToken token = default)
-        => await _repository.GetAssessmentAsync(query, token);
+
+    public async Task<Domain.Assessment.Assessment?> GetAssessmentAsync(int id
+        , CancellationToken token = default)
+    {
+        var query = new AssessmentQuery(id: id);
+        return await _repository.GetAssessmentAsync(query, token);
+    }
 
     public async Task<List<Domain.Assessment.Assessment>> GetAssessmentsAsync(AssessmentQuery query
                                                                             , CancellationToken token = default)
