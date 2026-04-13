@@ -30,7 +30,7 @@ public class TemplateRepository: ITemplateRepository
         var specification = new TemplateSpecificationBuilder().WithQuery(query).Build();
         var templates = await GetAllTemplates()
             .Where(specification)
-            .OrderByDescending(cm => cm.Name)
+            .OrderBy(cm => cm.Name)
             .ToListAsync(token);
         
         var details = templates.SelectMany(t => t.TemplateDetails).ToList();

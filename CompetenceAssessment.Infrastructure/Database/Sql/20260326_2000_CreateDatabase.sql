@@ -170,7 +170,7 @@ CREATE TABLE assessment.assessment (
 ALTER TABLE assessment.assessment OWNER TO postgres;
 
 CREATE TABLE assessment.assessment_result (
-                                             assessment_result_id bigint NOT NULL,
+                                             assessment_result_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
                                              task_id bigint,
                                              comment text,
                                              score smallint NOT NULL,

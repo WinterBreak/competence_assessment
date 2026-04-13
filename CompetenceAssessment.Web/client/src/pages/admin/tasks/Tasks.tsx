@@ -50,25 +50,32 @@ export const Tasks: React.FC = observer(() => {
         setIsModalOpen(true);
     };
 
-    const handleModalSubmit = async (data: { id?: string; text: string; type: string; answer?: string | null }) => {
+    const handleModalSubmit = async (data: { id?: string; text: string; type: string; answers?: Record<string, boolean> }) => {
         if (editingTask) {
             let editDto: UpdateTaskDto = {
                 id: Number(data.id),
                 text: data.text,
                 type: Number(data.type),
-                answer: data.answer ?? ''
+                answers: data.answers || {}
             };
             await taskStore.updateTask(editDto);
+
+            // Обновляем editingTask после успешного сохранения
+            const updatedTask = taskStore.tasks.find(t => t.id.toString() === data.id);
+            if (updatedTask) {
+                setEditingTask(updatedTask);
+            }
+            // НЕ закрываем модальное окно при редактировании
         } else {
             let createDto: CreateTaskDto = {
                 text: data.text,
                 type: Number(data.type),
-                answer: data.answer ?? ''
+                answers: data.answers || {}
             };
             await taskStore.createTask(createDto);
+            setIsModalOpen(false); // Закрываем только при создании
+            setEditingTask(null);
         }
-        setIsModalOpen(false);
-        setEditingTask(null);
     };
 
     const handleModalClose = () => {
@@ -80,11 +87,20 @@ export const Tasks: React.FC = observer(() => {
         await taskStore.exportTasks();
     };
 
+    const taskType = (type: string | number) => {
+        switch (Number(type)) {
+            case 1: return 'Тестовый вопрос';
+            case 2: return 'Открытый вопрос';
+            case 3: return 'Анкета';
+            default: return 'Неизвестный тип';
+        }
+    }
+    
     const rows = useMemo(() =>
             taskStore.tasks.map(t => ({
                 id: String(t.id),
                 text: t.text,
-                type: t.type,
+                type: taskType(t.type),
             })),
         [taskStore.tasks]);
 

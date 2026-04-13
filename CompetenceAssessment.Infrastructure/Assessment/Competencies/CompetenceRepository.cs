@@ -31,6 +31,7 @@ public class CompetenceRepository: ICompetenceRepository
         
         return await GetAllCompetences()
             .Where(specification)
+            .OrderBy(c => c.Name)
             .Select(c => new Competence(c.Id, c.Name, c.Description))
             .ToListAsync(token);
     }

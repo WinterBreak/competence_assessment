@@ -36,7 +36,7 @@ public class TaskController: ControllerBase
     public async Task<IActionResult> CreateTaskAsync(TaskCreateRequest request
         , CancellationToken token = default)
     {
-        var command = new CreateTaskCommand(request.Text, (TaskType)request.Type, request.Answer);
+        var command = new CreateTaskCommand(request.Text, (TaskType)request.Type, request.Answers);
         var errors = await _competenceService.CreateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
@@ -50,7 +50,7 @@ public class TaskController: ControllerBase
     public async Task<IActionResult> UpdateTaskAsync(TaskUpdateRequest request
         , CancellationToken token = default)
     {
-        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answer, (TaskType)request.Type);
+        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answers, (TaskType)request.Type);
         var errors = await _competenceService.UpdateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

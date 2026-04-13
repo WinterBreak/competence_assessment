@@ -1,3 +1,5 @@
+import {Answer} from "../../tasks/types/task.types";
+
 export interface Template {
     id: string;
     competenceModel: TemplateCompetenceModel;

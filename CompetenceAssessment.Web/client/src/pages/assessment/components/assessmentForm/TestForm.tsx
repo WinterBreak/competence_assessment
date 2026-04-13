@@ -3,9 +3,10 @@ import { Button, Loading } from '@carbon/react';
 import { TestQuestion } from './TestQuestion';
 import { OpenQuestion } from './OpenQuestion';
 import { Template } from '../../../admin/templates/types/template.types';
+import {AssessmentTemplate} from "../../types/assessment.types";
 
 interface TestFormProps {
-    template: Template;
+    template: AssessmentTemplate;
     onSubmit: (answers: Record<string, any>) => void;
     isSubmitting?: boolean;
 }
@@ -25,7 +26,7 @@ export const TestForm: React.FC<TestFormProps> = ({
         }
 
         const allAnswered = template.tasks.every(task => {
-            const answer = answers[task.taskId];
+            const answer = answers[task.id];
             return answer !== undefined && answer !== null && answer !== '';
         });
 
@@ -49,24 +50,6 @@ export const TestForm: React.FC<TestFormProps> = ({
         return <Loading description="Загрузка заданий..." />;
     }
 
-    // Группируем задания по компетенциям
-    const tasksByCompetence = template.tasks.reduce((acc, task) => {
-        const competenceName = template.competenceModel?.competencies[task.competenceId.toString()] || 'Общие задания';
-        if (!acc[competenceName]) {
-            acc[competenceName] = [];
-        }
-        acc[competenceName].push(task);
-        return acc;
-    }, {} as Record<string, typeof template.tasks>);
-
-    // Определяем тип задания (заглушка - позже будет из БД)
-    const isOpenQuestion = (taskText: string): boolean => {
-        // Временная логика: если текст задания содержит "расскажите" или "опишите"
-        return taskText.toLowerCase().includes('расскажите') ||
-            taskText.toLowerCase().includes('опишите') ||
-            taskText.toLowerCase().includes('объясните');
-    };
-
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <div style={{ marginBottom: '2rem' }}>
@@ -75,28 +58,18 @@ export const TestForm: React.FC<TestFormProps> = ({
                     Тип: Тестирование | Шкала: {template.scale}-балльная
                 </p>
             </div>
-
-            {Object.entries(tasksByCompetence).map(([competenceName, tasks]) => (
-                <div key={competenceName} style={{ marginBottom: '2rem' }}>
-                    <h3 style={{
-                        marginBottom: '1rem',
-                        paddingBottom: '0.5rem',
-                        borderBottom: '2px solid #0f62ac',
-                        color: '#0f62ac'
-                    }}>
-                        {competenceName}
-                    </h3>
-
-                    {tasks.map(task => {
-                        const isOpen = isOpenQuestion(task.taskText);
+            
+            {template.tasks.map(task => {
+                        const isOpen = task.type == '2';
 
                         if (isOpen) {
                             return (
                                 <OpenQuestion
-                                    key={task.taskId}
-                                    taskText={task.taskText}
-                                    value={answers[task.taskId] || ''}
-                                    onChange={(value) => handleAnswerChange(task.taskId, value)}
+                                    key={task.id}
+                                    taskId={task.id}
+                                    taskText={task.text}
+                                    value={answers[task.id] || ''}
+                                    onChange={(value) => handleAnswerChange(task.id, value)}
                                     required={true}
                                 />
                             );
@@ -104,17 +77,16 @@ export const TestForm: React.FC<TestFormProps> = ({
 
                         return (
                             <TestQuestion
-                                key={task.taskId}
-                                taskText={task.taskText}
-                                correctAnswer={task.taskText.includes('правильный') ? 'Правильный ответ' : 'Пример ответа'}
-                                value={answers[task.taskId] || ''}
-                                onChange={(value) => handleAnswerChange(task.taskId, value)}
+                                key={task.id}
+                                taskId={task.id}
+                                taskText={task.text}
+                                answers={task.answers}
+                                value={answers[task.id] || ''}
+                                onChange={(value) => handleAnswerChange(task.id, value)}
                                 required={true}
                             />
                         );
                     })}
-                </div>
-            ))}
 
             <div style={{
                 display: 'flex',

@@ -2,6 +2,7 @@ import React from 'react';
 import { TextArea } from '@carbon/react';
 
 interface OpenQuestionProps {
+    taskId: string;
     taskText: string;
     value: string;
     onChange: (value: string) => void;
@@ -9,6 +10,7 @@ interface OpenQuestionProps {
 }
 
 export const OpenQuestion: React.FC<OpenQuestionProps> = ({
+                                                              taskId,
                                                               taskText,
                                                               value,
                                                               onChange,
@@ -28,8 +30,8 @@ export const OpenQuestion: React.FC<OpenQuestionProps> = ({
             </div>
 
             <TextArea
-                id={`open-${taskText}`}
-                labelText="Ваш ответ"
+                id={`${taskId}`}
+                labelText=""
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 rows={4}

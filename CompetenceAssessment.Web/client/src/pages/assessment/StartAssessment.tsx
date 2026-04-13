@@ -66,11 +66,19 @@ export const Assessments: React.FC = observer(() => {
     const handleExport = async () => {
         await assessmentStore.exportAssessments();
     };
+    
+    const assessmentType = (type: string) => {
+        switch (Number(type)){
+            case 1: return 'Тестирование';
+            case 2: return 'Анкетирование';
+            case 3: return ' Оценка 360 градусов';
+        }
+    }
 
     const rows = useMemo(() =>
             assessmentStore.assessments.map(a => ({
                 id: String(a.id),
-                type: a.type,
+                type: assessmentType(a.type),
                 startDate: a.startDate ? new Date(a.startDate).toLocaleString('ru-RU') : '',
                 endDate: a.endDate ? new Date(a.endDate).toLocaleString('ru-RU') : '',
                 isFinished: a.isFinished ? 'Завершено' : 'В процессе',

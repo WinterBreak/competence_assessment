@@ -2,14 +2,16 @@ import React from 'react';
 import { RadioButtonGroup, RadioButton } from '@carbon/react';
 
 interface ScaleQuestionProps {
+    taskId: string;
     taskText: string;
-    scale: number; // 5 или 10
-    value: number | null;
-    onChange: (value: number) => void;
+    scale: number;
+    value: string;
+    onChange: (value: string) => void;
     required?: boolean;
 }
 
 export const ScaleQuestion: React.FC<ScaleQuestionProps> = ({
+                                                                taskId,
                                                                 taskText,
                                                                 scale,
                                                                 value,
@@ -33,16 +35,16 @@ export const ScaleQuestion: React.FC<ScaleQuestionProps> = ({
             </div>
 
             <RadioButtonGroup
-                name={`question-${taskText}`}
+                name={`${taskId}`}
                 valueSelected={value?.toString() || ''}
-                onChange={(val) => onChange(Number(val))}
+                onChange={(val) => onChange(val?.toString() || '')}
                 orientation="horizontal"
                 style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}
             >
                 {scaleValues.map(num => (
                     <RadioButton
-                        key={num}
-                        id={`scale-${num}`}
+                        key={`${taskId}-${num.toString()}`}
+                        id={`${taskId}-${num.toString()}`}
                         labelText={num.toString()}
                         value={num.toString()}
                         style={{ marginRight: '0.5rem' }}

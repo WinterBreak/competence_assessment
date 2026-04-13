@@ -95,7 +95,9 @@ export class AssessmentStore {
                 else{
                     this.error = result.errorValues == undefined
                         ? 'Неизвестная ошибка'
-                        : result.errorValues["Empty"]; //  TODO написать обработчик ошибок
+                        : Object.entries(result.errorValues)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join('\n');
                 }
                 this.totalItems++;
                 this.isLoading = false;

@@ -12,7 +12,7 @@ public class AssessmentDto
     
     public int Type { get; set; }
     
-    public TemplateDto Template { get; set; }
+    public AssessmentTemplateDto Template { get; set; }
     
     public List<Domain.Assessment.DTO.AssessmentParticipant> Inspectors { get; set; }
     
@@ -29,7 +29,7 @@ public class AssessmentDto
         StartDate = assessment.StartDate;
         EndDate = assessment.EndDate;
         Type = (int)assessment.Type;
-        Template = new TemplateDto(assessment.Template);
+        Template = new AssessmentTemplateDto(assessment.Template);
         Inspectors = assessment.Inspectors;
         Results = assessment.Results?.Select(a => new AssessmentResultDto(a)).ToList();
         IsFinished = assessment.IsFinished;

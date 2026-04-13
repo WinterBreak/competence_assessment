@@ -42,7 +42,9 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
                                                         , CancellationToken token = default)
     {
         var specification = new AssessmentSpecificationBuilder().WithQuery(query).Build();
-        var assessments = await _context.Assessments.Where(specification).ToListAsync(token);
+        var assessments = await _context.Assessments
+            .Where(specification)
+            .OrderByDescending(a => a.StartDate).ToListAsync(token);
         var participants = await GetParticipantsAsync(assessments, token);
         var templates = await GetTemplatesAsync(assessments, token);
         
@@ -80,7 +82,7 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
             .SingleOrDefaultAsync(a => a.Id == assessment.Id, token);
         ArgumentNullException.ThrowIfNull(updatingAssessment);
         
-        updatingAssessment.IsFinished = assessment.IsFinished;
+        updatingAssessment.IsFinished = assessment.IsFinished; // TODO фронт пока не передает
         
         await UpdateInspectors(assessment, updatingAssessment);
         await _resultRepository.AddAssessmentsAsync(assessment.Results, token);

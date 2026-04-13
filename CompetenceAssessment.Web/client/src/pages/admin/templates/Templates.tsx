@@ -120,7 +120,7 @@ export const Templates: React.FC = observer(() => {
             templateStore.templates.map(t => ({
                 id: String(t.id),
                 name: t.name,
-                type: t.type === '1' ? 'Анкета' : 'Тестирование',
+                type: t.type == '1' ? 'Тестирование' : 'Анкета',
                 creation_date: t.creationDate ? new Date(t.creationDate).toLocaleDateString('ru-RU') : '',
             })),
         [templateStore.templates]);
