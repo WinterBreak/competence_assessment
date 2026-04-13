@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
 import { RadioButtonGroup, RadioButton, TextInput } from '@carbon/react';
+import {Answer} from "../../../admin/tasks/types/task.types";
 
 interface TestQuestionProps {
+    taskId: string;
     taskText: string;
-    correctAnswer: string;
+    answers: Answer[];
     value: string;
     onChange: (value: string) => void;
     required?: boolean;
 }
 
 export const TestQuestion: React.FC<TestQuestionProps> = ({
+                                                              taskId,
                                                               taskText,
-                                                              correctAnswer,
+                                                              answers,
                                                               value,
                                                               onChange,
                                                               required = true
                                                           }) => {
-    const [options] = useState([
-        correctAnswer,
-        `Вариант 1 (неправильный)`,
-        `Вариант 2 (неправильный)`,
-        `Вариант 3 (неправильный)`
-    ]);
-
     return (
         <div style={{
             padding: '1.5rem',
@@ -35,19 +31,19 @@ export const TestQuestion: React.FC<TestQuestionProps> = ({
                 {taskText}
                 {required && <span style={{ color: '#da1e28', marginLeft: '0.25rem' }}>*</span>}
             </div>
-
-            <RadioButtonGroup
-                name={`test-${taskText}`}
+            
+            <RadioButtonGroup // TODO множественный выбор можно сделать, если проверять, сколько isCorrect среди answers
+                name={`${taskId}`}
                 valueSelected={value}
                 onChange={(val) => onChange(val?.toString() || '')}
                 orientation="vertical"
             >
-                {options.map((option, index) => (
+                {answers.map((option, index) => (
                     <RadioButton
-                        key={index}
-                        id={`option-${index}`}
-                        labelText={option}
-                        value={option}
+                        key={`${taskId}-${option.id}`}
+                        id={`${taskId}-${option.id}`}
+                        labelText={option.text}
+                        value={option.id.toString()}
                     />
                 ))}
             </RadioButtonGroup>

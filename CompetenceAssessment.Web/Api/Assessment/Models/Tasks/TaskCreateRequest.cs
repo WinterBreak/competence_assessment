@@ -6,5 +6,5 @@ public class TaskCreateRequest
     
     public int Type { get; set; }
     
-    public string? Answer { get; set; }
+    public Dictionary<string, bool> Answers { get; set; }
 }

@@ -22,15 +22,16 @@ public class TaskConfiguration: IEntityTypeConfiguration<Task>
             .HasColumnName("text")
             .IsRequired();
 
-        builder.Property(x => x.Answer)
-            .HasColumnName("answer");
-
-
+        
         builder.HasMany(x => x.TemplateDetails)
             .WithOne(x => x.Task)
             .HasForeignKey(x => x.TaskId);
         
         builder.HasMany(x => x.Results)
+            .WithOne(x => x.Task)
+            .HasForeignKey(x => x.TaskId);
+        
+        builder.HasMany(x => x.Answers)
             .WithOne(x => x.Task)
             .HasForeignKey(x => x.TaskId);
     }

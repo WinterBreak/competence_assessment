@@ -1,19 +1,14 @@
-// src/components/AssessmentForm/SurveyForm.tsx
 import React, { useState, useEffect } from 'react';
 import { Button, Loading } from '@carbon/react';
 import { ScaleQuestion } from './ScaleQuestion';
 import { OpenQuestion } from './OpenQuestion';
-import { Template } from '../../../admin/templates/types/template.types';
+import {TestQuestion} from "./TestQuestion";
+import {AssessmentTask, AssessmentTemplate} from "../../types/assessment.types";
 
 interface SurveyFormProps {
-    template: Template;
+    template: AssessmentTemplate;
     onSubmit: (answers: Record<string, any>) => void;
     isSubmitting?: boolean;
-}
-
-interface Answer {
-    taskId: string;
-    value: any;
 }
 
 export const SurveyForm: React.FC<SurveyFormProps> = ({
@@ -23,8 +18,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                                                                     }) => {
     const [answers, setAnswers] = useState<Record<string, any>>({});
     const [isValid, setIsValid] = useState(false);
-
-    // Проверка заполнения всех обязательных полей
+    
     useEffect(() => {
         if (!template.tasks) {
             setIsValid(false);
@@ -32,7 +26,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
         }
 
         const allAnswered = template.tasks.every(task => {
-            const answer = answers[task.taskId];
+            const answer = answers[task.id];
             return answer !== undefined && answer !== null && answer !== '';
         });
 
@@ -52,54 +46,58 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
         }
     };
 
+    const renderQuestion = (task: AssessmentTask) => {
+        switch (Number(task.type)) {
+            case 1:
+                return (
+                    <TestQuestion
+                        taskId={task.id}
+                        taskText={task.text}
+                        answers={task.answers}
+                        value={answers[task.id] || null}
+                        onChange={(value) => handleAnswerChange(task.id, value)}
+                        required={true}
+                    />
+                );
+            case 2:
+                return (
+                    <OpenQuestion
+                        taskId={task.id}
+                        taskText={task.text}
+                        value={answers[task.id] || null}
+                        onChange={(value) => handleAnswerChange(task.id, value)}
+                        required={true}
+                    />
+                );
+            case 3:
+                return (
+                    <ScaleQuestion
+                        taskId={task.id}
+                        taskText={task.text}
+                        scale={template.scale}
+                        value={answers[task.id] || null}
+                        onChange={(value) => handleAnswerChange(task.id, value)}
+                        required={true}
+                    />
+                );
+            default:
+                return <div>Unknown question type: {task.type}</div>;
+        }
+    };
+
     if (!template.tasks) {
         return <Loading description="Загрузка заданий..." />;
     }
-
-    // Группируем задания по компетенциям
-    const tasksByCompetence = template.tasks.reduce((acc, task) => {
-        const competenceName = template.competenceModel?.competencies[task.competenceId.toString()] || 'Общие задания';
-        if (!acc[competenceName]) {
-            acc[competenceName] = [];
-        }
-        acc[competenceName].push(task);
-        return acc;
-    }, {} as Record<string, typeof template.tasks>);
 
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <div style={{ marginBottom: '2rem' }}>
                 <h2>{template.name}</h2>
-                <p style={{ color: '#6f6f6f', marginTop: '0.5rem' }}>
-                    Шкала оценивания: {template.scale}-балльная
-                </p>
             </div>
 
-            {Object.entries(tasksByCompetence).map(([competenceName, tasks]) => (
-                <div key={competenceName} style={{ marginBottom: '2rem' }}>
-                    <h3 style={{
-                        marginBottom: '1rem',
-                        paddingBottom: '0.5rem',
-                        borderBottom: '2px solid #0f62ac',
-                        color: '#0f62ac'
-                    }}>
-                        {competenceName}
-                    </h3>
-
-                    {tasks.map(task => {
-                        // Определяем тип задания по типу шаблона
-                        // Для анкеты все задания - это шкала
-                        return (
-                            <ScaleQuestion
-                                key={task.taskId}
-                                taskText={task.taskText}
-                                scale={template.scale}
-                                value={answers[task.taskId] || null}
-                                onChange={(value) => handleAnswerChange(task.taskId, value)}
-                                required={true}
-                            />
-                        );
-                    })}
+            {template.tasks.map(task => (
+                <div key={`${task.id}`} style={{ marginBottom: '2rem' }}>
+                    {renderQuestion(task)}
                 </div>
             ))}
 

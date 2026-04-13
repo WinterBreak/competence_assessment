@@ -22,7 +22,12 @@ public class UserRepository: BLL.IUserRepository
     public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default) // TODO надо дерево строить
     {
         var specification = new UserSpecificationBuilder().WithQuery(query).Build();
-        var users =  GetAllUsersWithData().Where(specification).ToList();
+        var users =  await GetAllUsersWithData()
+            .Where(specification)
+            .OrderBy(u => u.LastName)
+            .ThenBy(u => u.FirstName)
+            .ThenBy(u => u.SecondName)
+            .ToListAsync(token);
         
         return users.Select(u =>
         {

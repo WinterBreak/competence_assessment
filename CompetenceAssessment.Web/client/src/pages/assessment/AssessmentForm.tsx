@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { Breadcrumb, BreadcrumbItem, Loading, ToastNotification } from '@carbon/react';
+import {Breadcrumb, BreadcrumbItem, Loading, Modal, ToastNotification} from '@carbon/react';
 import { assessmentStore } from './stores/assessmentStore';
 import { templateStore } from '../admin/templates/stores/templateStore';
 import { SurveyForm } from './components/assessmentForm/SurveyForm';
 import { TestForm } from './components/assessmentForm/TestForm';
-import { Assessment } from './types/assessment.types';
+import {Assessment, UpdateAssessmentDto} from './types/assessment.types';
 
 export const AssessmentFormPage: React.FC = observer(() => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [assessment, setAssessment] = useState<Assessment | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -38,9 +39,18 @@ export const AssessmentFormPage: React.FC = observer(() => {
     const handleSubmit = async (answers: Record<string, any>) => {
         setIsSubmitting(true);
         try {
-            // Здесь будет вызов API для сохранения результатов
-            // await assessmentStore.submitAssessmentResults(id!, answers);
-            navigate('/assessments'); // Возврат к списку оценок
+            let dto: UpdateAssessmentDto = {
+                assessmentId: id || '',
+                answers: answers,
+                scores: assessment?.type == '2' || assessment?.type == '3'
+                    ? answers
+                    : {},
+                comments: {},
+                comment: '',
+            };
+            
+            await assessmentStore.updateAssessment(dto);
+            setIsConfirmationModalOpen(true);
         } catch (err) {
             setError('Ошибка при сохранении результатов');
         } finally {
@@ -52,7 +62,7 @@ export const AssessmentFormPage: React.FC = observer(() => {
         return <Loading description="Загрузка оценки..." withOverlay />;
     }
 
-    const isTest = assessment.template?.type === '1'; // 1 - тест, 2 - анкета
+    const isTest = assessment.template?.type == '1';
     const template = assessment.template;
 
     if (!template) {
@@ -104,6 +114,17 @@ export const AssessmentFormPage: React.FC = observer(() => {
                     />
                 )}
             </div>
+
+            <Modal
+                open={isConfirmationModalOpen}
+                modalHeading="Уведомление"
+                primaryButtonText="Ок"
+                danger
+                onRequestClose={() => setIsConfirmationModalOpen(false)}
+                onRequestSubmit={() => navigate('/assessments')}
+            >
+                <p>Прохождение оценки успешно завершено.</p>
+            </Modal>
         </div>
     );
 });

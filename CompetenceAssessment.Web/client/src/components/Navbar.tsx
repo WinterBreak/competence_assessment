@@ -55,7 +55,7 @@ function Navbar() {
                                   isActive={isSideNavExpanded} 
                                   aria-expanded={isSideNavExpanded}
                                   style={{ display: 'flex' }}/>
-                <HeaderName href="#">
+                <HeaderName href="" prefix="">
                     Оценка компетенций
                 </HeaderName>
                 {/*<HeaderNavigation aria-label="Оценка компетенций">*/}

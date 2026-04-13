@@ -1,5 +1,5 @@
 import {AssessmentParticipant} from "../../admin/users/types/user.types";
-import {Template} from "../../admin/templates/types/template.types";
+import {Answer} from "../../admin/tasks/types/task.types";
 
 export interface Assessment {
     id: string;
@@ -7,10 +7,25 @@ export interface Assessment {
     startDate: Date;
     endDate: Date;
     type: string;
-    template: Template;
+    template: AssessmentTemplate;
     inspectors: AssessmentParticipant[];
     results: AssessmentResult[];
     isFinished: boolean; // TODO нужна статусная модель
+}
+
+export interface AssessmentTemplate {
+    id: string;
+    type: string;
+    name: string;
+    scale: number;
+    tasks: AssessmentTask[];
+}
+
+export interface AssessmentTask {
+    id: string;
+    type: string;
+    text: string;
+    answers: Answer[];
 }
 
 export interface AssessmentResult {
