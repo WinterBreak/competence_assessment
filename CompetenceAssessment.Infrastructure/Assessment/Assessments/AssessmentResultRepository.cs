@@ -21,7 +21,7 @@ public class AssessmentResultRepository: BLL.IAssessmentResultRepository
     public async Task<List<BLL.AssessmentResult>> GetAssessmentsAsync(BLL.AssessmentResultQuery query
                                                                     , CancellationToken token = default)
     {
-        var specification = new AssessmentResultSpecificationBuilder().WithAssessmentId(query.AssessmentId).Build();
+        var specification = new AssessmentResultSpecificationBuilder().WithAssessmentIds(query.AssessmentIds).Build();
         var results = await _context.AssessmentResults.Where(specification).ToListAsync(token);
         
         var taskIds = results.Select(r => r.TaskId).ToList();

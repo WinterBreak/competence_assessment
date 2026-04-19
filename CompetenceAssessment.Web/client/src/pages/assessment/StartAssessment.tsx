@@ -208,7 +208,25 @@ export const Assessments: React.FC = observer(() => {
                                                         </TableCell>
                                                     );
                                                 }
-
+                                                else if (cell.info.header === 'candidate') {
+                                                    return (
+                                                        <TableCell key={cell.id}>
+                                                            (
+                                                                <span
+                                                                    onClick={() => navigate(`/results/${row.id}`)}
+                                                                    style={{
+                                                                        cursor: 'pointer',
+                                                                        color: '#0f62ac',
+                                                                        textDecoration: 'underline',
+                                                                        fontWeight: 500
+                                                                    }}
+                                                                >
+                                                                    {cell.value}
+                                                                </span>
+                                                            )
+                                                        </TableCell>
+                                                    );
+                                                }
                                                 return (
                                                     <TableCell key={cell.id}>
                                                         {cell.value}

@@ -37,6 +37,16 @@ export interface AssessmentResult {
     score: number;
 }
 
+export interface AssessmentCalculation {
+    referenceTotal: number;
+    receivedTotal: number;
+    totalReceivedPercentage: number;
+    competenceReferences: Record<number, number>;
+    competenciesReceived: Record<number, number>;
+    competenciesReceivedPercentage: Record<number, number>;
+    competenceNames: Record<number, string>;
+}
+
 export interface CreateAssessmentDto {
     templateId: number;
     type: number;
@@ -50,4 +60,24 @@ export interface UpdateAssessmentDto {
     scores: Record<string, number>;
     comments: Record<string, string>;
     comment: string;
+}
+
+export interface AssessmentCalcDto {
+    id: string;
+}
+
+export interface EmployeeData {
+    userId: string;
+    fullName: string;
+    department: string;
+    position: string;
+    competencies: EmployeeCompetenceData[];
+}
+
+export interface EmployeeCompetenceData {
+    competenceId: string;
+    name: string;
+    score: number;
+    percentage: number;
+    level: string;
 }

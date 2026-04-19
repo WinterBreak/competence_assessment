@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import {
-    Assessment,
-    CreateAssessmentDto,
+    Assessment, AssessmentCalcDto, AssessmentCalculation,
+    CreateAssessmentDto, EmployeeData,
     UpdateAssessmentDto,
 } from '../types/assessment.types';
 import {ApiResponse} from "../../../types/common.types";
@@ -85,6 +85,24 @@ class AssessmentService {
     async deleteAssessment(id: string): Promise<ApiResponse> {
         try {
             const response = await this.api.delete(`/assessments/${id}`);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async calculate(data: AssessmentCalcDto): Promise<AssessmentCalculation> {
+        try {
+            const response = await this.api.post(`/assessments/calculate`, data);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async getParticipantCompetencies(): Promise<EmployeeData[]> {
+        try {
+            const response = await this.api.get(`/assessments/participant_competencies`);
             return response.data;
         } catch (error) {
             throw this.handleError(error);

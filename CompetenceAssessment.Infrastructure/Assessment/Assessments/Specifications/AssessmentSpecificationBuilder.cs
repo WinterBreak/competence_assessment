@@ -8,6 +8,7 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
     public AssessmentSpecificationBuilder WithQuery(AssessmentQuery query)
     {
         return WithIds(query.Ids)
+            .WithCandidates(query.CandidateIds)
             .WithType(query.Type)
             .WithStatus(query.IsFinished);
     }
@@ -20,6 +21,18 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
         }
         
         var specification = new AssessmentIdSpecification(ids);
+        AppendSpecification(specification);
+        return this;
+    }
+    
+    public AssessmentSpecificationBuilder WithCandidates(IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any())
+        {
+            return this;
+        }
+        
+        var specification = new AssessmentCandidateSpecification(ids);
         AppendSpecification(specification);
         return this;
     }

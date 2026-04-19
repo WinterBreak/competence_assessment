@@ -6,13 +6,18 @@ namespace CompetenceAssessment.Infrastructure.Assessments;
 
 public class AssessmentResultAssessmentSpecification: SpecificationBase<AssessmentResult>
 {
-    private readonly int _assessmentId = new();
+    private readonly List<int> _assessmentIds = new();
 
+    public AssessmentResultAssessmentSpecification(IEnumerable<int> assessmentIds)
+    {
+        _assessmentIds = assessmentIds?.ToList() ?? _assessmentIds;
+    }
+    
     public AssessmentResultAssessmentSpecification(int assessmentId)
     {
-        _assessmentId = assessmentId;
+        _assessmentIds.Add(assessmentId);
     }
     
     public override Expression<Func<AssessmentResult, bool>> Criteria 
-        => t => _assessmentId == t.AssessmentId;
+        => t => !_assessmentIds.Any() || _assessmentIds.Contains(t.AssessmentId);
 }

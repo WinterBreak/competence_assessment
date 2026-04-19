@@ -37,6 +37,7 @@ function Navbar() {
         ],
         assessment: [
             { label: 'Оценка', href: '/' },
+            { label: 'Аналитика', href: '/analytics' },
             { label: 'История', href: '/assessment_history' },
         ]
     };
@@ -58,14 +59,6 @@ function Navbar() {
                 <HeaderName href="" prefix="">
                     Оценка компетенций
                 </HeaderName>
-                {/*<HeaderNavigation aria-label="Оценка компетенций">*/}
-                {/*    <HeaderMenuItem href="/templates">Шаблоны</HeaderMenuItem>*/}
-                {/*    <HeaderMenuItem href="/competence_models">Модели компетенций</HeaderMenuItem>*/}
-                {/*    <HeaderMenuItem href="/tasks">Задания</HeaderMenuItem>*/}
-                {/*    <HeaderMenuItem href="/competencies">Компетенции</HeaderMenuItem>*/}
-                {/*    <HeaderMenuItem href="/users">Пользователи</HeaderMenuItem>*/}
-                {/*</HeaderNavigation>*/}
-
                 <HeaderNavigation aria-label="Навигация">
                     {navigationLinks[activeSection].map((link, index) => (
                         <HeaderMenuItem key={index} href={link.href}>
