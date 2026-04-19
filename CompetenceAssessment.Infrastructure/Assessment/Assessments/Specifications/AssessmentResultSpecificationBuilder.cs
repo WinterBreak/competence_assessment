@@ -11,4 +11,16 @@ public class AssessmentResultSpecificationBuilder: SpecificationBuilderBase<Asse
         AppendSpecification(specification);
         return this;
     }
+    
+    public AssessmentResultSpecificationBuilder WithAssessmentIds(IEnumerable<int> assessmentIds)
+    {
+        if (assessmentIds == null || !assessmentIds.Any())
+        {
+            return this;
+        }
+        
+        var specification = new AssessmentResultAssessmentSpecification(assessmentIds);
+        AppendSpecification(specification);
+        return this;
+    }
 }

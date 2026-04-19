@@ -11,10 +11,16 @@ namespace CompetenceAssessment.Web.Assessment;
 public class AssessmentController: ControllerBase
 {
     private readonly IAssessmentService _assessmentService;
+    private readonly IAssessmentCalcService _calcService;
+    private readonly IAssessmentAnalyticsService _analyticsService;
 
-    public AssessmentController(IAssessmentService assessmentService)
+    public AssessmentController(IAssessmentService assessmentService
+        , IAssessmentCalcService calcService
+        , IAssessmentAnalyticsService analyticsService)
     {
         _assessmentService = assessmentService;
+        _calcService = calcService;
+        _analyticsService = analyticsService;
     }
     
     /// <summary>
@@ -66,5 +72,32 @@ public class AssessmentController: ControllerBase
         return errors.HasErrors
             ? BadRequest(errors)
             : Ok(errors);
+    }
+
+    /// <summary>
+    /// Расчет оценки
+    /// </summary>
+    [Route("calculate")]
+    [HttpPost]
+    public async Task<IActionResult> CalculateAsync(AssessmentCalculateRequest request
+                                                  , CancellationToken token = default)
+    {
+        var calc = await _calcService.CalculateAsync(request.Id, token);
+        return Ok(calc);
+    }
+    
+    /// <summary>
+    /// Компетенции сотрудников
+    /// </summary>
+    [Route("participant_competencies")]
+    [HttpGet]
+    public async Task<IActionResult> GetParticipantCompetenciesAsync(CancellationToken token = default)
+    {
+        var competencies = await _analyticsService
+            .GetParticipantsCompetenciesAsync(token);
+        var dtos = competencies
+            .Select(c => new ParticipantCompetenciesDto(c))
+            .ToList(); 
+        return Ok(dtos);
     }
 }

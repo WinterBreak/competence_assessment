@@ -47,6 +47,12 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
             .OrderByDescending(a => a.StartDate).ToListAsync(token);
         var participants = await GetParticipantsAsync(assessments, token);
         var templates = await GetTemplatesAsync(assessments, token);
+        var assessmentIds = assessments.Select(a => a.Id).ToList();
+        var resultQuery = new BLL.AssessmentResultQuery(assessmentIds: assessmentIds);
+        var results = await _resultRepository.GetAssessmentsAsync(resultQuery, token);
+        var resultDict = results
+            .GroupBy(r => r.AssessmentId)
+            .ToDictionary(r => r.Key, r => r.ToList());
         
         return assessments.Select(a => {
                 var candidate = participants.SingleOrDefault(p => p.Id == a.UserId);
@@ -54,9 +60,11 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
                 var inspectors = participants
                     .Where(p => inspectorIds.Contains(p.Id))
                     .ToList();
+                var res = resultDict[a.Id];
                 var template = templates.SingleOrDefault(t => t.Id == a.TemplateId);
                 return new BLL.Assessment(a.Id, a.StartDate, a.EndDate, candidate
-                    , (BLL.AssessmentType)a.AssessmentTypeId, template, inspectors, a.IsFinished);
+                    , (BLL.AssessmentType)a.AssessmentTypeId, template, inspectors, a.IsFinished
+                    , res);
             })
             .ToList();
     }

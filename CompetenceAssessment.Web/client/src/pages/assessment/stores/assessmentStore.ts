@@ -1,5 +1,11 @@
 import {makeAutoObservable, runInAction } from 'mobx';
-import { Assessment, CreateAssessmentDto, UpdateAssessmentDto } from '../types/assessment.types';
+import {
+    Assessment,
+    AssessmentCalcDto,
+    CreateAssessmentDto,
+    EmployeeData,
+    UpdateAssessmentDto
+} from '../types/assessment.types';
 import { assessmentService } from '../services/assessmentService';
 
 export class AssessmentStore {
@@ -134,16 +140,16 @@ export class AssessmentStore {
         }
     }
 
-    async deleteAssessment(id: string): Promise<boolean> {
+    async calculateAssessment(id: string): Promise<boolean> { // TODO дописать
         this.isLoading = true;
         this.error = null;
 
         try {
-            const result = await assessmentService.deleteAssessment(id);
+            let dto : AssessmentCalcDto = {
+                id: id
+            };
+            const result = await assessmentService.calculate(dto);
             runInAction( async () => {
-                if (result.hasErrors){
-                    await this.loadAssessments();
-                }
                 this.totalItems--;
                 this.isLoading = false;
             });
@@ -154,6 +160,21 @@ export class AssessmentStore {
                 this.isLoading = false;
             });
             return false;
+        }
+    }
+
+    async getParticipantsCompetencies(): Promise<EmployeeData[]> {
+        this.isLoading = true;
+        this.error = null;
+
+        try {
+            return await assessmentService.getParticipantCompetencies();
+        } catch (error) {
+            runInAction(() => {
+                this.error = error instanceof Error ? error.message : 'Ошибка получения данных';
+                this.isLoading = false;
+            });
+            return [];
         }
     }
 
