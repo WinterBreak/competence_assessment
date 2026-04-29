@@ -45,9 +45,14 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
     }
 
     // TODO для фильтрации еще нужен вариант "все". enum?
-    public AssessmentSpecificationBuilder WithStatus(bool isFinished)
+    public AssessmentSpecificationBuilder WithStatus(bool? isFinished)
     {
-        var specification = new AssessmentIsFinishedSpecification(isFinished);
+        if (isFinished is null)
+        {
+            return this;
+        }
+        
+        var specification = new AssessmentIsFinishedSpecification(isFinished.Value);
         AppendSpecification(specification);
         return this;
     }

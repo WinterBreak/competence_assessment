@@ -6,15 +6,18 @@ namespace CompetenceAssessment.Infrastructure.Assessment.Assessments;
 
 public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
 {
+    private readonly AssessmentContext _context;
     private readonly IUserRepository _userRepository;
     private readonly ICompetenceRepository _competenceRepository;
     private readonly IAssessmentRepository _assessmentRepository;
 
     public AssessmentAnalyticsRepository(
-          IUserRepository userRepository
+          AssessmentContext context
+        , IUserRepository userRepository
         , ICompetenceRepository comppetenceRepository
         , IAssessmentRepository assessmentRepository)
     {
+        _context = context;
         _userRepository = userRepository;
         _competenceRepository = comppetenceRepository;
         _assessmentRepository = assessmentRepository;
@@ -26,7 +29,7 @@ public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
         var users = await _userRepository.GetUsersAsync(new UserQuery(), token);
         var userIds = users.Select(u => u.Id).ToList();
         var assessments = await _assessmentRepository
-            .GetAssessmentsAsync(new AssessmentQuery(candidateIds: userIds), token);
+            .GetAssessmentsAsync(new AssessmentQuery(candidateIds: userIds, isFinished: true), token);
         var competencies = await _competenceRepository.GetCompetenciesAsync(new CompetenceQuery(), token);
     
         var competenceDict = competencies.ToDictionary(c => c.Id);
@@ -58,6 +61,34 @@ public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
             .ToList();
     
         return result;
+    }
+    
+    public async Task<CompetenceDevelopmentData> GetCompetenceDevelopmentAsync(int employeeId
+        , CancellationToken token = default)
+    {
+        var user = await _userRepository.GetUserAsync(new UserQuery(id: employeeId), token);
+        
+        var assessments = await _assessmentRepository.GetAssessmentsAsync(
+            new AssessmentQuery(candidateIds: new List<int> { employeeId }
+                              , isFinished: true), token);
+        
+        var calculations = GetCalculations(assessments);
+        
+        var allPoints = new List<DevelopmentPoint>();
+        foreach (var assessment in assessments)
+        {
+            var calc = calculations.Single(c => c.AssessmentId == assessment.Id);
+            var points = assessment.Template.Model.Competencies
+                .Select(c => c.Competence)
+                .Select(c => new DevelopmentPoint(c, assessment.EndDate.Value
+                                                          , calc.CompetenciesReceivedPercentage[c.Id]))
+                .ToList();
+            
+            allPoints.AddRange(points);
+        }
+        
+        var data = new CompetenceDevelopmentData(user, 80, allPoints); // TODO убрать магическое число
+        return data;
     }
 
     private List<AssessmentCalculation> GetCalculations(IEnumerable<Domain.Assessment.Assessment> assessments)

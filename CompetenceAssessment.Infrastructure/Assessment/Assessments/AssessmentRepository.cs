@@ -90,7 +90,7 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
             .SingleOrDefaultAsync(a => a.Id == assessment.Id, token);
         ArgumentNullException.ThrowIfNull(updatingAssessment);
         
-        updatingAssessment.IsFinished = assessment.IsFinished; // TODO фронт пока не передает
+        updatingAssessment.IsFinished = assessment.IsFinished; // TODO фронт пока не передает + END DATE
         
         await UpdateInspectors(assessment, updatingAssessment);
         await _resultRepository.AddAssessmentsAsync(assessment.Results, token);

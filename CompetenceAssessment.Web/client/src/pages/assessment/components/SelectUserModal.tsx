@@ -78,12 +78,10 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
     const loadData = async () => {
             await userStore.loadUsers();
     };
-
-    // Фильтрация пользователей
+    
     const filteredUsers = useMemo(() => {
         let users = userStore.users.filter(u => !excludeUserIds.includes(u.id));
-
-        // Поиск по ФИО и email
+        
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
             users = users.filter(u =>
@@ -91,13 +89,11 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
                 u.email.toLowerCase().includes(term)
             );
         }
-
-        // Фильтр по департаментам
+        
         if (selectedDepartments.length > 0) {
             users = users.filter(u => selectedDepartments.includes(u.departmentId));
         }
-
-        // Фильтр по должностям
+        
         if (selectedPositions.length > 0) {
             users = users.filter(u => selectedPositions.includes(u.positionId));
         }

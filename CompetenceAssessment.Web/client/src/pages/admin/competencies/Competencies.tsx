@@ -18,17 +18,20 @@ import {
     TableToolbarAction,
     TableToolbarSearch,
     Loading,
-    ToastNotification, IconButton
+    ToastNotification, IconButton, Modal
 } from '@carbon/react';
 import { observer } from 'mobx-react-lite';
 import { Edit, TrashCan, Add } from '@carbon/react/icons';
 import { competenceStore } from './stores/competenceStore';
 import {Competence, CreateCompetencyDto, UpdateCompetencyDto} from "./types/competence.types";
 import { CompetenceModal } from './components/CompetenceModal';
+import {competenceModelStore} from "../competendeModels/stores/competenceModelStore";
 
 export const Competencies: React.FC = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [editingCompetence, setEditingCompetence] = useState<Competence | null>(null);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     
     useEffect(() => {
         competenceStore.loadCompetencies();
@@ -40,8 +43,9 @@ export const Competencies: React.FC = observer(() => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        await competenceStore.deleteCompetency(id);
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteModalOpen(true);
     };
 
     const handleAdd = () => {
@@ -75,6 +79,14 @@ export const Competencies: React.FC = observer(() => {
 
     const handleExport = async () => {
         await competenceStore.exportCompetencies();
+    };
+
+    const confirmDelete = async () => {
+        if (itemToDelete) {
+            await competenceStore.deleteCompetency(itemToDelete);
+            setItemToDelete(null);
+        }
+        setIsDeleteModalOpen(false);
     };
 
     const rows = competenceStore.competencies.map(comp => ({
@@ -193,7 +205,7 @@ export const Competencies: React.FC = observer(() => {
                                                                 kind="ghost"
                                                                 size="sm"
                                                                 iconDescription="Удалить"
-                                                                onClick={() => handleDelete(row.id)}
+                                                                onClick={() => handleDeleteClick(row.id)}
                                                                 renderIcon={TrashCan}
                                                                 hasIconOnly
                                                             />
@@ -217,15 +229,20 @@ export const Competencies: React.FC = observer(() => {
             </DataTable>
 
             <Pagination
-                page={competenceStore.currentPage}
-                pageSize={competenceStore.pageSize}
-                totalItems={competenceStore.totalItems}
-                pageSizes={[5, 10, 20, 50]}
+                page={competenceModelStore.currentPage}
+                pageSize={competenceModelStore.pageSize}
+                totalItems={competenceModelStore.totalItems}
+                backwardText="Назад"
+                forwardText="Вперед"
+                itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
+                itemsPerPageText="Элементов на странице"
+                pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
+                pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
-                    if (pageSize !== competenceStore.pageSize) {
-                        competenceStore.setPageSize(pageSize);
+                    if (pageSize !== competenceModelStore.pageSize) {
+                        competenceModelStore.setPageSize(pageSize);
                     } else {
-                        competenceStore.setCurrentPage(page);
+                        competenceModelStore.setCurrentPage(page);
                     }
                 }}
             />
@@ -237,6 +254,21 @@ export const Competencies: React.FC = observer(() => {
                 initialData={editingCompetence || undefined}
                 mode={editingCompetence ? 'edit' : 'create'}
             />
+
+            <Modal
+                open={isDeleteModalOpen}
+                modalHeading="Подтверждение удаления"
+                primaryButtonText="Удалить"
+                secondaryButtonText="Отмена"
+                danger
+                onRequestClose={() => setIsDeleteModalOpen(false)}
+                onRequestSubmit={confirmDelete}
+            >
+                <p>Вы уверены, что хотите удалить эту компетенцию?</p>
+                <p style={{ marginTop: '0.5rem', color: '#da1e28' }}>
+                    Это действие невозможно отменить.
+                </p>
+            </Modal>
         </div>
     );
 });

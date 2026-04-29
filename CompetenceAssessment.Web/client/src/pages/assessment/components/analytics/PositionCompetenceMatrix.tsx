@@ -1,5 +1,4 @@
-// components/Admin/CompetenceMatrix/PositionCompetenceMatrix.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     BarChart,
     Bar,
@@ -8,60 +7,62 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
-    ResponsiveContainer,
-    Cell
+    ResponsiveContainer
 } from 'recharts';
 import { Accordion, AccordionItem, Tag, Select } from '@carbon/react';
+import { assessmentService } from "../../services/assessmentService";
+import { EmployeeData, PositionData, EmployeeCompetenceData } from "../../types/assessment.types";
 
-interface PositionRequirement {
-    position: string;
-    requiredCompetencies: Map<string, {
-        requiredLevel: number;
-        minPercentage: number;
-    }>;
-}
+export const PositionCompetenceMatrix: React.FC = () => {
+    const [positions, setPositions] = useState<PositionData[]>([]);
+    const [participants, setParticipants] = useState<EmployeeData[]>([]);
+    const [selectedPosition, setSelectedPosition] = useState<string>('');
 
-interface EmployeePositionData {
-    employeeId: string;
-    name: string;
-    position: string;
-    competencies: Map<string, number>;
-}
+    useEffect(() => {
+        assessmentService.getParticipantCompetencies().then(data => {
+            setParticipants(data);
+        });
+        assessmentService.getPositionCompetencies().then(data => {
+            setPositions(data);
+            if (data && data.length > 0) {
+                setSelectedPosition(data[0]?.positionName || '');
+            }
+        });
+    }, []);
 
-interface PositionCompetenceMatrixProps {
-    positions: PositionRequirement[];
-    employees: EmployeePositionData[];
-}
-
-export const PositionCompetenceMatrix: React.FC<PositionCompetenceMatrixProps> = ({
-                                                                                      positions,
-                                                                                      employees
-                                                                                  }) => {
-    const [selectedPosition, setSelectedPosition] = useState<string>(positions[0]?.position || '');
-
-    const getGapStatus = (current: number, required: number) => {
-        const gap = current - required;
-        if (gap >= 0) return { status: 'success', text: 'Соответствует', icon: '✓' };
-        if (gap >= -10) return { status: 'warning', text: 'Незначительное отставание', icon: '⚠' };
-        return { status: 'error', text: 'Требуется развитие', icon: '✗' };
+    const getColorByLevel = (percentage: number) => {
+        if (percentage >= 80) return '#0f62ac';
+        if (percentage >= 60) return '#ff832b';
+        if (percentage >= 40) return '#f1c21b';
+        return '#da1e28';
     };
 
-    const positionData = positions.find(p => p.position === selectedPosition);
-    const employeesInPosition = employees.filter(e => e.position === selectedPosition);
+    const getLevelText = (percentage: number) => {
+        if (percentage >= 80) return 'Эксперт';
+        if (percentage >= 60) return 'Продвинутый';
+        if (percentage >= 40) return 'Средний';
+        return 'Начальный';
+    };
+
+    const positionData = positions.find(p => p.positionName === selectedPosition);
 
     // Данные для графика Gap Analysis
-    const gapAnalysisData = Array.from(positionData?.requiredCompetencies.entries() || [])
-        .map(([competence, requirement]) => {
-            const avgScore = employeesInPosition.reduce((sum, emp) =>
-                sum + (emp.competencies.get(competence) || 0), 0) / employeesInPosition.length;
-
+    const gapAnalysisData = (positionData?.competencies || [])
+        .map(competence => {
             return {
-                competence,
-                required: requirement.minPercentage,
-                current: avgScore,
-                gap: avgScore - requirement.minPercentage
+                competence: competence.competenceName,
+                required: 40,
+                current: competence.score,
+                gap: competence.percentage
             };
         });
+
+    // Функция для получения текущей компетенции сотрудника
+    const getCurrentScore = (employeeId: string, competenceId: string): number => {
+        const employee = participants.find(p => p.userId === employeeId);
+        const competence = employee?.competencies.find(c => c.competenceId === competenceId);
+        return competence?.percentage || 0;
+    };
 
     return (
         <div style={{ padding: '2rem' }}>
@@ -75,60 +76,62 @@ export const PositionCompetenceMatrix: React.FC<PositionCompetenceMatrixProps> =
                     onChange={(e) => setSelectedPosition(e.target.value)}
                 >
                     {positions.map(pos => (
-                        <option key={pos.position} value={pos.position}>
-                            {pos.position} ({employees.filter(e => e.position === pos.position).length} чел.)
+                        <option key={pos.positionName} value={pos.positionName}>
+                            {pos.positionName} ({pos.employees?.length || 0} чел.)
                         </option>
                     ))}
                 </Select>
             </div>
 
             {/* Gap Analysis Chart */}
-            <div style={{ marginBottom: '2rem', height: '400px' }}>
-                <h3>Анализ разрыва компетенций</h3>
-                <ResponsiveContainer>
-                    <BarChart data={gapAnalysisData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="competence" angle={-45} textAnchor="end" height={100} />
-                        <YAxis label={{ value: 'Процент выполнения (%)', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="required" name="Требуемый уровень" fill="#8d8d8d" />
-                        <Bar dataKey="current" name="Текущий уровень" fill="#0f62ac" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+            {gapAnalysisData.length > 0 && (
+                <div style={{ marginBottom: '2rem', height: '400px' }}>
+                    <h3>Анализ разрыва компетенций</h3>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={gapAnalysisData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="competence" angle={-45} textAnchor="end" height={100} />
+                            <YAxis label={{ value: 'Процент выполнения (%)', angle: -90, position: 'insideLeft' }} />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="required" name="Требуемый уровень" fill="#8d8d8d" />
+                            <Bar dataKey="current" name="Текущий уровень" fill="#0f62ac" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
 
-            {/* Employee vs Requirements Matrix */}
             <div style={{ overflowX: 'auto' }}>
                 <h3>Соответствие сотрудников требованиям должности</h3>
                 <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
                     <thead>
                     <tr style={{ backgroundColor: '#f4f4f4' }}>
                         <th style={{ padding: '1rem' }}>Сотрудник</th>
-                        {Array.from(positionData?.requiredCompetencies.keys() || []).map(comp => (
-                            <th key={comp} style={{ padding: '1rem' }}>{comp}</th>
+                        {(positionData?.competencies || []).map(comp => (
+                            <th key={comp?.competenceId} style={{ padding: '1rem' }}>{comp.competenceName}</th>
                         ))}
                         <th style={{ padding: '1rem' }}>Общий статус</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {employeesInPosition.map(employee => {
-                        const overallStatus = Array.from(positionData?.requiredCompetencies.entries() || [])
-                            .every(([comp, req]) =>
-                                (employee.competencies.get(comp) || 0) >= req.minPercentage
-                            );
+                    {(positionData?.employees || []).map(employee => {
+                        // Проверяем соответствие всем компетенциям
+                        const overallStatus = (positionData?.competencies || []).every(comp => {
+                            const currentScore = getCurrentScore(employee.id, comp.competenceId);
+                            return currentScore >= 39;
+                        });
 
                         return (
-                            <tr key={employee.employeeId} style={{ borderBottom: '1px solid #e0e0e0' }}>
-                                <td style={{ padding: '1rem', fontWeight: 'bold' }}>{employee.name}</td>
-                                {Array.from(positionData?.requiredCompetencies.entries() || []).map(([comp, req]) => {
-                                    const currentScore = employee.competencies.get(comp) || 0;
-                                    const meetsRequirement = currentScore >= req.minPercentage;
+                            <tr key={employee.id} style={{ borderBottom: '1px solid #e0e0e0' }}>
+                                <td style={{ padding: '1rem', fontWeight: 'bold' }}>{employee.fullName}</td>
+                                {(positionData?.competencies || []).map(comp => {
+                                    const currentScore = getCurrentScore(employee.id, comp.competenceId);
+                                    const meetsRequirement = currentScore >= 39;
 
                                     return (
-                                        <td key={comp} style={{ padding: '1rem', textAlign: 'center' }}>
+                                        <td key={comp.competenceId} style={{ padding: '1rem', textAlign: 'center' }}>
                                             <Tag type={meetsRequirement ? 'green' : 'red'}>
-                                                {currentScore}% / {req.minPercentage}%
+                                                {`${Math.round(currentScore)}% / 39%`}
                                             </Tag>
                                         </td>
                                     );

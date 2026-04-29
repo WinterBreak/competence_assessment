@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Domain.Assessment;
 using Microsoft.EntityFrameworkCore;
 using A = System.Threading.Tasks;
@@ -38,6 +39,36 @@ public class TaskRepository: ITaskRepository
                 return new ITask(t.Id, t.Text, (TaskType)t.TaskTypeId, answers);
             })
             .ToList();
+    }
+    
+    public async Task<PaginatedResponse<ITask>> GetPaginatedTasksAsync(TaskQuery query
+        , CancellationToken token = default)
+    {
+        var specification = new TaskSpecificationBuilder().WithQuery(query).Build();
+        var tasks = GetAllTasks()
+            .Where(specification)
+            .OrderBy(t => t.Text)
+            .Skip(query.PageSize * (query.Page - 1))
+            .Take(query.PageSize)
+            .AsEnumerable();
+        
+        var bllTasks = tasks
+                .Select(t =>
+                {
+                    var answers = t.Answers
+                        .Select(a => new Domain.Assessment.Answer(a.Id, a.TaskId, a.Text, a.IsCorrect))
+                        .ToList();
+                    return new ITask(t.Id, t.Text, (TaskType)t.TaskTypeId, answers);
+                })
+                .ToList();
+        var totalCount = _context.Tasks.Where(specification).Count();
+        return new PaginatedResponse<ITask>
+        {
+            Items = bllTasks,
+            CurrentPage = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async A.Task AddTaskAsync(ITask task

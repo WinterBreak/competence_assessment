@@ -25,6 +25,7 @@ import { Edit } from '@carbon/react/icons';
 import { userStore } from './stores/userStore';
 // import {UserModal} from "../users/components/UserModal";
 import {User} from "./types/user.types";
+import {competenceModelStore} from "../competendeModels/stores/competenceModelStore";
 // import {CreateUserDto, UpdateUserDto} from "../users/types/user.types";
 
 export const Users: React.FC = observer(() => {
@@ -135,12 +136,6 @@ export const Users: React.FC = observer(() => {
                                         }}
                                     />
                                     
-                                    {/*<TableToolbarMenu>*/}
-                                    {/*    <TableToolbarAction onClick={handleExport}>*/}
-                                    {/*        Экспорт*/}
-                                    {/*    </TableToolbarAction>*/}
-                                    {/*</TableToolbarMenu>*/}
-                                    
                                 </TableToolbarContent>
                             </TableToolbar>
 
@@ -193,15 +188,20 @@ export const Users: React.FC = observer(() => {
             </DataTable>
 
             <Pagination
-                page={userStore.currentPage}
-                pageSize={userStore.pageSize}
-                totalItems={userStore.totalItems}
-                pageSizes={[5, 10, 20, 50]}
+                page={competenceModelStore.currentPage}
+                pageSize={competenceModelStore.pageSize}
+                totalItems={competenceModelStore.totalItems}
+                backwardText="Назад"
+                forwardText="Вперед"
+                itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
+                itemsPerPageText="Элементов на странице"
+                pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
+                pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
-                    if (pageSize !== userStore.pageSize) {
-                        userStore.setPageSize(pageSize);
+                    if (pageSize !== competenceModelStore.pageSize) {
+                        competenceModelStore.setPageSize(pageSize);
                     } else {
-                        userStore.setCurrentPage(page);
+                        competenceModelStore.setCurrentPage(page);
                     }
                 }}
             />

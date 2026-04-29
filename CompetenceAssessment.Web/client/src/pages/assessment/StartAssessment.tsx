@@ -145,18 +145,6 @@ export const Assessments: React.FC = observer(() => {
                                         </TableToolbarAction>
                                     </TableToolbarMenu>
 
-                                    {selectedIds.length > 0 && (
-                                        <Button
-                                            kind="danger"
-                                            renderIcon={TrashCan}
-                                            onClick={() =>
-                                                assessmentStore.deleteManyAssessments(selectedIds)
-                                            }
-                                        >
-                                            Удалить ({selectedIds.length})
-                                        </Button>
-                                    )}
-
                                     <Button
                                         kind="primary"
                                         onClick={handleAdd}
@@ -246,7 +234,12 @@ export const Assessments: React.FC = observer(() => {
                 page={assessmentStore.currentPage}
                 pageSize={assessmentStore.pageSize}
                 totalItems={assessmentStore.totalItems}
-                pageSizes={[5, 10, 20, 50]}
+                backwardText="Назад"
+                forwardText="Вперед"
+                itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
+                itemsPerPageText="Элементов на странице"
+                pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
+                pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
                     if (pageSize !== assessmentStore.pageSize) {
                         assessmentStore.setPageSize(pageSize);
