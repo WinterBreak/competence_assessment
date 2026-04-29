@@ -62,6 +62,20 @@ export interface UpdateAssessmentDto {
     comment: string;
 }
 
+export interface DevelopmentPointDto {
+    date: Date;
+    score: number;
+    competenceId: string;
+    competenceName: string;
+}
+
+export interface CompetenceDevelopmentDto {
+    employeeId: number;
+    employeeName: string;
+    targetScore: number;
+    developmentHistory: DevelopmentPointDto[];
+}
+
 export interface AssessmentCalcDto {
     id: string;
 }
@@ -80,4 +94,32 @@ export interface EmployeeCompetenceData {
     score: number;
     percentage: number;
     level: string;
+}
+
+export interface PositionData {
+    positionId: string;
+    positionName: string;
+    score: number;
+    percentage: number;
+    level: string;
+    competencies: CompetenceData[];
+    employees: AssessmentParticipant[];
+}
+
+export interface CompetenceData {
+    competenceId: string;
+    competenceName: string;
+    score: number;
+    percentage: number;
+    level: string;
+}
+
+export interface DepartmentData {
+    departmentId: string;
+    departmentName: string;
+    score: number;
+    percentage: number;
+    level: string;
+    competencies: CompetenceData[];
+    employees: AssessmentParticipant[];
 }

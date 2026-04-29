@@ -1,3 +1,5 @@
+using CompetenceAssessment.Domain.UserManagement;
+
 namespace CompetenceAssessment.Domain.Assessment.DTO;
 
 public class AssessmentParticipant
@@ -15,5 +17,12 @@ public class AssessmentParticipant
         Id = id;
         BossId = bossId;
         FullName = fullName;
+    }
+
+    public AssessmentParticipant(User user)
+    {
+        Id = user.Id;
+        BossId = user.BossId;
+        FullName = user.FullName;
     }
 }

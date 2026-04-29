@@ -100,4 +100,44 @@ public class AssessmentController: ControllerBase
             .ToList(); 
         return Ok(dtos);
     }
+    
+    /// <summary>
+    /// Компетенции по должностям
+    /// </summary>
+    [Route("position_competencies")]
+    [HttpGet]
+    public async Task<IActionResult> GetPositionsCompetenciesAsync(CancellationToken token = default)
+    {
+        var competencies = await _analyticsService.GetPositionsCompetenciesAsync(token);
+        var dtos = competencies
+            .Select(c => new PositionsCompetenciesDto(c))
+            .ToList(); 
+        return Ok(dtos);
+    }
+    
+    /// <summary>
+    /// Компетенции по департаменту
+    /// </summary>
+    [Route("department_competencies")]
+    [HttpGet]
+    public async Task<IActionResult> GetDepartmentsCompetenciesAsync(CancellationToken token = default)
+    {
+        var competencies = await _analyticsService.GetDepartmentCompetenciesAsync(token);
+        var dtos = competencies
+            .Select(c => new DepartmentsCompetenciesDto(c))
+            .ToList(); 
+        return Ok(dtos);
+    }
+    
+    /// <summary>
+    /// Получение истории развития компетенции сотрудника
+    /// </summary>
+    [Route("competence_development/{employeeId}")]
+    [HttpGet]
+    public async Task<IActionResult> GetCompetenceDevelopmentAsync(int employeeId, CancellationToken token = default)
+    {
+        var data = await _analyticsService.GetCompetenceDevelopmentAsync(employeeId, token);
+        var dto = new CompetenceDevelopmentDto(data);
+        return Ok(dto);
+    }
 }

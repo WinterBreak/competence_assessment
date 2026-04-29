@@ -6,6 +6,7 @@ public class TestCalcStrategy: IAssessmentCalcStrategy
 {
 public AssessmentCalculation Calculate(Domain.Assessment.Assessment assessment)
     {
+        SetScores(assessment.Results, (int)assessment.Template.Scale);
         var calculation = new AssessmentCalculation(assessment);
         
         var competenceWeightsDict = assessment.Template.Model.Competencies
@@ -142,6 +143,20 @@ public AssessmentCalculation Calculate(Domain.Assessment.Assessment assessment)
         }
         
         return percentages;
+    }
+
+    private static void SetScores(IEnumerable<AssessmentResult> results, int scale)
+    {
+        foreach (var result in results)
+        {
+            if (result.Task.Type != TaskType.TestQuestion)
+            {
+                continue;
+            }
+            
+            var correctAnswer = result.Task.Answers.Single(a => a.IsCorrect).Text;
+            result.Score = result.Answer == correctAnswer ? scale : 0;
+        }
     }
     
     private static decimal GetPercentageDiff(decimal reference, decimal received)

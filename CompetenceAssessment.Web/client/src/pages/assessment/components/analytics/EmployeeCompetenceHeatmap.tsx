@@ -13,8 +13,7 @@ export const EmployeeCompetenceHeatmap: React.FC<CompetenceMatrixProps> = ({
     const [selectedDepartment, setSelectedDepartment] = useState<string>('all');
     const [sortBy, setSortBy] = useState<'fullName' | 'avgScore'>('fullName');
     const [employees, setEmployees] = useState<EmployeeData[]>([]);
-
-    // Получаем список всех компетенций из данных
+    
     const competencies = useMemo(() => {
         const allComps = new Set<string>();
         employees.forEach(emp => {

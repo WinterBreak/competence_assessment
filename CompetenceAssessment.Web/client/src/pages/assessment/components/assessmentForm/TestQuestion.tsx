@@ -43,7 +43,7 @@ export const TestQuestion: React.FC<TestQuestionProps> = ({
                         key={`${taskId}-${option.id}`}
                         id={`${taskId}-${option.id}`}
                         labelText={option.text}
-                        value={option.id.toString()}
+                        value={option.text}
                     />
                 ))}
             </RadioButtonGroup>

@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ResponsiveRadar } from '@nivo/radar';
-import { Select } from "@carbon/react";
+import { Select, Loading } from "@carbon/react";
+import {assessmentService} from "../../services/assessmentService";
 
-interface DepartmentMaturity {
-    department: string;
-    competencies: Map<string, {
-        score: number;
-        maturityLevel: 'initial' | 'managed' | 'defined' | 'quantitatively' | 'optimizing';
-    }>;
+interface CompetenceData {
+    competenceId: string;
+    competenceName: string;
+    score: number;
+    percentage: number;
+    level: string;
 }
 
-interface MaturityMatrixProps {
-    departments: DepartmentMaturity[];
-    benchmark?: Map<string, number>;
+interface DepartmentData {
+    departmentId: string;
+    departmentName: string;
+    score: number;
+    percentage: number;
+    level: string;
+    competencies: CompetenceData[];
+    employees: any[];
 }
 
 const MATURITY_LEVELS = {
@@ -23,50 +29,74 @@ const MATURITY_LEVELS = {
     optimizing: { name: 'Оптимизирующий', score: 100, color: '#198038', description: 'Процессы постоянно улучшаются' }
 };
 
-export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ departments, benchmark }) => {
-    const [selectedDepartment, setSelectedDepartment] = React.useState<string>(departments[0]?.department || '');
+const getMaturityLevelByScore = (percentage: number): keyof typeof MATURITY_LEVELS => {
+    if (percentage >= 80) return 'optimizing';
+    if (percentage >= 60) return 'quantitatively';
+    if (percentage >= 40) return 'defined';
+    if (percentage >= 20) return 'managed';
+    return 'initial';
+};
 
-    const getMaturityData = (department: string) => {
-        const dept = departments.find(d => d.department === department);
-        if (!dept) return [];
+export const OrganizationalMaturityMatrix: React.FC = () => {
+    const [departments, setDepartments] = useState<DepartmentData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>('');
 
-        return Array.from(dept.competencies.entries()).map(([competence, data]) => ({
-            competence: competence,
-            уровень: MATURITY_LEVELS[data.maturityLevel].score,
-            уровеньНазвание: MATURITY_LEVELS[data.maturityLevel].name,
-            бенчмарк: benchmark?.get(competence) || 0
+    useEffect(() => {
+        const fetchDepartmentsData = async () => {
+            try {
+                setLoading(true);
+                const response = await assessmentService.getDepartmentsCompetencies();
+                setDepartments(response);
+                if (response.length > 0 && !selectedDepartmentId) {
+                    setSelectedDepartmentId(response[0].departmentId);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки данных департаментов:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDepartmentsData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                <Loading description="Загрузка матрицы зрелости..." />
+            </div>
+        );
+    }
+
+    if (!departments || departments.length === 0) {
+        return (
+            <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px' }}>
+                <h3>Нет данных о департаментах</h3>
+                <p>Для отображения матрицы зрелости необходимо загрузить данные по департаментам.</p>
+            </div>
+        );
+    }
+
+    const selectedDepartment = departments.find(d => d.departmentId === selectedDepartmentId);
+    if (!selectedDepartment) return null;
+
+    const getMaturityData = () => {
+        return selectedDepartment.competencies.map(comp => ({
+            competence: comp.competenceName,
+            уровень: comp.percentage,
+            уровеньНазвание: MATURITY_LEVELS[getMaturityLevelByScore(comp.percentage)].name,
+            уровеньУровень: getMaturityLevelByScore(comp.percentage)
         }));
     };
 
-    const getOverallMaturity = (department: string) => {
-        const dept = departments.find(d => d.department === department);
-        if (!dept) return 'initial';
+    const data = getMaturityData();
+    const overallMaturity = getMaturityLevelByScore(selectedDepartment.percentage);
 
-        const scores = Array.from(dept.competencies.values()).map(v => MATURITY_LEVELS[v.maturityLevel].score);
-        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
-
-        let maturity: keyof typeof MATURITY_LEVELS = 'initial';
-        for (const [level, data] of Object.entries(MATURITY_LEVELS)) {
-            if (avgScore >= data.score) {
-                maturity = level as keyof typeof MATURITY_LEVELS;
-            }
-        }
-        return maturity;
-    };
-
-    const data = getMaturityData(selectedDepartment);
-    const overallMaturity = getOverallMaturity(selectedDepartment);
-
-    // Подготовка данных для Nivo Radar
     const radarData = data.map(item => ({
         competence: item.competence,
-        'Текущий уровень': item.уровень,
-        ...(benchmark && { 'Отраслевой бенчмарк': item.бенчмарк })
+        'Текущий уровень': item.уровень
     }));
-
-    const radarKeys = benchmark
-        ? ['Текущий уровень', 'Отраслевой бенчмарк']
-        : ['Текущий уровень'];
 
     return (
         <div style={{ padding: '2rem' }}>
@@ -76,12 +106,12 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
                 <Select
                     id="department-filter"
                     labelText="Выберите департамент"
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    value={selectedDepartmentId}
+                    onChange={(e) => setSelectedDepartmentId(e.target.value)}
                 >
                     {departments.map(dept => (
-                        <option key={dept.department} value={dept.department}>
-                            {dept.department} (Уровень: {MATURITY_LEVELS[getOverallMaturity(dept.department)].name})
+                        <option key={dept.departmentId} value={dept.departmentId}>
+                            {dept.departmentName} (Уровень: {MATURITY_LEVELS[getMaturityLevelByScore(dept.percentage)].name})
                         </option>
                     ))}
                 </Select>
@@ -97,7 +127,7 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
                     <h3>Профиль зрелости компетенций</h3>
                     <ResponsiveRadar
                         data={radarData}
-                        keys={radarKeys}
+                        keys={['Текущий уровень']}
                         indexBy="competence"
                         valueFormat=">-.0f"
                         margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
@@ -106,7 +136,7 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
                         dotSize={10}
                         dotColor={{ theme: 'background' }}
                         dotBorderWidth={2}
-                        colors={benchmark ? ['#0f62ac', '#da1e28'] : { scheme: 'nivo' }}
+                        colors={{ scheme: 'nivo' }}
                         fillOpacity={0.25}
                         blendMode="multiply"
                         animate={true}
@@ -170,7 +200,7 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
                             {MATURITY_LEVELS[overallMaturity].description}
                         </p>
                         <div style={{ marginTop: '1rem' }}>
-                            <strong>{Math.round(MATURITY_LEVELS[overallMaturity].score)}%</strong>
+                            <strong>{Math.round(selectedDepartment.percentage)}%</strong>
                             <div style={{
                                 width: '100%',
                                 height: '8px',
@@ -180,7 +210,7 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
                                 overflow: 'hidden'
                             }}>
                                 <div style={{
-                                    width: `${MATURITY_LEVELS[overallMaturity].score}%`,
+                                    width: `${selectedDepartment.percentage}%`,
                                     height: '100%',
                                     backgroundColor: MATURITY_LEVELS[overallMaturity].color,
                                     transition: 'width 0.5s ease'
@@ -193,43 +223,33 @@ export const OrganizationalMaturityMatrix: React.FC<MaturityMatrixProps> = ({ de
 
             <div>
                 <h3>Детализация по компетенциям</h3>
-                {data.map(item => (
-                    <div key={item.competence} style={{ marginBottom: '1rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                            <span>{item.competence}</span>
-                            <span style={{ color: MATURITY_LEVELS[Object.keys(MATURITY_LEVELS).find(
-                                    k => MATURITY_LEVELS[k as keyof typeof MATURITY_LEVELS].score === item.уровень
-                                ) as keyof typeof MATURITY_LEVELS]?.color }}>
-                                {item.уровеньНазвание} ({item.уровень}%)
-                            </span>
-                        </div>
-                        <div style={{
-                            width: '100%',
-                            height: '30px',
-                            backgroundColor: '#e0e0e0',
-                            borderRadius: '4px',
-                            overflow: 'hidden'
-                        }}>
-                            <div style={{
-                                width: `${item.уровень}%`,
-                                height: '100%',
-                                backgroundColor: MATURITY_LEVELS[Object.keys(MATURITY_LEVELS).find(
-                                    k => MATURITY_LEVELS[k as keyof typeof MATURITY_LEVELS].score === item.уровень
-                                ) as keyof typeof MATURITY_LEVELS]?.color,
-                                transition: 'width 0.5s ease'
-                            }} />
-                        </div>
-                        {benchmark && benchmark.get(item.competence) && (
-                            <div style={{
-                                marginTop: '0.25rem',
-                                fontSize: '0.75rem',
-                                color: '#6f6f6f'
-                            }}>
-                                Бенчмарк: {benchmark.get(item.competence)}%
+                {data.map(item => {
+                    const level = getMaturityLevelByScore(item.уровень);
+                    return (
+                        <div key={item.competence} style={{ marginBottom: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                <span>{item.competence}</span>
+                                <span style={{ color: MATURITY_LEVELS[level].color }}>
+                                    {item.уровеньНазвание} ({item.уровень}%)
+                                </span>
                             </div>
-                        )}
-                    </div>
-                ))}
+                            <div style={{
+                                width: '100%',
+                                height: '30px',
+                                backgroundColor: '#e0e0e0',
+                                borderRadius: '4px',
+                                overflow: 'hidden'
+                            }}>
+                                <div style={{
+                                    width: `${item.уровень}%`,
+                                    height: '100%',
+                                    backgroundColor: MATURITY_LEVELS[level].color,
+                                    transition: 'width 0.5s ease'
+                                }} />
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             <div style={{

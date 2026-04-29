@@ -256,7 +256,7 @@ export const CompetenceModels: React.FC = observer(() => {
                 itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
                 itemsPerPageText="Элементов на странице"
                 pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
-                pageSizes={[5, 10, 20, 50]}
+                pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
                     if (pageSize !== competenceModelStore.pageSize) {
                         competenceModelStore.setPageSize(pageSize);

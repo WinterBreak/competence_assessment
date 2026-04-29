@@ -2,9 +2,9 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public class AssessmentResultQuery
 {
-    public List<int> AssessmentIds { get; }
+    public List<int> AssessmentIds { get; } = [];
 
-    public List<int> ResultIds { get; } = [];
+    public List<int> ResultIds { get; }
 
     public AssessmentResultQuery(int assessmentId = default, List<int> resultIds = default)
     {
@@ -12,7 +12,7 @@ public class AssessmentResultQuery
         {
             AssessmentIds.Add(assessmentId);
         }
-        ResultIds = resultIds;
+        ResultIds = resultIds?.ToList() ?? new List<int>();
     }
     
     public AssessmentResultQuery(IEnumerable<int> assessmentIds = default, List<int> resultIds = default)

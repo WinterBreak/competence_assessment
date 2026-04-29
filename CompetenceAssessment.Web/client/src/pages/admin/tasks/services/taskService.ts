@@ -4,7 +4,7 @@ import {
     CreateTaskDto,
     UpdateTaskDto,
 } from '../types/task.types';
-import { ApiResponse} from "../../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../../types/common.types";
 
 class TaskService {
     private api: AxiosInstance;
@@ -43,13 +43,20 @@ class TaskService {
         //     }
         // );
     }
-    
+
     async getTasks(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<Task[]> {
+        search?: string;
+    }): Promise<PaginatedResponse<Task>> {
         try {
-            const response = await this.api.get('/tasks');
+            const response = await this.api.get('/tasks', {
+                params: {
+                    page: params?.page || 1,
+                    pageSize: params?.pageSize || 10,
+                    searchTerm: params?.search || ''
+                }
+            });
             return response.data;
         } catch (error) {
             throw this.handleError(error);

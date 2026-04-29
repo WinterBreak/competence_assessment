@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import {
     Assessment, AssessmentCalcDto, AssessmentCalculation,
-    CreateAssessmentDto, EmployeeData,
-    UpdateAssessmentDto,
+    CreateAssessmentDto, EmployeeData, PositionData,
+    UpdateAssessmentDto, CompetenceDevelopmentDto, DepartmentData
 } from '../types/assessment.types';
 import {ApiResponse} from "../../../types/common.types";
 
@@ -109,13 +109,31 @@ class AssessmentService {
         }
     }
 
-    async deleteManyAssessments(ids: string[]): Promise<void> {
+    async getPositionCompetencies(): Promise<PositionData[]> {
         try {
-            await this.api.post('/assessments/delete-many', { ids });
+            const response = await this.api.get(`/assessments/position_competencies`);
+            return response.data;
         } catch (error) {
             throw this.handleError(error);
         }
     }
+
+    async getDepartmentsCompetencies(): Promise<DepartmentData[]> {
+        try {
+            const response = await this.api.get(`/assessments/department_competencies`);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async getCompetenceDevelopment (
+        employeeId: string
+    ): Promise<CompetenceDevelopmentDto> {
+        const params: any = { employeeId };
+        const response = await this.api.get(`/assessments/competence_development/${employeeId}`);
+        return response.data;
+    };
 
     async exportAssessments(): Promise<Blob> {
         try {

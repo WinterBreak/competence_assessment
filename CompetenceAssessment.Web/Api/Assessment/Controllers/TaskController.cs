@@ -22,11 +22,12 @@ public class TaskController: ControllerBase
     /// Получение заданий
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetTasksAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetTasksAsync([FromQuery] TaskGetRequest request
+                                                 , CancellationToken token = default)
     {
-        var query = new TaskQuery();
-        var competencies = await _competenceService.GetTasksAsync(query, token);
-        return Ok(competencies);
+        var query = new TaskQuery(page: request.Page, pageSize: request.PageSize);
+        var tasks = await _competenceService.GetPaginatedTasksAsync(query, token);
+        return Ok(tasks);
     }
 
     /// <summary>

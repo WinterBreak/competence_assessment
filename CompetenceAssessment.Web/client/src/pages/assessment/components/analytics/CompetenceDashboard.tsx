@@ -31,23 +31,15 @@ export const CompetenceDashboard: React.FC = () => {
                     </TabPanel>
                     <TabPanel>
                         <PositionCompetenceMatrix
-                            positions={[]}
-                            employees={[]}
                         />
                     </TabPanel>
                     <TabPanel>
                         <CompetenceDevelopmentTracker
-                            employeeId=""
-                            employeeName=""
-                            competenceName=""
-                            developmentHistory={[]}
-                            targetScore={80}
+                            employeeId="23"
                         />
                     </TabPanel>
                     <TabPanel>
-                        <OrganizationalMaturityMatrix
-                            departments={[]}
-                        />
+                        <OrganizationalMaturityMatrix/>
                     </TabPanel>
                     <TabPanel>
                         <div style={{ padding: '2rem' }}>

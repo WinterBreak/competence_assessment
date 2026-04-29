@@ -18,7 +18,7 @@ import {
     TableToolbarAction,
     TableToolbarSearch,
     Loading,
-    ToastNotification
+    ToastNotification, MultiSelect, Modal
 } from '@carbon/react';
 import { observer } from 'mobx-react-lite';
 import { Edit, TrashCan, Add } from '@carbon/react/icons';
@@ -30,6 +30,9 @@ import {CreateTaskDto, UpdateTaskDto} from "../tasks/types/task.types";
 export const Tasks: React.FC = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     
     useEffect(() => {
         taskStore.loadTasks();
@@ -41,8 +44,17 @@ export const Tasks: React.FC = observer(() => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        await taskStore.deleteTask(id);
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (itemToDelete) {
+            await taskStore.deleteTask(itemToDelete);
+            setItemToDelete(null);
+        }
+        setIsDeleteModalOpen(false);
     };
 
     const handleAdd = () => {
@@ -60,12 +72,10 @@ export const Tasks: React.FC = observer(() => {
             };
             await taskStore.updateTask(editDto);
 
-            // Обновляем editingTask после успешного сохранения
-            const updatedTask = taskStore.tasks.find(t => t.id.toString() === data.id);
+            const updatedTask = filteredTasks.find(t => t.id.toString() === data.id);
             if (updatedTask) {
                 setEditingTask(updatedTask);
             }
-            // НЕ закрываем модальное окно при редактировании
         } else {
             let createDto: CreateTaskDto = {
                 text: data.text,
@@ -73,7 +83,7 @@ export const Tasks: React.FC = observer(() => {
                 answers: data.answers || {}
             };
             await taskStore.createTask(createDto);
-            setIsModalOpen(false); // Закрываем только при создании
+            setIsModalOpen(false);
             setEditingTask(null);
         }
     };
@@ -86,6 +96,14 @@ export const Tasks: React.FC = observer(() => {
     const handleExport = async () => {
         await taskStore.exportTasks();
     };
+    
+    const allTypes = () => {
+        return [
+            { id: 1, name:'Тест'},
+            {id: 2, name: 'Открытый'},
+            {id:3, name:'Анкета'}
+        ]
+    }
 
     const taskType = (type: string | number) => {
         switch (Number(type)) {
@@ -95,9 +113,18 @@ export const Tasks: React.FC = observer(() => {
             default: return 'Неизвестный тип';
         }
     }
-    
+
+    const filteredTasks = useMemo(() => {
+        let tasks = taskStore.tasks;
+        if (selectedTypes.length > 0) {
+            tasks = taskStore.tasks.filter(t => selectedTypes.includes(Number(t.type)));
+        }
+        return tasks;
+    }, [taskStore.tasks, selectedTypes]);
+
+
     const rows = useMemo(() =>
-            taskStore.tasks.map(t => ({
+            filteredTasks.map(t => ({
                 id: String(t.id),
                 text: t.text,
                 type: taskType(t.type),
@@ -147,7 +174,18 @@ export const Tasks: React.FC = observer(() => {
                             {...getTableContainerProps()}
                         >
                             <TableToolbar {...getToolbarProps()}>
+                                <MultiSelect
+                                    id="type-filter"
+                                    items={allTypes().map(d => ({ id: d.id, label: d.name }))}
+                                    selectionFeedback="top-after-reopen"
+                                    onChange={({ selectedItems }) => {
+                                        selectedItems = selectedItems ?? [];
+                                        setSelectedTypes(selectedItems.map(item => item.id));
+                                    }}
+                                    label="Тип задания"
+                                />
                                 <TableToolbarContent>
+                                    
                                     <TableToolbarSearch
                                         onChange={(e) => {
                                             onInputChange(e);
@@ -216,7 +254,7 @@ export const Tasks: React.FC = observer(() => {
                                                                 kind="ghost"
                                                                 size="sm"
                                                                 iconDescription="Удалить"
-                                                                onClick={() => handleDelete(row.id)}
+                                                                onClick={() => handleDeleteClick(row.id)}
                                                                 renderIcon={TrashCan}
                                                                 hasIconOnly
                                                             />
@@ -243,7 +281,12 @@ export const Tasks: React.FC = observer(() => {
                 page={taskStore.currentPage}
                 pageSize={taskStore.pageSize}
                 totalItems={taskStore.totalItems}
-                pageSizes={[5, 10, 20, 50]}
+                backwardText="Назад"
+                forwardText="Вперед"
+                itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
+                itemsPerPageText="Элементов на странице"
+                pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
+                pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
                     if (pageSize !== taskStore.pageSize) {
                         taskStore.setPageSize(pageSize);
@@ -260,6 +303,21 @@ export const Tasks: React.FC = observer(() => {
                 initialData={editingTask || undefined}
                 mode={editingTask ? 'edit' : 'create'}
             />
+
+            <Modal
+                open={isDeleteModalOpen}
+                modalHeading="Подтверждение удаления"
+                primaryButtonText="Удалить"
+                secondaryButtonText="Отмена"
+                danger
+                onRequestClose={() => setIsDeleteModalOpen(false)}
+                onRequestSubmit={confirmDelete}
+            >
+                <p>Вы уверены, что хотите удалить это задание?</p>
+                <p style={{ marginTop: '0.5rem', color: '#da1e28' }}>
+                    Это действие невозможно отменить.
+                </p>
+            </Modal>
         </div>
     );
 });

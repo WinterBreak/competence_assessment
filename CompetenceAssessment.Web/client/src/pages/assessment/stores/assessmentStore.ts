@@ -52,8 +52,6 @@ export class AssessmentStore {
 
             runInAction(() => {
                 this.currentAssessment = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {
@@ -175,31 +173,6 @@ export class AssessmentStore {
                 this.isLoading = false;
             });
             return [];
-        }
-    }
-
-    async deleteManyAssessments(ids: string[]): Promise<boolean> {
-        if (ids.length === 0) return false;
-
-        this.isLoading = true;
-        this.error = null;
-
-        try {
-            await assessmentService.deleteManyAssessments(ids);
-            runInAction(() => {
-                this.assessments = this.assessments.filter(
-                    c => !ids.includes(c.id)
-                );
-                this.totalItems -= ids.length;
-                this.isLoading = false;
-            });
-            return true;
-        } catch (error) {
-            runInAction(() => {
-                this.error = error instanceof Error ? error.message : 'Ошибка массового удаления';
-                this.isLoading = false;
-            });
-            return false;
         }
     }
 
