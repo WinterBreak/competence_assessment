@@ -1,4 +1,3 @@
-// components/Results/CompetenciesTable.tsx
 import React, { useState } from 'react';
 import { DataTable, Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
 

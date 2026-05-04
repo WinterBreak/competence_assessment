@@ -18,5 +18,6 @@ public class UserRolesSpecification: SpecificationBase<User>
     }
     
     public override Expression<Func<User, bool>> Criteria 
-        => u => !_roleIds.Any() || u.RoleLinks.Select(r => r.RoleId).Intersect(_roleIds).Any();
+        => u => !_roleIds.Any();
+        // => u => !_roleIds.Any() || u.RoleLinks.Select(r => r.RoleId).Intersect(_roleIds).Any();
 }

@@ -86,6 +86,30 @@ export class AssessmentStore {
         }
     }
 
+    async loadHistory() {
+        this.isLoading = true;
+        this.error = null;
+
+        try {
+            const response = await assessmentService.getAssessmentHistory({
+                page: this.currentPage,
+                pageSize: this.pageSize,
+            });
+
+            runInAction(() => {
+                this.assessments = response;
+                // this.totalItems = response.total;
+                // this.totalPages = response.totalPages;
+                this.isLoading = false;
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.error = error instanceof Error ? error.message : 'Ошибка загрузки данных';
+                this.isLoading = false;
+            });
+        }
+    }
+
     async createAssessment(data: CreateAssessmentDto): Promise<boolean> {
         this.isLoading = true;
         this.error = null;

@@ -24,6 +24,8 @@ public class User
     
     public string Department { get; set; }
     
+    public List<string> Roles { get; set; } = new List<string>();
+    
     public string FullName => SecondName is null 
         ? $"{LastName} {FirstName}"
         : $"{LastName} {FirstName} {SecondName}";
@@ -32,7 +34,8 @@ public class User
 
     public User(int id, string firstName, string? secondName, string lastName
               , int? bossId, string email, int positionId, string position
-              , int departmentId, string department, string? bossName)
+              , int departmentId, string department, string? bossName
+              , List<string> roles)
     {
         Id = id;
         FirstName = firstName;
@@ -45,6 +48,7 @@ public class User
         Position = position;
         DepartmentId = departmentId;
         Department = department;
+        Roles = roles;
     }
     
     public User(int id, string firstName, string? secondName, string lastName

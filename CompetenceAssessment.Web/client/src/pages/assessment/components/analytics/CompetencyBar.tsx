@@ -1,4 +1,3 @@
-// components/Results/CompetencyBar.tsx
 import React from 'react';
 import { ProgressIndicator, ProgressStep } from '@carbon/react';
 

@@ -55,6 +55,18 @@ class AssessmentService {
         }
     }
 
+    async getAssessmentHistory(params?: {
+        page?: number;
+        pageSize?: number;
+    }): Promise<Assessment[]> {
+        try {
+            const response = await this.api.get('/assessments/history');
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
     async getAssessmentById(id: string): Promise<Assessment> {
         try {
             const response = await this.api.get(`/assessments/${id}`);
