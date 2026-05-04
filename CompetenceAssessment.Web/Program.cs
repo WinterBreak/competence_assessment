@@ -2,10 +2,14 @@ using System.Reflection;
 using CompetenceAssessment.Infrastructure;
 using CompetenceAssessment.Infrastructure.Database;
 using CompetenceAssessment.Infrastructure.UserManagement;
+using CompetenceAssessment.Web.Attributes;
+using CompetenceAssessment.Web.Handlers;
 using CompetenceAssessment.Web.Startup;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using FluentMigrator.Runner;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +51,76 @@ builder.Services.AddDbContext<UserManagementContext>(options =>
 builder.Services.AddDbContext<AssessmentContext>(options =>
     options.UseLazyLoadingProxies()
            .UseNpgsql(connectionString));
+
+// builder.Services.AddIdentity<User, Role>(options =>
+//     {
+//         options.Password.RequireDigit = true;
+//         options.Password.RequiredLength = 6;
+//         options.Password.RequireNonAlphanumeric = false;
+//         options.Password.RequireUppercase = true;
+//         options.Password.RequireLowercase = true;
+//         
+//         options.User.RequireUniqueEmail = true;
+//         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//         
+//         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+//         options.Lockout.MaxFailedAccessAttempts = 5;
+//         options.Lockout.AllowedForNewUsers = true;
+//     })
+//     .AddEntityFrameworkStores<UserManagementContext>()
+//     .AddDefaultTokenProviders()
+//     .AddUserManager<UserManager<User>>()
+//     .AddRoleManager<RoleManager<Role>>()
+//     .AddSignInManager<SignInManager<User>>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuthorizationHandler, AssessmentAuthorizationHandler>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+        options.LoginPath = "/api/auth/login";
+        options.LogoutPath = "/api/auth/logout";
+        options.AccessDeniedPath = "/api/auth/access-denied";
+        options.Cookie.Name = "AssessmentAuth";
+        
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                context.Response.StatusCode = 403;
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+    
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Authenticated", policy =>
+        policy.Requirements.Add(new AssessmentAuthorizeAttribute()));
+    options.AddPolicy("Admin", policy =>
+        policy.Requirements.Add(new AssessmentAuthorizeAttribute("Администратор")));
+    
+    options.AddPolicy("Candidate", policy =>
+        policy.Requirements.Add(new AssessmentAuthorizeAttribute("Аттестуемый")));
+    
+    options.AddPolicy("Inspector", policy =>
+        policy.Requirements.Add(new AssessmentAuthorizeAttribute("Проверяющий, Аттестуемый")));
+    
+    // options.FallbackPolicy = new AuthorizationPolicyBuilder()
+    //     .AddRequirements(new AssessmentAuthorizeAttribute())
+    //     .Build();
+});
 
 builder.Services.AddInfrastructure(builder.Configuration);
 

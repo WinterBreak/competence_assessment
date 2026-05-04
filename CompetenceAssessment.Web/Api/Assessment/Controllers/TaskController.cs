@@ -1,5 +1,6 @@
 using CompetenceAssessment.Domain.Assessment;
 using CompetenceAssessment.Web.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TaskAssessment.Web.Assessment;
@@ -22,6 +23,7 @@ public class TaskController: ControllerBase
     /// Получение заданий
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> GetTasksAsync([FromQuery] TaskGetRequest request
                                                  , CancellationToken token = default)
     {
@@ -34,6 +36,7 @@ public class TaskController: ControllerBase
     /// Создание заданий
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateTaskAsync(TaskCreateRequest request
         , CancellationToken token = default)
     {
@@ -48,6 +51,7 @@ public class TaskController: ControllerBase
     /// Изменение заданий
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateTaskAsync(TaskUpdateRequest request
         , CancellationToken token = default)
     {
@@ -63,6 +67,7 @@ public class TaskController: ControllerBase
     /// </summary>
     [Route("{id}")]
     [HttpDelete]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteTaskAsync(int id, CancellationToken token = default)
     {
         var command = new DeleteTaskCommand(id);

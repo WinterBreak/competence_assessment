@@ -1,4 +1,5 @@
 using CompetenceAssessment.Domain.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompetenceAssessment.Web.Assessment;
@@ -21,6 +22,7 @@ public class TemplateController: ControllerBase
     /// Получение шаблонов
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> GetTemplatesAsync(CancellationToken token = default)
     {
         var query = new TemplateQuery();
@@ -33,6 +35,7 @@ public class TemplateController: ControllerBase
     /// Создание шаблона
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateTemplatesAsync(TemplateCreateRequest request
                                                          , CancellationToken token = default)
     {
@@ -48,6 +51,7 @@ public class TemplateController: ControllerBase
     /// Изменение шаблона
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateTemplateAsync(TemplateUpdateRequest request
                                                          , CancellationToken token = default)
     {
@@ -65,6 +69,7 @@ public class TemplateController: ControllerBase
     /// </summary>
     [Route("{id}")]
     [HttpDelete]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> DeleteTemplateAsync(int id, CancellationToken token = default)
     {
         var command = new DeleteTemplateCommand(id);

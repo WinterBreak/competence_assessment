@@ -12,5 +12,7 @@ public interface IUserRepository
     
     Task RemoveUserAsync(int id, CancellationToken token = default);
     
+    Task<bool> ValidatePasswordAsync(int userId, string password, CancellationToken token = default);
+    
     Task SaveAllChangesAsync(CancellationToken token = default);
 }

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Tabs, Tab, Button, TabList, TabPanels, TabPanel } from '@carbon/react';
 import { EmployeeCompetenceHeatmap } from './EmployeeCompetenceHeatmap';
 import { PositionCompetenceMatrix } from './PositionCompetenceMatrix';
-import { CompetenceDevelopmentTracker } from './CompetenceDevelopmentTracker';
 import { OrganizationalMaturityMatrix } from './OrganizationalMaturityMatrix';
 
 export const CompetenceDashboard: React.FC = () => {
@@ -19,7 +18,6 @@ export const CompetenceDashboard: React.FC = () => {
                 <TabList>
                     <Tab>Тепловая карта сотрудников</Tab>
                     <Tab>Матрица должностей</Tab>
-                    <Tab>Трекер развития</Tab>
                     <Tab>Матрица зрелости</Tab>
                     <Tab>Экспорт отчетов</Tab>
                 </TabList>
@@ -31,11 +29,6 @@ export const CompetenceDashboard: React.FC = () => {
                     </TabPanel>
                     <TabPanel>
                         <PositionCompetenceMatrix
-                        />
-                    </TabPanel>
-                    <TabPanel>
-                        <CompetenceDevelopmentTracker
-                            employeeId="23"
                         />
                     </TabPanel>
                     <TabPanel>

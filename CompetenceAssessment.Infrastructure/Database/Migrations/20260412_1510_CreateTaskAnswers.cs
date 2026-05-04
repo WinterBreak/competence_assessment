@@ -7,8 +7,7 @@ public class _20260412_1510_CreateTaskAnswers: Migration
 {
     public override void Up()
     {
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260412_1500_CreateAnswers.sql");
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260412_1510_AlterTasks.sql");
+        Execute.Script("CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260412_1500_CreateAnswers.sql");
     }
 
     public override void Down()

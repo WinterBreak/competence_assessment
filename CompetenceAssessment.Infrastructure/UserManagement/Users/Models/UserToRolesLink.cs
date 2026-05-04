@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace CompetenceAssessment.Infrastructure.UserManagement;
 
 public class UserToRolesLink

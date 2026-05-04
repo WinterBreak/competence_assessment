@@ -4,12 +4,9 @@ import { DatePicker, DatePickerInput, Tag, Loading } from '@carbon/react';
 import { CompetenceDevelopmentDto, DevelopmentPointDto } from "../../types/assessment.types";
 import {assessmentService} from "../../services/assessmentService";
 
-interface CompetenceDevelopmentTrackerProps {
-    employeeId: string;
-}
-
-export const CompetenceDevelopmentTracker: React.FC<CompetenceDevelopmentTrackerProps> = ({ employeeId }) => {
+export const CompetenceDevelopmentTracker: React.FC = () => {
     const [data, setData] = useState<CompetenceDevelopmentDto>();
+    const [employeeId, setEmployeeId] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState<[Date, Date] | null>(null);
     const [selectedCompetenceId, setSelectedCompetenceId] = useState<string | null>(null);
@@ -32,10 +29,18 @@ export const CompetenceDevelopmentTracker: React.FC<CompetenceDevelopmentTracker
             .filter(point => point.competenceId === currentCompetence.id)
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         : [];
+
+    useEffect(() => {
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+            setEmployeeId(userId);
+        }
+    }, []);
     
     useEffect(() => {
         const fetchData = async () => {
             try {
+                if (!employeeId) return;
                 setLoading(true);
                 const response = await assessmentService.getCompetenceDevelopment(employeeId);
                 setData(response);

@@ -1,5 +1,7 @@
 using CompetenceAssessment.Domain.Assessment.DTO;
 using CompetenceAssessment.Domain.UserManagement;
+using CompetenceAssessment.Web.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompetenceAssessment.Web.UserManagement;
@@ -19,6 +21,7 @@ public class UserController: ControllerBase
     /// Получение пользователей
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> GetUsersAsync(CancellationToken token = default)
     {
         var query = new UserQuery();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,11 +18,11 @@ public class RoleConfiguration: IEntityTypeConfiguration<Role>
         builder.Property(x => x.Name)
             .HasColumnName("name")
             .IsRequired();
-
+        
         builder.Property(x => x.Description)
             .HasColumnName("description");
-
-
+        
+        
         builder.HasMany(x => x.UserLinks)
             .WithOne(x => x.Role)
             .HasForeignKey(x => x.RoleId);
