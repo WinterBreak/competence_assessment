@@ -115,7 +115,6 @@ export const PositionCompetenceMatrix: React.FC = () => {
                     </thead>
                     <tbody>
                     {(positionData?.employees || []).map(employee => {
-                        // Проверяем соответствие всем компетенциям
                         const overallStatus = (positionData?.competencies || []).every(comp => {
                             const currentScore = getCurrentScore(employee.id, comp.competenceId);
                             return currentScore >= 39;
