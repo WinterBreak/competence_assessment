@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using CompetenceAssessment.Core.Extensions;
 using CompetenceAssessment.Domain.Assessment;
+using CompetenceAssessment.Domain.Export;
+using CompetenceAssessment.Domain.Export.Enumerations;
+using CompetenceAssessment.Domain.Export.Models;
 using CompetenceAssessment.Domain.UserManagement.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +21,19 @@ public class AssessmentController: ControllerBase
     private readonly IAssessmentCalcService _calcService;
     private readonly IAssessmentAnalyticsService _analyticsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IReportExportService _exportService;
 
     public AssessmentController(IAssessmentService assessmentService
         , IAssessmentCalcService calcService
         , IAssessmentAnalyticsService analyticsService
-        , IHttpContextAccessor httpContextAccessor)
+        , IHttpContextAccessor httpContextAccessor
+        , IReportExportService exportService)
     {
         _assessmentService = assessmentService;
         _calcService = calcService;
         _analyticsService = analyticsService;
         _httpContextAccessor = httpContextAccessor;
+        _exportService = exportService;
     }
     
     /// <summary>
@@ -172,6 +178,64 @@ public class AssessmentController: ControllerBase
         var data = await _analyticsService.GetCompetenceDevelopmentAsync(employeeId, token);
         var dto = new CompetenceDevelopmentDto(data);
         return Ok(dto);
+    }
+    
+    [HttpPost("export")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExportReport(
+        [FromBody] ExportReportRequest request,
+        CancellationToken token = default)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            ReportRequest reportRequest = request.ReportType switch
+            {
+                ReportType.EmployeeCompetenceHeatmap => new HeatmapReportRequest
+                {
+                    DepartmentId = request.DepartmentId,
+                    SortBy = request.SortBy
+                },
+                ReportType.PositionMatrix => new PositionMatrixReportRequest
+                {
+                    PositionId = request.PositionId
+                },
+                ReportType.OrganizationalMaturity => new OrganizationalMaturityReportRequest
+                {
+                    DepartmentId = request.DepartmentId
+                },
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(request.ReportType), 
+                    $"Неподдерживаемый тип отчёта: {request.ReportType}")
+            };
+
+            byte[] fileBytes = await _exportService.GenerateReportAsync(reportRequest, token);
+
+            string fileName = request.ReportType switch
+            {
+                ReportType.EmployeeCompetenceHeatmap => "Тепловая_карта_компетенций.xlsx",
+                ReportType.PositionMatrix => "Матрица_должностей.xlsx",
+                ReportType.OrganizationalMaturity => "Матрица_зрелости.xlsx",
+                _ => "Отчёт.xlsx"
+            };
+
+            return File(
+                fileContents: fileBytes,
+                contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileDownloadName: fileName
+            );
+        }
+        catch (NotSupportedException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Внутренняя ошибка при формировании отчёта" });
+        }
     }
 
     private bool IsAdmin()
