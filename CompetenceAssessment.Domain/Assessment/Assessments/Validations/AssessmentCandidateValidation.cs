@@ -13,7 +13,7 @@ public class AssessmentCandidateValidation: IValidationRule<Assessment>
 
         await Task.Run(() =>
         {
-            if (assessment.Candidate.Id == null)
+            if (assessment.Candidate.Id == default)
             {
                 validationErrors.AddError(ErrorsConfg.EMPTY_FIELD, ErrorsConfg.EMPTY_FIELD_ERROR);
                 return;

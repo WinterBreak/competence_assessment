@@ -181,7 +181,7 @@ CREATE TABLE assessment.assessment_result (
 
 ALTER TABLE assessment.assessment_result OWNER TO postgres;
 
-ALTER TABLE assessment.competence_model_detail ADD CONSTRAINT competence_model_fk FOREIGN KEY (id_competence_model)
+ALTER TABLE assessment.competence_model_detail ADD CONSTRAINT competence_model_fk FOREIGN KEY (competence_model_id)
     REFERENCES assessment.competence_model (id) MATCH FULL
     ON DELETE SET NULL ON UPDATE CASCADE;
 

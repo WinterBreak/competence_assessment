@@ -7,7 +7,13 @@ public class _20260412_1510_CreateTaskAnswers: Migration
 {
     public override void Up()
     {
-        Execute.Script("CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260412_1500_CreateAnswers.sql");
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Database",
+            "Sql",
+            "20260412_1500_CreateAnswers.sql"
+        );
+        Execute.Script(path);
     }
 
     public override void Down()

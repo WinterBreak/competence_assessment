@@ -28,4 +28,40 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Database\Sql\20260326_2000_CreateDatabase.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260327_1100_InsertTaskType.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260331_2100_InsertTemplateType.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260331_2105_InsertScale.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260401_0900_InsertAssessmentType.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260401_0910_InsertUsers.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260412_1500_CreateAnswers.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260412_1510_AlterTasks.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260413_2130_AlterAssessmentResult.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260430_1900_AlterUsers.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Database\Sql\20260430_2000_AlterUser.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

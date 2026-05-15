@@ -4,20 +4,22 @@ public class UpdateUserCommand
 {
     public int Id { get; set; }
     
-    public string FirstName { get; }
+    public string FirstName { get; set; }
     
-    public string? SecondName { get; }
+    public string? SecondName { get; set; }
     
-    public string LastName { get; }
+    public string LastName { get; set; }
     
-    public string Email { get; }
+    public string Email { get; set; }
     
-    public int? BossId { get; }
+    public int? BossId { get; set; }
     
-    public int PositionId { get; }
+    public int PositionId { get; set; }
     
-    public int DepartmentId { get; }
-    
+    public int DepartmentId { get; set; }
+
+    public UpdateUserCommand() { }
+
     public UpdateUserCommand(string firstName, string? secondName, string lastName
                            , string email, int? bossId, int positionId, int departmentId)
     {

@@ -133,15 +133,19 @@ public AssessmentCalculation Calculate(Domain.Assessment.Assessment assessment)
         => GetPercentageDiff(reference, received);
 
     private Dictionary<int, decimal> GetPercentageByCompetencies(
-        Dictionary<int, decimal> reference, Dictionary<int, decimal> received)
+        Dictionary<int, decimal> reference,
+        Dictionary<int, decimal> received)
     {
         var percentages = new Dictionary<int, decimal>();
+
         foreach (var keyValuePair in reference)
         {
-            var percentage = GetPercentageDiff(keyValuePair.Value, received[keyValuePair.Key]);
+            received.TryGetValue(keyValuePair.Key, out var receivedValue);
+
+            var percentage = GetPercentageDiff(keyValuePair.Value, receivedValue);
             percentages.Add(keyValuePair.Key, percentage);
         }
-        
+
         return percentages;
     }
 
@@ -153,14 +157,26 @@ public AssessmentCalculation Calculate(Domain.Assessment.Assessment assessment)
             {
                 continue;
             }
-            
-            var correctAnswer = result.Task.Answers.Single(a => a.IsCorrect).Text;
+
+            var correctAnswer = result.Task.Answers
+                .FirstOrDefault(a => a.IsCorrect)?
+                .Text;
+
+            if (correctAnswer is null)
+            {
+                result.Score = 0;
+                continue;
+            }
+
             result.Score = result.Answer == correctAnswer ? scale : 0;
         }
     }
     
     private static decimal GetPercentageDiff(decimal reference, decimal received)
     {
+        if (reference == 0)
+            return 0;
+
         return received * 100 / reference;
     }
 }

@@ -7,7 +7,13 @@ public class _20260327_1100_InsertTaskType : Migration
 {
     public override void Up()
     {
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260327_1100_InsertTaskType.sql");
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Database",
+            "Sql",
+            "20260327_1100_InsertTaskType.sql"
+        );
+        Execute.Script(path);
     }
 
     public override void Down()

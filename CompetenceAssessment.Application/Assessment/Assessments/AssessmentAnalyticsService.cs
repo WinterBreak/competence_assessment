@@ -107,7 +107,6 @@ public class AssessmentAnalyticsService: IAssessmentAnalyticsService
                                       , competencies, employees);
     }
     
-    // TODO пересчитать
     private DepartmentCompetencies GetDepartmentCompetencies(
           IEnumerable<User> employees
         , IEnumerable<CompetenceResult> competencies, string departmentName

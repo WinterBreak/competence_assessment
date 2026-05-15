@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security.Claims;
 using CompetenceAssessment.Infrastructure;
 using CompetenceAssessment.Infrastructure.Database;
 using CompetenceAssessment.Infrastructure.UserManagement;
@@ -14,13 +15,13 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-    c.SwaggerDoc("v1", new OpenApiInfo 
-    { 
-        Title = "Competence assessment", 
-        Version = "v1" 
-    }));
-
+// builder.Services.AddSwaggerGen(c =>
+//     c.SwaggerDoc("v1", new OpenApiInfo 
+//     { 
+//         Title = "Competence assessment", 
+//         Version = "v1" 
+//     }));
+builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
@@ -51,27 +52,6 @@ builder.Services.AddDbContext<UserManagementContext>(options =>
 builder.Services.AddDbContext<AssessmentContext>(options =>
     options.UseLazyLoadingProxies()
            .UseNpgsql(connectionString));
-
-// builder.Services.AddIdentity<User, Role>(options =>
-//     {
-//         options.Password.RequireDigit = true;
-//         options.Password.RequiredLength = 6;
-//         options.Password.RequireNonAlphanumeric = false;
-//         options.Password.RequireUppercase = true;
-//         options.Password.RequireLowercase = true;
-//         
-//         options.User.RequireUniqueEmail = true;
-//         options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//         
-//         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-//         options.Lockout.MaxFailedAccessAttempts = 5;
-//         options.Lockout.AllowedForNewUsers = true;
-//     })
-//     .AddEntityFrameworkStores<UserManagementContext>()
-//     .AddDefaultTokenProviders()
-//     .AddUserManager<UserManager<User>>()
-//     .AddRoleManager<RoleManager<Role>>()
-//     .AddSignInManager<SignInManager<User>>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthorizationHandler, AssessmentAuthorizationHandler>();
@@ -116,11 +96,9 @@ builder.Services.AddAuthorization(options =>
     
     options.AddPolicy("Inspector", policy =>
         policy.Requirements.Add(new AssessmentAuthorizeAttribute("Проверяющий, Аттестуемый")));
-    
-    // options.FallbackPolicy = new AuthorizationPolicyBuilder()
-    //     .AddRequirements(new AssessmentAuthorizeAttribute())
-    //     .Build();
 });
+
+
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -135,12 +113,13 @@ if (!app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
     app.Services.RunMigrations();
-    app.UseSwagger();
-    app.UseSwaggerUI(c => 
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence assessment V1");
-        c.RoutePrefix = "swagger";
-    });
+    app.MapOpenApi();
+    // app.UseSwagger();
+    // app.UseSwaggerUI(c => 
+    // {
+    //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence assessment V1");
+    //     c.RoutePrefix = "swagger";
+    // });
 }
 
 app.UseStaticFiles();
@@ -155,16 +134,21 @@ app.MapControllerRoute(
     
 app.MapControllers();
 
-app.UseSpa(spa =>
+if (app.Environment.IsDevelopment())
 {
-    spa.Options.SourcePath = "client";
-    app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+    app.UseSpa(spa =>
     {
-        appBuilder.UseSpa(spa =>
+        spa.Options.SourcePath = "client";
+        app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
         {
-            spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            appBuilder.UseSpa(spa =>
+            {
+                spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            });
         });
     });
-});
+}
 
 app.Run();
+
+public partial class Program { }

@@ -62,7 +62,8 @@ public class CompetenceNameValidationTest
     {
         var moq = new Mock<ICompetenceValidationQueries>();
         moq.Setup(m => m
-                .IsNameTakenAsync(name, id, CancellationToken.None))
+                .IsNameTakenAsync(It.IsAny<string>(), It.IsAny<int?>()
+                           , It.IsAny<CancellationToken>()))
             .ReturnsAsync(result);
         
         return new CompetenceNameValidation(moq.Object);

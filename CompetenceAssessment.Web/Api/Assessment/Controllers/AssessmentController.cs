@@ -89,7 +89,9 @@ public class AssessmentController: ControllerBase
         var command = new CreateAssessmentCommand(request.TemplateId, (AssessmentType)request.Type
                                                 , request.CandidateId, request.InspectorsIds);
         var errors = await _assessmentService.CreateAssessmentAsync(command, token);
-        return Ok(errors); // TODO написать стандартные модели ответов: успех и ошибка
+        return errors.HasErrors 
+            ? BadRequest(errors)
+            : Ok(errors);
     }
 
     /// <summary>
@@ -183,6 +185,7 @@ public class AssessmentController: ControllerBase
     [HttpPost("export")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> ExportReport(
         [FromBody] ExportReportRequest request,
         CancellationToken token = default)
