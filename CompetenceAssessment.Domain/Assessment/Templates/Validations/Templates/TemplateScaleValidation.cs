@@ -11,7 +11,7 @@ public class TemplateScaleValidation: IValidationRule<ITemplate>
         ArgumentNullException.ThrowIfNull(template);
         ArgumentNullException.ThrowIfNull(validationErrors);
 
-        if (template.Scale == null)
+        if (template.Scale == 0)
         {
             validationErrors.AddError(ErrorsConfg.NAME_ERROR, ErrorsConfg.EMPTY_FIELD_ERROR);
         }

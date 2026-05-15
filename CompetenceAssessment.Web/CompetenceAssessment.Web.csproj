@@ -4,22 +4,33 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+        <OpenApiGenerateDocumentsOptions>--file-name openapi</OpenApiGenerateDocumentsOptions>
+        <!-- Директория '.' означает корневую папку проекта (рядом с .csproj) -->
+        <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+        <PackageReference Include="coverlet.collector" Version="10.0.0">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.9" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.15" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="9.0.14" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.15">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.14" />
+        <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="9.0.6">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Nabs.Aspire.ServiceDefaults" Version="9.0.89" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,5 +42,5 @@
       <Folder Include="client\" />
       <Folder Include="client\src\pages\utils\" />
     </ItemGroup>
-
+    
 </Project>

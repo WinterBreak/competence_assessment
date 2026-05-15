@@ -90,17 +90,22 @@ public class UpdateCompetenceTest
     {
         var repoMoq = new Mock<ICompetenceRepository>();
         repoMoq.Setup(m => m
-                .GetCompetenceAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
+                .GetCompetenceAsync(It.IsAny<CompetenceQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Competence(1,"Стрессоустойчивость ", null));
         
         var competencies = Competencies().ToList();
         repoMoq.Setup(m =>
-                m.GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
+                m.GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(competencies);
         
         var queriesMoq = new Mock<ICompetenceValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, id, CancellationToken.None))
+                => q.IsCompetenceExistsAsync(It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(It.IsAny<string>(), It.IsAny<int?>()
+                    , It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult);
         
         var validationService = new CompetenceValidationService(queriesMoq.Object);

@@ -21,24 +21,6 @@ public class CreateCompetenceTest
         Assert.Equal(false, errors.HasErrors);
     }
     
-    private CompetenceService CreateService(string name, bool queryResult)
-    {
-        var competencies = Competencies().ToList();
-        var repoMoq = new Mock<ICompetenceRepository>();
-        repoMoq.Setup(m => m
-                .GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
-            .ReturnsAsync(competencies);
-        
-        var queriesMoq = new Mock<ICompetenceValidationQueries>();
-        queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, null, CancellationToken.None))
-            .ReturnsAsync(queryResult);
-        
-        var validationService = new CompetenceValidationService(queriesMoq.Object);
-        
-        return new CompetenceService(repoMoq.Object, validationService);
-    }
-    
     [Theory]
     [InlineData("", null)]
     public async Task Validate_Not_Valid(string name, string? description)
@@ -94,24 +76,25 @@ public class CreateCompetenceTest
         
         Assert.Equal(true, errors.HasErrors);
     }
-    //
-    // private CompetenceService CreateService(string name, bool queryResult)
-    // {
-    //     var competencies = Competencies().ToList();
-    //     var repoMoq = new Mock<ICompetenceRepository>();
-    //     repoMoq.Setup(m => m
-    //             .GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
-    //         .ReturnsAsync(competencies);
-    //     
-    //     var queriesMoq = new Mock<ICompetenceValidationQueries>();
-    //     queriesMoq.Setup(q 
-    //             => q.IsNameTakenAsync(name, null, CancellationToken.None))
-    //         .ReturnsAsync(queryResult);
-    //     
-    //     var validationService = new CompetenceValidationService(queriesMoq.Object);
-    //     
-    //     return new CompetenceService(repoMoq.Object, validationService);
-    // }
+    
+    private CompetenceService CreateService(string name, bool queryResult)
+    {
+        var competencies = Competencies().ToList();
+        var repoMoq = new Mock<ICompetenceRepository>();
+        repoMoq.Setup(m => m
+                .GetCompetenciesAsync(It.IsAny<CompetenceQuery>(), CancellationToken.None))
+            .ReturnsAsync(competencies);
+        
+        var queriesMoq = new Mock<ICompetenceValidationQueries>();
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(It.IsAny<string>(), It.IsAny<int?>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(queryResult);
+        
+        var validationService = new CompetenceValidationService(queriesMoq.Object);
+        
+        return new CompetenceService(repoMoq.Object, validationService);
+    }
 
     private static IEnumerable<Competence> Competencies()
     {

@@ -7,4 +7,6 @@ public class ReportRequest
     public ReportType ReportType { get; init; }
     
     protected ReportRequest(ReportType type) => ReportType = type;
+
+    public ReportRequest() {}
 }

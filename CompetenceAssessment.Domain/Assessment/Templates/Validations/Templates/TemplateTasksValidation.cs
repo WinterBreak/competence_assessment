@@ -15,6 +15,7 @@ public class TemplateTasksValidation: IValidationRule<ITemplate>
         if (template.Weights == null || !template.Weights.Any())
         {
             validationErrors.AddError(ErrorsConfg.DETAILS_ERROR, ErrorsConfg.EMPTY_FIELD_ERROR);
+            return;
         }
 
         if (template.Weights.Count < TEMPLATE_TASKS_MIN_COUNT)

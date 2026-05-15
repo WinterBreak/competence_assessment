@@ -7,7 +7,13 @@ public class _20260326_2000_CreateDatabase : Migration
 {
     public override void Up()
     {
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260326_2000_CreateDatabase.sql");
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Database",
+            "Sql",
+            "20260326_2000_CreateDatabase.sql"
+        );
+        Execute.Script(path);
     }
 
     public override void Down()

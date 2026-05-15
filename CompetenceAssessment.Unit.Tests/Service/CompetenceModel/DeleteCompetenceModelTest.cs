@@ -13,7 +13,7 @@ public class DeleteCompetenceModelModelTest
     {
         var command = new DeleteCompetenceModelCommand(id);
         
-        var service = CreateService(id, false);
+        var service = CreateService(isUsed: false, isExist: true);
         var errors = await service.DeleteCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(false, errors.HasErrors);
@@ -25,13 +25,13 @@ public class DeleteCompetenceModelModelTest
     {
         var command = new DeleteCompetenceModelCommand(id);
         
-        var service = CreateService(id, true);
+        var service = CreateService(isUsed: false, isExist: false);
         var errors = await service.DeleteCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
     }
     
-    private CompetenceModelService CreateService(int id, bool queryResult)
+    private CompetenceModelService CreateService(bool isExist, bool isUsed)
     {
         var repoMoq = new Mock<ICompetenceModelRepository>();
         repoMoq.Setup(m => m
@@ -41,8 +41,13 @@ public class DeleteCompetenceModelModelTest
         
         var queriesMoq = new Mock<ICompetenceModelValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsUsedInTemplateAsync(id, CancellationToken.None))
-            .ReturnsAsync(queryResult);
+                => q.IsModelExist(It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(isExist);
+        queriesMoq.Setup(q 
+                => q.IsUsedInTemplateAsync(It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(isUsed);
         
         var validationService = new CompetenceModelValidationService(queriesMoq.Object);
         

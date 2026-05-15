@@ -3,7 +3,7 @@ using CompetenceAssessment.Domain.Assessment;
 using Moq;
 using Xunit;
 
-namespace CompetenceModelAssessment.Unit.Tests.Service;
+namespace CompetenceAssessment.Unit.Tests.Service;
 
 public class UpdateCompetenceModelModelTest
 {
@@ -14,7 +14,7 @@ public class UpdateCompetenceModelModelTest
     {
         var command = new UpdateCompetenceModelCommand(1, name, description, WeightDict());
         
-        var service = CreateService(command.Name, command.Id, false);
+        var service = CreateService(command.Name, command.Id, false, false);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(false, errors.HasErrors);
@@ -26,7 +26,7 @@ public class UpdateCompetenceModelModelTest
     {
         var command = new UpdateCompetenceModelCommand(1, name, description, WeightDict());
         
-        var service = CreateService(command.Name, command.Id, false);
+        var service = CreateService(command.Name, command.Id, false, false);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -38,7 +38,7 @@ public class UpdateCompetenceModelModelTest
     {
         var command = new UpdateCompetenceModelCommand(1, name, description, WeightDict());
         
-        var service = CreateService(command.Name, command.Id,true);
+        var service = CreateService(command.Name, command.Id,true, true);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -49,7 +49,7 @@ public class UpdateCompetenceModelModelTest
     {
         var command = new UpdateCompetenceModelCommand(1, new string('a', 256), null, WeightDict());
         
-        var service = CreateService(command.Name, command.Id, false);
+        var service = CreateService(command.Name, command.Id, false, false);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -60,7 +60,7 @@ public class UpdateCompetenceModelModelTest
     {
         var command = new UpdateCompetenceModelCommand(1, "a", new string('a', 1001), WeightDict());
         
-        var service = CreateService(command.Name, command.Id, false);
+        var service = CreateService(command.Name, command.Id, false, false);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
@@ -72,29 +72,38 @@ public class UpdateCompetenceModelModelTest
         var command = new UpdateCompetenceModelCommand(1, "a", new string('a', 999)
             , new Dictionary<int, decimal>());
         
-        var service = CreateService(command.Name, command.Id, false);
+        var service = CreateService(command.Name, command.Id, false, false);
         var errors = await service.UpdateCompetenceModelAsync(command, CancellationToken.None);
         
         Assert.Equal(true, errors.HasErrors);
     }
 
-    private CompetenceModelService CreateService(string name, int id, bool queryResult)
+    private CompetenceModelService CreateService(string name, int id, bool isUsed, bool isTaken)
     {
         var repoMoq = new Mock<ICompetenceModelRepository>();
         repoMoq.Setup(m => m
-                .GetCompetenceModelAsync(It.IsAny<CompetenceModelQuery>(), CancellationToken.None))
+                .GetCompetenceModelAsync(It.IsAny<CompetenceModelQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new CompetenceModel(1,"Стрессоустойчивость ", null, DateTime.Now
                 ,ValidWeights().ToList() ));
         
         var models = Models().ToList();
         repoMoq.Setup(m =>
-                m.GetCompetenceModelsAsync(It.IsAny<CompetenceModelQuery>(), CancellationToken.None))
+                m.GetCompetenceModelsAsync(It.IsAny<CompetenceModelQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(models);
         
         var queriesMoq = new Mock<ICompetenceModelValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, id, CancellationToken.None))
-            .ReturnsAsync(queryResult);
+                => q.IsModelExist(It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        queriesMoq.Setup(q 
+                => q.IsNameTakenAsync(It.IsAny<string>(),It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(isTaken);
+        queriesMoq.Setup(q 
+                => q.IsUsedInTemplateAsync(It.IsAny<int>()
+                    , It.IsAny<CancellationToken>()))
+            .ReturnsAsync(isUsed);
         
         var validationService = new CompetenceModelValidationService(queriesMoq.Object);
         
