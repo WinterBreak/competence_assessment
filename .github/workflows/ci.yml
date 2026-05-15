@@ -7,13 +7,26 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  DOTNET_NOLOGO: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
   test:
     name: Build & Test
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: competence_assessment_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     
     steps:
       - name: Checkout code
@@ -29,10 +42,18 @@ jobs:
       
       - name: Build
         run: dotnet build --no-restore --configuration Release
-
-      - name: Run Unit and Integration Tests
-        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage"
       
+
+      - name: Run Unit Tests
+        run: dotnet test CompetenceAssessment.Unit.Tests/CompetenceAssessment.Unit.Tests.csproj --configuration Release --no-build
+      
+
+      - name: Run Integration Tests
+        run: dotnet test CompetenceAssessment.Integration.Tests/CompetenceAssessment.Integration.Tests.csproj --configuration Release --no-build
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=competence_assessment_test;Username=postgres;Password=postgres"
+      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -46,7 +67,9 @@ jobs:
           dotnet run --project CompetenceAssessment.Web/CompetenceAssessment.Web.csproj \
             --configuration Release \
             --urls "http://localhost:5173" &
-          sleep 10
+          sleep 15
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=competence_assessment_test;Username=postgres;Password=postgres"
       
       - name: Run Functional Tests
         run: |
