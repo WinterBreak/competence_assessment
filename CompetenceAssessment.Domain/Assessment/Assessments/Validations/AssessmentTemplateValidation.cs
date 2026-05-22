@@ -13,7 +13,7 @@ public class AssessmentTemplateValidation: IValidationRule<Assessment>
 
         await Task.Run(() =>
         {
-            if (assessment.Template.Id == null)
+            if (assessment.Template.Id == default || assessment.Template.Id == null || assessment.Template is null )
             {
                 validationErrors.AddError(ErrorsConfg.EMPTY_FIELD, ErrorsConfg.EMPTY_FIELD_ERROR);
                 return;

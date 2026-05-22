@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.Assessment;
 
@@ -22,6 +23,9 @@ public class TaskService: ITaskService
 
     public async Task<List<ITask>> GetTasksAsync(TaskQuery query, CancellationToken token = default)
         => await _repository.GetTasksAsync(query, token);
+    
+    public async Task<PaginatedResponse<ITask>> GetPaginatedTasksAsync(TaskQuery query, CancellationToken token = default)
+        => await _repository.GetPaginatedTasksAsync(query, token);
 
     public async Task<ValidationErrors> CreateTaskAsync(CreateTaskCommand command
                                                       , CancellationToken token = default)

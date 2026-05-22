@@ -5,25 +5,25 @@ public class ITask
     public int Id { get; set; }
     
     public string Text { get; set; }
-    
-    public string? Answer { get; set; }
+
+    public List<Answer> Answers { get; set; } = [];
     
     public TaskType Type { get; set; } = TaskType.None;
 
     public ITask() {}
     
-    public ITask(int id, string text, string? answer, TaskType type)
+    public ITask(int id, string text, TaskType type, List<Answer> answers)
     {
         Id = id;
         Text = text;
-        Answer = answer;
+        Answers = answers;
         Type = type;
     }
     
-    public ITask(string text, string? answer, TaskType type)
+    public ITask(string text, TaskType type, List<Answer> answers)
     {
         Text = text;
-        Answer = answer;
+        Answers = answers;
         Type = type;
     }
 }

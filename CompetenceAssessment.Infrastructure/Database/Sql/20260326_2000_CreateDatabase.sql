@@ -79,7 +79,7 @@ ALTER TABLE assessment.task OWNER TO postgres;
 
 CREATE TABLE assessment.task_type (
                                      id smallint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-                                     code varchar(50) NOT NULL,
+                                     code smallint NOT NULL,
                                      name varchar(255) NOT NULL,
                                      CONSTRAINT task_type_pk PRIMARY KEY (id)
 );
@@ -88,7 +88,6 @@ ALTER TABLE assessment.task_type OWNER TO postgres;
 
 CREATE TABLE assessment.scale (
                                  id smallint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-                                 min_score smallint NOT NULL,
                                  max_score smallint NOT NULL,
                                  code smallint NOT NULL,
                                  CONSTRAINT scale_id_pk PRIMARY KEY (id)
@@ -171,7 +170,7 @@ CREATE TABLE assessment.assessment (
 ALTER TABLE assessment.assessment OWNER TO postgres;
 
 CREATE TABLE assessment.assessment_result (
-                                             assessment_result_id bigint NOT NULL,
+                                             assessment_result_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
                                              task_id bigint,
                                              comment text,
                                              score smallint NOT NULL,
@@ -182,7 +181,7 @@ CREATE TABLE assessment.assessment_result (
 
 ALTER TABLE assessment.assessment_result OWNER TO postgres;
 
-ALTER TABLE assessment.competence_model_detail ADD CONSTRAINT competence_model_fk FOREIGN KEY (id_competence_model)
+ALTER TABLE assessment.competence_model_detail ADD CONSTRAINT competence_model_fk FOREIGN KEY (competence_model_id)
     REFERENCES assessment.competence_model (id) MATCH FULL
     ON DELETE SET NULL ON UPDATE CASCADE;
 

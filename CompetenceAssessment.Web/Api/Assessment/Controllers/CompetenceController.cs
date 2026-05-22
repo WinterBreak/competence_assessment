@@ -1,4 +1,5 @@
 using CompetenceAssessment.Domain.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompetenceAssessment.Web.Assessment;
@@ -21,6 +22,7 @@ public class CompetenceController: ControllerBase
     /// Получение компетенций
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> GetCompetencesAsync(CancellationToken token = default)
     {
         var query = new CompetenceQuery();
@@ -32,6 +34,7 @@ public class CompetenceController: ControllerBase
     /// Создание компетенции
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateCompetenceAsync(CompetenceCreateRequest request
         , CancellationToken token = default)
     {
@@ -46,6 +49,7 @@ public class CompetenceController: ControllerBase
     /// Изменение компетенции
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateCompetenceAsync(CompetenceUpdateRequest request
         , CancellationToken token = default)
     {
@@ -59,11 +63,13 @@ public class CompetenceController: ControllerBase
     /// <summary>
     /// Удаление компетенции
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCompetenceAsync(CompetenceDeleteRequest request
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> DeleteCompetenceAsync(int id
         , CancellationToken token = default)
     {
-        var command = new DeleteCompetenceCommand(request.Id);
+        var command = new DeleteCompetenceCommand(id);
         var errors = await _competenceService.DeleteCompetenceAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

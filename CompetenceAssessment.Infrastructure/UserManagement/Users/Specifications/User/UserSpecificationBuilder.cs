@@ -10,7 +10,8 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
         return WithIds(query.Ids)
             .WithRoles(query.RolesIds)
             .WithPosition(query.PositionId)
-            .WithDepartment(query.DepartmentId);
+            .WithDepartment(query.DepartmentId)
+            .WithEmail(query.Email);
         // .WithBoss(query.BossId);
     }
     
@@ -46,6 +47,18 @@ public class UserSpecificationBuilder: SpecificationBuilderBase<User>
         }
         
         var specification = new UserPositionSpecification(positionId);
+        AppendSpecification(specification);
+        return this;
+    }
+    
+    public UserSpecificationBuilder WithEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            return this;
+        }
+        
+        var specification = new UserEmailSpecification(email);
         AppendSpecification(specification);
         return this;
     }

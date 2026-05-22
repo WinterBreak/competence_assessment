@@ -4,7 +4,7 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public interface IAssessmentService
 {
-    Task<Assessment?> GetAssessmentAsync(AssessmentQuery query, CancellationToken token = default);
+    Task<Assessment?> GetAssessmentAsync(int id, CancellationToken token = default);
     
     Task<List<Assessment>> GetAssessmentsAsync(AssessmentQuery query, CancellationToken token = default);
     

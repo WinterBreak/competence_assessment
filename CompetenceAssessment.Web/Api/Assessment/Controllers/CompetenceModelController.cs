@@ -1,4 +1,5 @@
 using CompetenceAssessment.Domain.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompetenceAssessment.Web.Assessment;
@@ -21,17 +22,20 @@ public class CompetenceModelController: ControllerBase
     /// Получение моделей компетенций
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> GetCompetenceModelsAsync(CancellationToken token = default)
     {
         var query = new CompetenceModelQuery();
-        var competencies = await _competenceService.GetCompetenceModelsAsync(query, token);
-        return Ok(competencies);
+        var models = await _competenceService.GetCompetenceModelsAsync(query, token);
+        var dtos = models.Select(m => new CompetenceModelGetDto(m)).ToList();
+        return Ok(dtos);
     }
 
     /// <summary>
     /// Создание модели компетенций
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateCompetenceModelAsync(CompetenceModelCreateRequest request
         , CancellationToken token = default)
     {
@@ -46,6 +50,7 @@ public class CompetenceModelController: ControllerBase
     /// Изменение модели компетенций
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateCompetenceModelAsync(CompetenceModelUpdateRequest request
         , CancellationToken token = default)
     {
@@ -59,11 +64,12 @@ public class CompetenceModelController: ControllerBase
     /// <summary>
     /// Удаление модели компетенций
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteCompetenceModelAsync(CompetenceModelDeleteRequest request
-        , CancellationToken token = default)
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> DeleteCompetenceModelAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteCompetenceModelCommand(request.Id);
+        var command = new DeleteCompetenceModelCommand(id);
         var errors = await _competenceService.DeleteCompetenceModelAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

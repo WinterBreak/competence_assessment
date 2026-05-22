@@ -8,18 +8,17 @@ public class Task
     
     public string Text { get; set; }
     
-    public string? Answer { get; set; }
-    
     public virtual ICollection<AssessmentResult> Results { get; set; } = [];
     
     public virtual ICollection<TemplateDetail> TemplateDetails { get; set; } = [];
+    
+    public virtual ICollection<Answer> Answers { get; set; } = [];
 
     public Task() {}
     
-    public Task(int typeId, string text, string? answer)
+    public Task(int typeId, string text)
     {
         TaskTypeId = typeId;
         Text = text;
-        Answer = answer;
     }
 }

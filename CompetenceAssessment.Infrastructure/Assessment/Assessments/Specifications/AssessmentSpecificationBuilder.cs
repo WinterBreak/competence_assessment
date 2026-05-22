@@ -8,6 +8,7 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
     public AssessmentSpecificationBuilder WithQuery(AssessmentQuery query)
     {
         return WithIds(query.Ids)
+            .WithCandidates(query.CandidateIds)
             .WithType(query.Type)
             .WithStatus(query.IsFinished);
     }
@@ -24,6 +25,18 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
         return this;
     }
     
+    public AssessmentSpecificationBuilder WithCandidates(IEnumerable<int> ids)
+    {
+        if (ids == null || !ids.Any())
+        {
+            return this;
+        }
+        
+        var specification = new AssessmentCandidateSpecification(ids);
+        AppendSpecification(specification);
+        return this;
+    }
+    
     public AssessmentSpecificationBuilder WithType(AssessmentType type)
     {
         var specification = new AssessmentTypeSpecification(type);
@@ -32,9 +45,14 @@ public class AssessmentSpecificationBuilder: SpecificationBuilderBase<Assessment
     }
 
     // TODO для фильтрации еще нужен вариант "все". enum?
-    public AssessmentSpecificationBuilder WithStatus(bool isFinished)
+    public AssessmentSpecificationBuilder WithStatus(bool? isFinished)
     {
-        var specification = new AssessmentIsFinishedSpecification(isFinished);
+        if (isFinished is null)
+        {
+            return this;
+        }
+        
+        var specification = new AssessmentIsFinishedSpecification(isFinished.Value);
         AppendSpecification(specification);
         return this;
     }

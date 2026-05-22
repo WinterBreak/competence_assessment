@@ -1,5 +1,6 @@
 using CompetenceAssessment.Domain.Assessment;
 using CompetenceAssessment.Web.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TaskAssessment.Web.Assessment;
@@ -22,21 +23,24 @@ public class TaskController: ControllerBase
     /// Получение заданий
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetTasksAsync(CancellationToken token = default)
+    [Authorize(Policy = "Authenticated")]
+    public async Task<IActionResult> GetTasksAsync([FromQuery] TaskGetRequest request
+                                                 , CancellationToken token = default)
     {
-        var query = new TaskQuery();
-        var competencies = await _competenceService.GetTasksAsync(query, token);
-        return Ok(competencies);
+        var query = new TaskQuery(page: request.Page, pageSize: request.PageSize);
+        var tasks = await _competenceService.GetPaginatedTasksAsync(query, token);
+        return Ok(tasks);
     }
 
     /// <summary>
     /// Создание заданий
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateTaskAsync(TaskCreateRequest request
         , CancellationToken token = default)
     {
-        var command = new CreateTaskCommand(request.Text, (TaskType)request.TypeId, request.Answer);
+        var command = new CreateTaskCommand(request.Text, (TaskType)request.Type, request.Answers);
         var errors = await _competenceService.CreateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
@@ -47,10 +51,11 @@ public class TaskController: ControllerBase
     /// Изменение заданий
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateTaskAsync(TaskUpdateRequest request
         , CancellationToken token = default)
     {
-        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answer, (TaskType)request.Type);
+        var command = new UpdateTaskCommand(request.Id, request.Text,  request.Answers, (TaskType)request.Type);
         var errors = await _competenceService.UpdateTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)
@@ -60,11 +65,12 @@ public class TaskController: ControllerBase
     /// <summary>
     /// Удаление заданий
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteTaskAsync(TaskDeleteRequest request
-        , CancellationToken token = default)
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> DeleteTaskAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteTaskCommand(request.Id);
+        var command = new DeleteTaskCommand(id);
         var errors = await _competenceService.DeleteTaskAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

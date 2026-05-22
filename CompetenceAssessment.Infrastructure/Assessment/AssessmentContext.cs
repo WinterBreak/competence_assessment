@@ -22,6 +22,8 @@ public class AssessmentContext: DbContext
     
     public virtual DbSet<Task> Tasks { get; set; }
     
+    public virtual DbSet<Answer> Answers { get; set; }
+    
     public virtual DbSet<Template> Templates { get; set; }
     
     public virtual DbSet<TemplateDetail> TemplateDetails { get; set; }

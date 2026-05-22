@@ -29,7 +29,7 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
         var specification = new CompetenceModelSpecificationBuilder().WithQuery(query).Build();
         var models = await GetAllModels()
             .Where(specification)
-            .OrderByDescending(cm => cm.Name)
+            .OrderBy(cm => cm.Name)
             .ToListAsync(token);
         var modelIds = models.Select(model => model.Id).ToList();
         var weights = await GetWeights(modelIds, token);

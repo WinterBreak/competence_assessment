@@ -1,4 +1,5 @@
 using CompetenceAssessment.Infrastructure.Assessment;
+using Microsoft.AspNetCore.Identity;
 
 namespace CompetenceAssessment.Infrastructure.UserManagement;
 
@@ -17,6 +18,8 @@ public class User
     public string? SecondName { get; set; }
     
     public string LastName { get; set; }
+    
+    public string PasswordHash { get; set; }
     
     public int? BossId { get; set; }
     

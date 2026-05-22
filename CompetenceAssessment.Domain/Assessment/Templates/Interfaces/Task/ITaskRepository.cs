@@ -1,3 +1,5 @@
+using CompetenceAssessment.Core.Models;
+
 namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ITaskRepository
@@ -5,6 +7,8 @@ public interface ITaskRepository
     Task<ITask?> GetTaskAsync(TaskQuery query, CancellationToken token = default);
     
     Task<List<ITask>> GetTasksAsync(TaskQuery query, CancellationToken token = default);
+    
+    Task<PaginatedResponse<ITask>> GetPaginatedTasksAsync(TaskQuery query, CancellationToken token = default);
     
     Task AddTaskAsync(ITask task, CancellationToken token = default);
     

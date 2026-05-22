@@ -7,7 +7,13 @@ public class _20260331_2105_InsertScale : Migration
 {
     public override void Up()
     {
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260331_2105_InsertScale.sql");
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Database",
+            "Sql",
+            "20260331_2105_InsertScale.sql"
+        );
+        Execute.Script(path);
     }
 
     public override void Down()

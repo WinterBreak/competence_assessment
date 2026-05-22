@@ -6,6 +6,10 @@ public class UserQuery
     
     public List<int> RolesIds { get; } = [];
     
+    public string Email { get; set; }
+    
+    public string PasswordHash { get; set; }
+    
     public int PositionId { get;  }
     
     public int DepartmentId { get;  }
@@ -34,7 +38,7 @@ public class UserQuery
     }
     
     public UserQuery(int id = default, int roleId = default, int positionId = default
-        , int departmentId = default, int? bossId = default)
+        , int departmentId = default, int? bossId = default, string email = default, string passwordHash = default)
     {
         if (id != default)
         {
@@ -57,5 +61,7 @@ public class UserQuery
         }
 
         BossId = bossId;
+        Email = email;
+        PasswordHash = passwordHash;
     }
 }

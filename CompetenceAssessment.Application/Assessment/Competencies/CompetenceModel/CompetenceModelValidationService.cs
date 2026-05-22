@@ -20,16 +20,10 @@ public class CompetenceModelValidationService: ICompetenceModelValidationService
         CancellationToken token = default)
         => await ValidateAsync(model, token);
     
-    public async Task<ValidationErrors> ValidateDeletingCompetenceModelAsync(int id
+    public async Task<ValidationErrors> ValidateDeletingCompetenceModelAsync(CompetenceModel model
         , CancellationToken token = default)
     {
-        var model = new CompetenceModel { Id = id };
-        var errors = await ValidateAsync(model, token);
-        if (errors.HasErrors)
-        {
-            return errors;
-        }
-        
+        var errors = new ValidationErrors();
         await new CompetenceModelInTemplateValidation(_queries).ValidateAsync(model, errors, token);
         return errors;
     }

@@ -7,7 +7,13 @@ public class _20260401_0910_InsertUsers : Migration
 {
     public override void Up()
     {
-        Execute.Script("/Users/elizavetalozkina/RiderProjects/CompetenceAssessment.Web/CompetenceAssessment.Infrastructure/Database/Sql/20260401_0910_InsertUsers.sql");
+        var path = Path.Combine(
+            AppContext.BaseDirectory,
+            "Database",
+            "Sql",
+            "20260401_0910_InsertUsers.sql"
+        );
+        Execute.Script(path);
     }
 
     public override void Down()

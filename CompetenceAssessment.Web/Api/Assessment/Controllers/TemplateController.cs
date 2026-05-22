@@ -1,4 +1,5 @@
 using CompetenceAssessment.Domain.Assessment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompetenceAssessment.Web.Assessment;
@@ -21,17 +22,20 @@ public class TemplateController: ControllerBase
     /// Получение шаблонов
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = "Authenticated")]
     public async Task<IActionResult> GetTemplatesAsync(CancellationToken token = default)
     {
         var query = new TemplateQuery();
-        var competencies = await _assessmentService.GetTemplatesAsync(query, token);
-        return Ok(competencies);
+        var templates = await _assessmentService.GetTemplatesAsync(query, token);
+        var dtos = templates.Select(template => new TemplateDto(template)).ToList();
+        return Ok(dtos);
     }
 
     /// <summary>
     /// Создание шаблона
     /// </summary>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> CreateTemplatesAsync(TemplateCreateRequest request
                                                          , CancellationToken token = default)
     {
@@ -47,6 +51,7 @@ public class TemplateController: ControllerBase
     /// Изменение шаблона
     /// </summary>
     [HttpPatch]
+    [Authorize(Policy = "Admin")]
     public async Task<IActionResult> UpdateTemplateAsync(TemplateUpdateRequest request
                                                          , CancellationToken token = default)
     {
@@ -62,11 +67,12 @@ public class TemplateController: ControllerBase
     /// <summary>
     /// Удаление шаблона
     /// </summary>
+    [Route("{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteTemplateAsync(TemplateDeleteRequest request
-        , CancellationToken token = default)
+    [Authorize(Policy = "Admin")]
+    public async Task<IActionResult> DeleteTemplateAsync(int id, CancellationToken token = default)
     {
-        var command = new DeleteTemplateCommand(request.Id);
+        var command = new DeleteTemplateCommand(id);
         var errors = await _assessmentService.DeleteTemplateAsync(command, token);
         return errors.HasErrors
             ? BadRequest(errors)

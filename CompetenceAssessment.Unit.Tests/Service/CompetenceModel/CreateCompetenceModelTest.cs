@@ -89,7 +89,8 @@ public class CreateCompetenceModelTest
         
         var queriesMoq = new Mock<ICompetenceModelValidationQueries>();
         queriesMoq.Setup(q 
-                => q.IsNameTakenAsync(name, id, CancellationToken.None))
+                => q.IsNameTakenAsync(It.IsAny<string>(), It.IsAny<int?>()
+                    , It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult);
         
         var validationService = new CompetenceModelValidationService(queriesMoq.Object);
