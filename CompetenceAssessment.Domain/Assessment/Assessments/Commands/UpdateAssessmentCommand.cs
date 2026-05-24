@@ -37,10 +37,12 @@ public class UpdateAssessmentCommand
             Answers.TryGetValue(taskId, out var answer);
             Scores.TryGetValue(taskId, out var score);
             
+            
             var result = new AssessmentResult(AssessmentId, task, comment, answer, score);
             results.Add(result);
         }
         
+        assessment.Comment = Comment;
         assessment.Results = results;
         return assessment;
     }

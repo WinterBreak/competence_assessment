@@ -16,7 +16,7 @@ public class Assessment
     
     public string? Comment { get; set; }
     
-    public bool IsFinished { get; set; }
+    public int State { get; set; }
     
     public virtual Template Template { get; set; }
 
@@ -27,13 +27,13 @@ public class Assessment
     public Assessment() {}
     
     public Assessment(int templateId, int typeId, int userId, DateTime startDate, DateTime? endDate
-        , bool isFinished = false)
+        , int state)
     {
         TemplateId = templateId;
         AssessmentTypeId = typeId;
         UserId = userId;
         StartDate = startDate;
         EndDate = endDate;
-        IsFinished = isFinished;
+        State = state;
     }
 }

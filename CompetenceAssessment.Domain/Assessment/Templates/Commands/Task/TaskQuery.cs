@@ -12,7 +12,7 @@ public class TaskQuery
     
     public TaskQuery() {}
 
-    public TaskQuery(int page, int pageSize)
+    public TaskQuery(int page, int pageSize, TaskType taskType = TaskType.None)
     {
         Page = page;
         PageSize = pageSize;

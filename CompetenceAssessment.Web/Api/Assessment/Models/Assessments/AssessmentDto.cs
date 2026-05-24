@@ -18,7 +18,7 @@ public class AssessmentDto
     
     public List<AssessmentResultDto> Results { get; set; }
     
-    public bool IsFinished { get; set; }
+    public int State { get; set; }
     
     public AssessmentDto() {}
 
@@ -32,6 +32,6 @@ public class AssessmentDto
         Template = new AssessmentTemplateDto(assessment.Template);
         Inspectors = assessment.Inspectors;
         Results = assessment.Results?.Select(a => new AssessmentResultDto(a)).ToList();
-        IsFinished = assessment.IsFinished;
+        State = (int)assessment.State;
     }
 }

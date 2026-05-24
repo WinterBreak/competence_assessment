@@ -26,7 +26,7 @@ public class UpdateTaskCommand(int id, string text, Dictionary<string, bool> ans
         {
             if (answers.TryGetValue(key, out var answer))
             {
-                var newAnswer = new Answer(key, answer);
+                var newAnswer = new Answer(Id, key, answer);
                 newAnswers.Add(newAnswer);
             }
         }

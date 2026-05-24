@@ -27,6 +27,6 @@ public class CreateAssessmentCommand
         var inspectors = new List<AssessmentParticipant>();
         InspectorsIds.ForEach(id => inspectors.Add(new AssessmentParticipant { Id = id }));
         
-        return new Assessment(DateTime.UtcNow, null, candidate, Type, template, inspectors, false);
+        return new Assessment(DateTime.UtcNow, null, candidate, Type, template, inspectors, AssessmentState.InProgress);
     }
 }

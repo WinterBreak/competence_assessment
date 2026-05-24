@@ -76,8 +76,8 @@ public class TestCalcStrategyTests
             Type = TaskType.TestQuestion,
             Answers = new List<Answer>
             {
-                new Answer("A", true),
-                new Answer("B", false)
+                new Answer(1, "A", true),
+                new Answer(1, "B", false)
             }
         };
 

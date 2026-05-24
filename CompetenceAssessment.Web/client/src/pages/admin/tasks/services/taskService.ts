@@ -47,14 +47,14 @@ class TaskService {
     async getTasks(params?: {
         page?: number;
         pageSize?: number;
-        search?: string;
+        type?: number;
     }): Promise<PaginatedResponse<Task>> {
         try {
             const response = await this.api.get('/tasks', {
                 params: {
                     page: params?.page || 1,
                     pageSize: params?.pageSize || 10,
-                    searchTerm: params?.search || ''
+                    type: params?.type || 0
                 }
             });
             return response.data;

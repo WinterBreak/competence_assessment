@@ -141,29 +141,11 @@ public class TaskRepository: ITaskRepository
             return;
         }
         
-        var existingAnswersDict = details.ToDictionary(d => d.Text);
-        var updatedAnswersDict = updatedAnswers.ToDictionary(w => w.Id);
-        
-        foreach (var existingDetail in details)
-        {
-            if (updatedAnswersDict.TryGetValue(existingDetail.Id, out var updatedWeight))
-            {
-                existingDetail.Text = updatedWeight.Text;
-                existingDetail.IsCorrect = updatedWeight.IsCorrect;
-            }
-        }
-        
+        _context.Answers.RemoveRange(details);
         var answersToAdd = updatedAnswers
-            .Where(w => !existingAnswersDict.ContainsKey(w.Text))
             .Select(w => new Answer(w.TaskId, w.Text, w.IsCorrect))
             .ToList();
         await _context.Answers.AddRangeAsync(answersToAdd, token);
-        
-        var answersToRemove = details
-            .Where(d => !updatedAnswersDict.ContainsKey(d.TaskId))
-            .ToList();
-    
-        _context.Answers.RemoveRange(answersToRemove);
     }
     
     private IQueryable<Task> GetAllTasks() => _context.Tasks.Include(t => t.Answers);

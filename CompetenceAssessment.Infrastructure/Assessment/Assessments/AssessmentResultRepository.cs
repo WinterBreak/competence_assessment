@@ -45,10 +45,18 @@ public class AssessmentResultRepository: BLL.IAssessmentResultRepository
             return;
         }
 
+        var taskIds = results.Select(r => r.Task.Id).ToList();
+        var taskAnswers = _context.Answers
+            .Where(a => taskIds.Contains(a.TaskId) && a.IsCorrect)
+            .ToDictionary(a => a.TaskId, a => a.Text);
+        var scale = _context.Assessments
+            .Single(a => a.Id == results.First().AssessmentId).Template.ScaleId;
         var newResults = new List<AssessmentResult>();
         foreach (var result in results)
         {
-            var newResult = new AssessmentResult(result.Comment, result.Answer, result.Score
+            taskAnswers.TryGetValue(result.Task.Id, out var answer);
+            var score = answer == result.Answer ? scale : 0;
+            var newResult = new AssessmentResult(result.Comment, result.Answer, score
                                                , result.AssessmentId, result.Task.Id);
             newResults.Add(newResult);
         }

@@ -14,12 +14,13 @@ public class AssessmentServiceCreateTests
     {
         var repository = new Mock<IAssessmentRepository>();
         var validation = new Mock<IAssessmentValidationService>();
+        var stateService = new Mock<IAssessmentStateService>();
 
         validation
             .Setup(v => v.ValidateCreatingAssessmentAsync(It.IsAny<Assessment>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationErrors());
 
-        var service = new AssessmentService(repository.Object, validation.Object);
+        var service = new AssessmentService(repository.Object, validation.Object, stateService.Object);
 
         var command = new CreateAssessmentCommand(
             templateId: 1,
@@ -41,6 +42,7 @@ public class AssessmentServiceCreateTests
     {
         var repository = new Mock<IAssessmentRepository>();
         var validation = new Mock<IAssessmentValidationService>();
+        var stateService = new Mock<IAssessmentStateService>();
 
         var errors = new ValidationErrors();
         errors.AddMainError("error");
@@ -49,7 +51,7 @@ public class AssessmentServiceCreateTests
             .Setup(v => v.ValidateCreatingAssessmentAsync(It.IsAny<Assessment>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(errors);
 
-        var service = new AssessmentService(repository.Object, validation.Object);
+        var service = new AssessmentService(repository.Object, validation.Object, stateService.Object);
 
         var command = new CreateAssessmentCommand(
             templateId: 1,

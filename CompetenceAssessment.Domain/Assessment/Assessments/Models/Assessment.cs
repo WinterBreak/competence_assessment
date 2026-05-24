@@ -20,13 +20,15 @@ public class Assessment
 
     public List<AssessmentResult> Results { get; set; } = [];
     
-    public bool IsFinished { get; set; }
+    public AssessmentState State { get; set; }
+
+    public string Comment { get; set; }
     
     public Assessment() {}
 
     public Assessment(int id, DateTime startDate, DateTime? endDate, AssessmentParticipant candidate
         , AssessmentType type, ITemplate template, List<AssessmentParticipant> inspectors
-        , bool isFinished, List<AssessmentResult> results = default)
+        , AssessmentState state, string comment, List<AssessmentResult> results = default)
     {
         Id = id;
         StartDate = startDate;
@@ -36,12 +38,13 @@ public class Assessment
         Template = template;
         Inspectors = inspectors;
         Results = results;
-        IsFinished = isFinished;
+        State = state;
+        Comment = comment;
     }
     
     public Assessment(DateTime startDate, DateTime? endDate, AssessmentParticipant candidate
         , AssessmentType type, ITemplate template, List<AssessmentParticipant> inspectors
-        , bool isFinished, List<AssessmentResult> results = default)
+        , AssessmentState state, List<AssessmentResult> results = default)
     {
         StartDate = startDate;
         EndDate = endDate;
@@ -50,6 +53,6 @@ public class Assessment
         Template = template;
         Inspectors = inspectors;
         Results = results;
-        IsFinished = isFinished;
+        State = state;
     }
 }

@@ -48,6 +48,7 @@ export const Analytics: React.FC = () => {
     return (
         <AssessmentResults
             calculation={results!}
+            assessment={assessment!}
         />
     );
 };

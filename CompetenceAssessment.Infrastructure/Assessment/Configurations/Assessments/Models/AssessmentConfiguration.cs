@@ -36,8 +36,8 @@ public class AssessmentConfiguration: IEntityTypeConfiguration<Assessment.Assess
         builder.Property(x => x.Comment)
             .HasColumnName("comment");
         
-        builder.Property(x => x.IsFinished)
-            .HasColumnName("is_finished")
+        builder.Property(x => x.State)
+            .HasColumnName("state")
             .IsRequired();
 
 

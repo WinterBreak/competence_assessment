@@ -10,7 +10,7 @@ export interface Assessment {
     template: AssessmentTemplate;
     inspectors: AssessmentParticipant[];
     results: AssessmentResult[];
-    isFinished: boolean; // TODO нужна статусная модель
+    state: number; // TODO нужна статусная модель
 }
 
 export interface AssessmentTemplate {

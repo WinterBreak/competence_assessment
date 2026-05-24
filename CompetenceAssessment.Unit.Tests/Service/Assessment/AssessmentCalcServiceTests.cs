@@ -90,7 +90,7 @@ public class AssessmentCalcServiceTests
             Type = type,
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddHours(1),
-            IsFinished = true,
+            State = AssessmentState.Completed,
 
             Candidate = new AssessmentParticipant
             {

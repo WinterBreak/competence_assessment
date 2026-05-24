@@ -85,8 +85,8 @@ public class TestTaskValidationServiceTests
         var task = CreateValidTask();
         task.Answers =
         [
-            new Answer("A", false),
-            new Answer("B", false)
+            new Answer(0, "A", false),
+            new Answer(0, "B", false)
         ];
 
         var result = await service.ValidateCreatingTaskAsync(task);
@@ -189,8 +189,8 @@ public class TestTaskValidationServiceTests
             "What is C#?",
             TaskType.TestQuestion,
             [
-                new Answer("Programming language", true),
-                new Answer("Database", false)
+                new Answer(id, "Programming language", true),
+                new Answer(id, "Database", false)
             ]);
     }
 

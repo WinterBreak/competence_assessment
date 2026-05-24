@@ -292,32 +292,50 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
                             )}
                         </FormGroup>
                     )}
-                    
+
                     {showInspectorsSelection() && selectedCandidate && selectedTemplate && (
                         <FormGroup legendText={assessmentType === '3' ? 'Участники оценки' : 'Проверяющий'}>
-                            <div style={{ marginBottom: '0.5rem' }}>
-                                {selectedInspectors.length > 0 && (
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                                        {selectedInspectors.map(inspector => (
-                                            <Tag key={inspector.id} type="blue">
-                                                {inspector.lastName} {inspector.firstName}
-                                            </Tag>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <Button
-                                kind="secondary"
-                                onClick={() => setIsSelectInspectorsOpen(true)}
-                                renderIcon={Add}
-                            >
-                                {selectedInspectors.length > 0 ? 'Изменить выбор' : 'Выбрать'}
-                            </Button>
-
-                            {assessmentType === '3' && (
-                                <div style={{ fontSize: '0.75rem', color: '#6f6f6f', marginTop: '0.5rem' }}>
-                                    Выбрано: {selectedInspectors.length} / 10 (минимум 2)
+                            {selectedInspectors.length === 0 ? (
+                                <Button
+                                    kind="secondary"
+                                    onClick={() => setIsSelectInspectorsOpen(true)}
+                                    renderIcon={Add}
+                                >
+                                    {assessmentType === '3' ? 'Выбрать участников' : 'Выбрать проверяющего'}
+                                </Button>
+                            ) : (
+                                <div>
+                                    {selectedInspectors.map(inspector => (
+                                        <div
+                                            key={inspector.id}
+                                            style={{
+                                                padding: '1rem',
+                                                backgroundColor: '#f4f4f4',
+                                                borderRadius: '4px',
+                                                marginBottom: '0.5rem'
+                                            }}
+                                        >
+                                            <div style={{ fontWeight: 'bold' }}>
+                                                {inspector.lastName} {inspector.firstName} {inspector.secondName}
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#6f6f6f', marginTop: '0.25rem' }}>
+                                                {inspector.position} | {inspector.department}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        kind="ghost"
+                                        size="sm"
+                                        onClick={() => setIsSelectInspectorsOpen(true)}
+                                        style={{ marginTop: '0.5rem' }}
+                                    >
+                                        {assessmentType === '3' ? 'Изменить состав' : 'Изменить проверяющего'}
+                                    </Button>
+                                    {assessmentType === '3' && (
+                                        <div style={{ fontSize: '0.75rem', color: '#6f6f6f', marginTop: '0.5rem' }}>
+                                            Выбрано: {selectedInspectors.length} / 10 (минимум 2)
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </FormGroup>

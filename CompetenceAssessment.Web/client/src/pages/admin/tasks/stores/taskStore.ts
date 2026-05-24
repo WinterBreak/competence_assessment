@@ -36,7 +36,7 @@ export class TaskStore {
         this.loadTasks();
     }
     
-    async loadTasks() {
+    async loadTasks(type?: number) {
         this.isLoading = true;
         this.error = null;
 
@@ -44,7 +44,7 @@ export class TaskStore {
             const response = await taskService.getTasks({
                 page: this.currentPage,
                 pageSize: this.pageSize,
-                search: this.searchTerm,
+                type: type,
             });
 
             runInAction(() => {
@@ -154,28 +154,47 @@ export class TaskStore {
         }
     }
 
-    async exportTasks(): Promise<void> {
+    // Добавьте в TaskStore для фильтрации на клиенте
+    setFilteredTasks(filteredTasks: Task[]) {
+        this.tasks = filteredTasks;
+        // Обновляем totalItems для корректной пагинации
+        this.totalItems = filteredTasks.length;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    }
+
+// Или улучшенный метод loadTasks с поддержкой нескольких типов
+    async loadTasksWithMultipleTypes(types?: number[], search?: string) {
         this.isLoading = true;
         this.error = null;
 
         try {
-            const blob = await taskService.exportTasks();
-            // Создаем ссылку для скачивания
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `tasks_${new Date().toISOString()}.xlsx`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            if (types && types.length > 1) {
+                const promises = types.map(type =>
+                    taskService.getTasks({
+                        page: this.currentPage,
+                        pageSize: this.pageSize,
+                        type: type,
+                    })
+                );
 
-            runInAction(() => {
-                this.isLoading = false;
-            });
+                const responses = await Promise.all(promises);
+
+                runInAction(() => {
+                    // Объединяем результаты
+                    const allItems = responses.flatMap(r => r.items);
+                    this.tasks = allItems;
+                    this.totalItems = responses.reduce((sum, r) => sum + r.totalCount, 0);
+                    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+                    this.isLoading = false;
+                });
+            } else {
+                // Обычная загрузка
+                const type = types && types.length === 1 ? types[0] : undefined;
+                await this.loadTasks(type);
+            }
         } catch (error) {
             runInAction(() => {
-                this.error = error instanceof Error ? error.message : 'Ошибка экспорта';
+                this.error = error instanceof Error ? error.message : 'Ошибка загрузки данных';
                 this.isLoading = false;
             });
         }

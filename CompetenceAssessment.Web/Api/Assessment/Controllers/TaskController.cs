@@ -27,7 +27,7 @@ public class TaskController: ControllerBase
     public async Task<IActionResult> GetTasksAsync([FromQuery] TaskGetRequest request
                                                  , CancellationToken token = default)
     {
-        var query = new TaskQuery(page: request.Page, pageSize: request.PageSize);
+        var query = new TaskQuery(page: request.Page, pageSize: request.PageSize, (TaskType) request.Type);
         var tasks = await _competenceService.GetPaginatedTasksAsync(query, token);
         return Ok(tasks);
     }
