@@ -22,7 +22,7 @@ import {
     ToastNotification
 } from '@carbon/react';
 import { observer } from 'mobx-react-lite';
-import { TrashCan, Add } from '@carbon/react/icons';
+import { TrashCan, Add, Play, View, Incomplete } from '@carbon/react/icons';
 import { assessmentStore } from './stores/assessmentStore';
 import { AssessmentCreateModal } from './components/AssessmentCreateModal';
 import {Assessment, CreateAssessmentDto} from "./types/assessment.types";
@@ -30,15 +30,31 @@ import {Assessment, CreateAssessmentDto} from "./types/assessment.types";
 export const Assessments: React.FC = observer(() => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingAssessment, setEditingAssessment] = useState<Assessment | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         assessmentStore.loadAssessments();
+
+        // Получаем ID текущего пользователя из localStorage
+        const userId = localStorage.getItem('userId');
+        setCurrentUserId(userId);
     }, []);
+
+    // Проверка, является ли пользователь администратором
+    const isAdmin = (): boolean => {
+        const roles = localStorage.getItem('roles');
+        if (!roles) return false;
+        try {
+            return JSON.parse(roles).includes('Администратор');
+        } catch {
+            return false;
+        }
+    };
 
     const handleAdd = () => {
         setEditingAssessment(null);
-        setIsCreateModalOpen(true); // Изменено с setIsModalOpen на setIsCreateModalOpen
+        setIsCreateModalOpen(true);
     };
 
     const handleCreateAssessment = async (data: {
@@ -52,8 +68,8 @@ export const Assessments: React.FC = observer(() => {
             type: Number(data.type),
             candidateId: Number(data.candidateId),
             inspectorsIds: data.inspectorsIds != undefined
-            ? data.inspectorsIds.map(id => Number(id))
-            : []    
+                ? data.inspectorsIds.map(id => Number(id))
+                : []
         }
         await assessmentStore.createAssessment(newAssessment);
         setIsCreateModalOpen(false);
@@ -66,14 +82,39 @@ export const Assessments: React.FC = observer(() => {
     const handleExport = async () => {
         await assessmentStore.exportAssessments();
     };
-    
+
     const assessmentType = (type: string) => {
         switch (Number(type)){
             case 1: return 'Тестирование';
             case 2: return 'Анкетирование';
-            case 3: return ' Оценка 360 градусов';
+            case 3: return 'Оценка 360 градусов';
         }
     }
+
+    const assessmentState = (state: number) => {
+        switch (state){
+            case 1: return 'В процессе';
+            case 2: return 'На проверке';
+            case 3: return 'Завершено';
+            default: return 'Неизвестно';
+        }
+    }
+
+    // Проверка, является ли текущий пользователь аттестуемым
+    const isCurrentUserCandidate = (assessment: Assessment): boolean => {
+        if (!assessment){
+            return false;
+        }
+        return currentUserId == assessment.candidate?.id.toString();
+    };
+
+    // Проверка, является ли текущий пользователь проверяющим
+    const isCurrentUserInspector = (assessment: Assessment): boolean => {
+        if (!assessment){
+            return false;
+        }
+        return assessment.inspectors.some(inspector => inspector.id == currentUserId?.toString());
+    };
 
     const rows = useMemo(() =>
             assessmentStore.assessments.map(a => ({
@@ -81,8 +122,10 @@ export const Assessments: React.FC = observer(() => {
                 type: assessmentType(a.type),
                 startDate: a.startDate ? new Date(a.startDate).toLocaleString('ru-RU') : '',
                 endDate: a.endDate ? new Date(a.endDate).toLocaleString('ru-RU') : '',
-                isFinished: a.isFinished ? 'Завершено' : 'В процессе',
+                state: assessmentState(a.state),
+                stateCode: a.state,
                 candidate: a.candidate.fullName,
+                assessment: a
             })),
         [assessmentStore.assessments]);
 
@@ -94,8 +137,9 @@ export const Assessments: React.FC = observer(() => {
         { key: 'type', header: 'Метод оценки' },
         { key: 'startDate', header: 'Дата начала' },
         { key: 'endDate', header: 'Дата завершения' },
-        { key: 'isFinished', header: 'Статус' },
+        { key: 'state', header: 'Статус' },
         { key: 'candidate', header: 'Аттестуемый' },
+        { key: 'actions', header: 'Действия' },
     ];
 
     return (
@@ -168,61 +212,89 @@ export const Assessments: React.FC = observer(() => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {rows.map(row => (
-                                        <TableRow {...getRowProps({ row })} key={row.id}>
-                                            <TableSelectRow {...getSelectionProps({ row })} />
+                                    {rows.map(row => {
+                                        const assessment = assessmentStore.assessments.find(a => a.id.toString() === row.id)!;
+                                        const state = row.cells.find(cell => cell.info.header === 'state')?.value;
 
-                                            {row.cells.map(cell => {
-                                                if (cell.info.header === 'isFinished') {
-                                                    const isFinished = cell.value === 'Завершено';
-                                                    const assessmentId = row.id;
+                                        return (
+                                            <TableRow {...getRowProps({ row })} key={row.id}>
+                                                <TableSelectRow {...getSelectionProps({ row })} />
 
+                                                {row.cells.map(cell => {
+                                                    if (cell.info.header === 'state') {
+                                                        return (
+                                                            <TableCell key={cell.id}>
+                                                                {cell.value}
+                                                            </TableCell>
+                                                        );
+                                                    }
+                                                    else if (cell.info.header === 'candidate') {
+                                                        return (
+                                                            <TableCell key={cell.id}>
+                                                                {cell.value}
+                                                            </TableCell>
+                                                        );
+                                                    }
+                                                    else if (cell.info.header === 'actions') {
+                                                        // Для администратора не показываем кнопки
+                                                        if (isAdmin()) {
+                                                            return <TableCell key={cell.id}>—</TableCell>;
+                                                        }
+
+                                                        return (
+                                                            <TableCell key={cell.id}>
+                                                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                                                    {/* Кнопка для прохождения оценки (статус "В процессе" и пользователь - аттестуемый) */}
+                                                                    {state == 'В процессе' && isCurrentUserCandidate(assessment) && (
+                                                                        <Button
+                                                                            kind="primary"
+                                                                            size="sm"
+                                                                            renderIcon={Play}
+                                                                            onClick={() => navigate(`/assessment-form/${row.id}`)}
+                                                                            style={{ minWidth: 'fit-content' }}
+                                                                        >
+                                                                            Пройти
+                                                                        </Button>
+                                                                    )}
+
+                                                                    {/* Кнопка для проверки оценки (статус "На проверке" и пользователь - проверяющий) */}
+                                                                    {state == 'На проверке' && isCurrentUserInspector(assessment) && (
+                                                                        <Button
+                                                                            kind="secondary"
+                                                                            size="sm"
+                                                                            renderIcon={View}
+                                                                            onClick={() => navigate(`/assessment-review/${row.id}`)}
+                                                                            style={{ minWidth: 'fit-content' }}
+                                                                        >
+                                                                            Проверить
+                                                                        </Button>
+                                                                    )}
+
+                                                                    {/* Кнопка для просмотра результатов (статус "Завершено" и пользователь - аттестуемый) */}
+                                                                    {state == 'Завершено' && isCurrentUserCandidate(assessment) && (
+                                                                        <Button
+                                                                            kind="tertiary"
+                                                                            size="sm"
+                                                                            renderIcon={Incomplete}
+                                                                            onClick={() => navigate(`/results/${row.id}`)}
+                                                                            style={{ minWidth: 'fit-content' }}
+                                                                        >
+                                                                            Результаты
+                                                                        </Button>
+                                                                    )}
+                                                                </div>
+                                                            </TableCell>
+                                                        );
+                                                    }
                                                     return (
                                                         <TableCell key={cell.id}>
-                                                            {!isFinished && (
-                                                                <span
-                                                                    onClick={() => navigate(`/assessment-form/${assessmentId}`)}
-                                                                    style={{
-                                                                        cursor: 'pointer',
-                                                                        color: '#0f62ac',
-                                                                        textDecoration: 'underline',
-                                                                        fontWeight: 500
-                                                                    }}
-                                                                >
-                        {cell.value}
-                    </span>
-                                                            )}
-                                                            {isFinished && cell.value}
+                                                            {cell.value}
                                                         </TableCell>
                                                     );
-                                                }
-                                                else if (cell.info.header === 'candidate') {
-                                                    return (
-                                                        <TableCell key={cell.id}>
-                                                            (
-                                                                <span
-                                                                    onClick={() => navigate(`/results/${row.id}`)}
-                                                                    style={{
-                                                                        cursor: 'pointer',
-                                                                        color: '#0f62ac',
-                                                                        textDecoration: 'underline',
-                                                                        fontWeight: 500
-                                                                    }}
-                                                                >
-                                                                    {cell.value}
-                                                                </span>
-                                                            )
-                                                        </TableCell>
-                                                    );
-                                                }
-                                                return (
-                                                    <TableCell key={cell.id}>
-                                                        {cell.value}
-                                                    </TableCell>
-                                                );
-                                            })}
-                                        </TableRow>
-                                    ))}
+                                                })}
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
                             </Table>
                         </TableContainer>

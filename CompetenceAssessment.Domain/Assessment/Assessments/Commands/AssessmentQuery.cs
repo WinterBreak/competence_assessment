@@ -6,26 +6,26 @@ public class AssessmentQuery
     
     public List<int> CandidateIds { get; } = [];
     
+    public List<int> InspectoreIds { get; } = [];
+    
     public AssessmentType Type { get; } = AssessmentType.None;
     
-    public bool? IsFinished { get; } = null; // TODO пора вводить статусы
+    public AssessmentState State { get; }
 
     public AssessmentQuery() { }
     
-    public AssessmentQuery(List<int> ids = default, List<int> candidateIds = default
-        , AssessmentType type = AssessmentType.None, bool? isFinished = null)
+    public AssessmentQuery(List<int> ids = default, List<int> candidateIds = default, List<int> inspectoreIds = default
+        , AssessmentType type = AssessmentType.None, AssessmentState state = AssessmentState.All)
     {
         Ids = ids;
         CandidateIds = candidateIds;
+        InspectoreIds = inspectoreIds;
         Type = type;
-        if (isFinished is not null)
-        {
-            IsFinished = isFinished;
-        }
-        
+        State = state;
     }
     
-    public AssessmentQuery(int id = default, AssessmentType type = AssessmentType.None, bool? isFinished = null)
+    public AssessmentQuery(int id = default, AssessmentType type = AssessmentType.None
+        , AssessmentState state = AssessmentState.All)
     {
         if (id != default)
         {
@@ -33,9 +33,6 @@ public class AssessmentQuery
         }
         
         Type = type;
-        if (isFinished is not null)
-        {
-            IsFinished = isFinished;
-        }
+        State = state;
     }
 }

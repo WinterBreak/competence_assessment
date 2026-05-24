@@ -29,7 +29,7 @@ public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
         var users = await _userRepository.GetUsersAsync(new UserQuery(), token);
         var userIds = users.Select(u => u.Id).ToList();
         var assessments = await _assessmentRepository
-            .GetAssessmentsAsync(new AssessmentQuery(candidateIds: userIds, isFinished: true), token);
+            .GetAssessmentsAsync(new AssessmentQuery(candidateIds: userIds, state: AssessmentState.Completed), token);
         var competencies = await _competenceRepository.GetCompetenciesAsync(new CompetenceQuery(), token);
     
         var competenceDict = competencies.ToDictionary(c => c.Id);
@@ -70,7 +70,7 @@ public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
         
         var assessments = await _assessmentRepository.GetAssessmentsAsync(
             new AssessmentQuery(candidateIds: new List<int> { employeeId }
-                              , isFinished: true), token);
+                              , state: AssessmentState.Completed), token);
         
         var calculations = GetCalculations(assessments);
         

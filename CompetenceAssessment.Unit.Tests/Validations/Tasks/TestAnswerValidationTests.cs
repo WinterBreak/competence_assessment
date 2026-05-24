@@ -17,8 +17,8 @@ public class TaskAnswerValidationTests
             TaskType.TestQuestion,
             new List<Answer>
             {
-                new("Answer 1", false),
-                new("Answer 2", true)
+                new(default, "Answer 1", false),
+                new(default, "Answer 2", true)
             });
         
         await _rule.ValidateAsync(task, errors);
@@ -36,7 +36,7 @@ public class TaskAnswerValidationTests
             taskType,
             new List<Answer>
             {
-                new("Answer", true)
+                new(default, "Answer", true)
             });
         
         await _rule.ValidateAsync(task, errors);
@@ -82,8 +82,8 @@ public class TaskAnswerValidationTests
             TaskType.TestQuestion,
             new List<Answer>
             {
-                new("Answer 1", false),
-                new("Answer 2", false)
+                new(default, "Answer 1", false),
+                new(default, "Answer 2", false)
             });
         
         await _rule.ValidateAsync(task, errors);
@@ -107,7 +107,7 @@ public class TaskAnswerValidationTests
             TaskType.TestQuestion,
             new List<Answer>
             {
-                new("Answer", true)
+                new(default, "Answer", true)
             });
         
         await Assert.ThrowsAsync<ArgumentNullException>(() =>

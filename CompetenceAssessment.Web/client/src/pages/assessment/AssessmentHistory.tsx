@@ -33,6 +33,7 @@ export const AssessmentHistory: React.FC = observer(() => {
         assessmentStore.loadHistory();
     }, []);
 
+    // TODO utils. методы ниже повторяются в разных файлах
     const assessmentType = (type: string) => {
         switch (Number(type)){
             case 1: return 'Тестирование';
@@ -42,13 +43,21 @@ export const AssessmentHistory: React.FC = observer(() => {
         }
     }
 
+    const assessmentState = (state: number) => {
+        switch (state){
+            case 1: return 'В процессе';
+            case 2: return 'На проверке';
+            case 3: return 'Завершено';
+        }
+    }
+
     const rows = useMemo(() =>
             assessmentStore.assessments.map(a => ({
                 id: String(a.id),
                 type: assessmentType(a.type),
                 startDate: a.startDate ? new Date(a.startDate).toLocaleString('ru-RU') : '',
                 endDate: a.endDate ? new Date(a.endDate).toLocaleString('ru-RU') : '',
-                isFinished: a.isFinished,
+                state: assessmentState(a.state),
                 candidateId: a.candidate.id,
             })),
         [assessmentStore.assessments]);
@@ -61,7 +70,7 @@ export const AssessmentHistory: React.FC = observer(() => {
         { key: 'type', header: 'Метод оценки' },
         { key: 'startDate', header: 'Дата начала' },
         { key: 'endDate', header: 'Дата завершения' },
-        { key: 'isFinished', header: 'Статус' },
+        { key: 'state', header: 'Статус' },
         { key: 'actions', header: 'Действия' },
     ];
 
@@ -131,14 +140,14 @@ export const AssessmentHistory: React.FC = observer(() => {
                                 <TableBody>
                                     {rows.map(row => {
                                         const originalAssessment = assessmentStore.assessments.find(a => String(a.id) === row.id);
-                                        const isFinished = originalAssessment?.isFinished;
+                                        const isFinished = assessmentState(originalAssessment?.state!) == 'Завершено';
 
                                         return (
                                             <TableRow {...getRowProps({ row })} key={row.id}>
                                                 <TableSelectRow {...getSelectionProps({ row })} />
 
                                                 {row.cells.map(cell => {
-                                                    if (cell.info.header === 'isFinished') {
+                                                    if (cell.info.header === 'state') {
                                                         return (
                                                             <TableCell key={cell.id}>
                                                                     <span style={{

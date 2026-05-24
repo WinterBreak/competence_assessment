@@ -62,6 +62,9 @@
       <None Update="Database\Sql\20260430_2000_AlterUser.sql">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="Database\Sql\20260522_1030_AlterAssessment.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

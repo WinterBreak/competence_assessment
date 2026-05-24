@@ -14,6 +14,7 @@ import { Login } from "./pages/auth/Login";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { RoleBasedAnalytics } from "./components/RoleBasedAnalytics";
 import {AssessmentHistory} from "./pages/assessment/AssessmentHistory";
+import {ReviewForm} from "./pages/assessment/components/assessmentForm/ReviewForm";
 
 function App() {
     return (
@@ -30,7 +31,7 @@ function App() {
                 }>
                     <Route index element={<Assessments />} />
                     <Route path="/assessment-form/:id" element={<AssessmentFormPage />} />
-
+                    <Route path="/assessment-review/:id" element={<ReviewForm />} />
                     {/* Условный маршрут для аналитики */}
                     <Route path="/analytics" element={<RoleBasedAnalytics />} />
                     <Route path="/assessment_history" element={<AssessmentHistory />} />

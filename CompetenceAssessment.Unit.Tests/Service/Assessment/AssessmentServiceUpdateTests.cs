@@ -14,6 +14,7 @@ public class AssessmentServiceUpdateTests
     {
         var repository = new Mock<IAssessmentRepository>();
         var validation = new Mock<IAssessmentValidationService>();
+        var stateService = new Mock<IAssessmentStateService>();
 
         var existing = new Assessment
         {
@@ -29,7 +30,7 @@ public class AssessmentServiceUpdateTests
                         Type = TaskType.TestQuestion,
                         Answers = new List<Answer>
                         {
-                            new Answer("A", true)
+                            new Answer(1, "A", true)
                         }
                     },
                     Answer = "A",
@@ -50,7 +51,7 @@ public class AssessmentServiceUpdateTests
             .Setup(v => v.ValidateUpdatingAssessmentAsync(It.IsAny<Assessment>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ValidationErrors());
 
-        var service = new AssessmentService(repository.Object, validation.Object);
+        var service = new AssessmentService(repository.Object, validation.Object, stateService.Object);
 
         var command = new UpdateAssessmentCommand(
             assessmentId: 1,
@@ -73,6 +74,7 @@ public class AssessmentServiceUpdateTests
     {
         var repository = new Mock<IAssessmentRepository>();
         var validation = new Mock<IAssessmentValidationService>();
+        var stateService = new Mock<IAssessmentStateService>();
 
         var errors = new ValidationErrors();
         errors.AddMainError("not found");
@@ -81,7 +83,7 @@ public class AssessmentServiceUpdateTests
             .Setup(v => v.ValidateExistenceAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(errors);
 
-        var service = new AssessmentService(repository.Object, validation.Object);
+        var service = new AssessmentService(repository.Object, validation.Object, stateService.Object);
 
         var command = new UpdateAssessmentCommand(
             assessmentId: 1,

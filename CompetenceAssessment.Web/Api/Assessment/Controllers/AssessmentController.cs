@@ -57,7 +57,9 @@ public class AssessmentController: ControllerBase
     {
         var query = IsAdmin()
             ? new AssessmentQuery()
-            : new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, isFinished: false);
+            : IsExpert() ? new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() },
+                    inspectoreIds: new List<int> { GetCurrUserId() }, state: AssessmentState.Reviewing)
+                : new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, state: AssessmentState.All);
         
         var assessments = await _assessmentService.GetAssessmentsAsync(query, token);
         var dtos = assessments.Select(a => new AssessmentDto(a)).ToList();
@@ -72,7 +74,7 @@ public class AssessmentController: ControllerBase
 
     public async Task<IActionResult> GetAssessmentHistoryAsync(CancellationToken token = default)
     {
-        var query = new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, isFinished: true);
+        var query = new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, state: AssessmentState.All);
         var assessments = await _assessmentService.GetAssessmentsAsync(query, token);
         var dtos = assessments.Select(a => new AssessmentDto(a)).ToList();
         return Ok(dtos);
@@ -251,6 +253,18 @@ public class AssessmentController: ControllerBase
             .Select(c => c.Value);
         
         return userRoles.Any(r => r == RolesEnum.Admin.GetDescription());
+    }
+    
+    private bool IsExpert()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+
+        var userRoles = httpContext.User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value);
+        
+        return userRoles.Any(r => r == RolesEnum.Inspector.GetDescription());
     }
 
     private int GetCurrUserId()

@@ -3,15 +3,16 @@ import React, { useState } from 'react';
 import { TotalScoreGauge } from './TotalScoreGauge';
 import { CompetenciesRadar } from './CompetenciesRadar';
 import { CompetencyBar } from './CompetencyBar';
-import { CompetenciesTable } from './CompetenciesTable';
-import {AssessmentCalculation} from "../../types/assessment.types";
+import { TestingResultsView} from './CompetenciesTable';
+import {Assessment, AssessmentCalculation} from "../../types/assessment.types";
 
 interface AssessmentResultsProps {
     calculation: AssessmentCalculation;
+    assessment: Assessment;
 }
 
 export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
-                                                                        calculation
+                                                                        calculation, assessment
                                                                     }) => {
     const [viewType, setViewType] = useState<'chart' | 'list'>('chart');
     const [activeTab, setActiveTab] = useState<'radar' | 'detail'>('radar');
@@ -156,7 +157,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                                 ))}
                             </div>
                         ) : (
-                            <CompetenciesTable competencies={competencies} />
+                            <TestingResultsView currAssessment={assessment} />
                         )
                     )}
                 </div>

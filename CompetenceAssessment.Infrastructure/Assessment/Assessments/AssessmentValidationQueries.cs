@@ -16,7 +16,7 @@ public class AssessmentValidationQueries: IAssessmentValidationQueries
                                               , CancellationToken token = default)
         => await _context.Assessments.AnyAsync(a => a.UserId == candidateId 
                                                            && a.AssessmentTypeId == (int)type
-                                                           && a.IsFinished == false
+                                                           && a.State == (int)AssessmentState.InProgress
                                                            && a.TemplateId == templateId, token);
 
     public async Task<bool> IsExistAsync(int id, CancellationToken token = default)

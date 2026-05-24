@@ -20,8 +20,9 @@ public class Answer
         IsCorrect = isCorrect;
     }
     
-    public Answer(string text, bool isCorrect)
+    public Answer(int taskId, string text, bool isCorrect)
     {
+        TaskId = taskId;
         Text = text;
         IsCorrect = isCorrect;
     }

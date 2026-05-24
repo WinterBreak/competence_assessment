@@ -27,7 +27,7 @@ public class CreateTaskCommand
         {
             if (answers.TryGetValue(key, out var answer))
             {
-                var newAnswer = new Answer(key, answer);
+                var newAnswer = new Answer(default, key, answer);
                 newAnswers.Add(newAnswer);
             }
         }

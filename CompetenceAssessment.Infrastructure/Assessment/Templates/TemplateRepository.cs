@@ -102,29 +102,11 @@ public class TemplateRepository: ITemplateRepository
             return;
         }
         
-        var existingDetailsDict = details.ToDictionary(d => d.TaskId);
-        var updatedWeightsDict = updatedWeights.ToDictionary(w => w.Task.Id);
-        
-        foreach (var existingDetail in details)
-        {
-            if (updatedWeightsDict.TryGetValue(existingDetail.TaskId, out var updatedWeight))
-            {
-                existingDetail.Weight = updatedWeight.Weight;
-                existingDetail.CompetenceId = updatedWeight.CompetenceId;
-            }
-        }
-        
-        var weightsToAdd = updatedWeights
-            .Where(w => !existingDetailsDict.ContainsKey(w.Task.Id))
-            .Select(w => new TemplateDetail(templateId, w.Task.Id, w.CompetenceId, w.Weight))
-            .ToList();
-        await _context.TemplateDetails.AddRangeAsync(weightsToAdd, token);
-        
-        var weightsToRemove = details
-            .Where(d => !updatedWeightsDict.ContainsKey(d.TaskId))
-            .ToList();
-    
-         _context.TemplateDetails.RemoveRange(weightsToRemove);
+        _context.TemplateDetails.RemoveRange(details);
+         var weightsToAdd = updatedWeights
+             .Select(w => new TemplateDetail(templateId, w.Task.Id, w.CompetenceId, w.Weight))
+             .ToList();
+         await _context.TemplateDetails.AddRangeAsync(weightsToAdd, token);
     }
     
     private void UpdateWeights(List<TemplateDetail> updatingWeights

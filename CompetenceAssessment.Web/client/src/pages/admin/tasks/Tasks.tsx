@@ -92,10 +92,6 @@ export const Tasks: React.FC = observer(() => {
         setIsModalOpen(false);
         setEditingTask(null);
     };
-
-    const handleExport = async () => {
-        await taskStore.exportTasks();
-    };
     
     const allTypes = () => {
         return [
@@ -192,12 +188,6 @@ export const Tasks: React.FC = observer(() => {
                                             taskStore.setSearchTerm(e.toString());
                                         }}
                                     />
-
-                                    <TableToolbarMenu>
-                                        <TableToolbarAction onClick={handleExport}>
-                                            Экспорт
-                                        </TableToolbarAction>
-                                    </TableToolbarMenu>
 
                                     {selectedIds.length > 0 && (
                                         <Button

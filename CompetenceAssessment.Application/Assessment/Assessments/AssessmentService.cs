@@ -7,12 +7,15 @@ public class AssessmentService: IAssessmentService
 {
     private readonly IAssessmentRepository _repository;
     private readonly IAssessmentValidationService _validationService;
+    private readonly IAssessmentStateService _stateService;
 
     public AssessmentService(IAssessmentRepository repository
-        , IAssessmentValidationService validationService)
+        , IAssessmentValidationService validationService
+        , IAssessmentStateService stateService)
     {
         _repository = repository;
         _validationService = validationService;
+        _stateService = stateService;
     }
 
     public async Task<Domain.Assessment.Assessment?> GetAssessmentAsync(int id
@@ -56,6 +59,7 @@ public class AssessmentService: IAssessmentService
         var updatingAssessment = await _repository.GetAssessmentAsync(query, token);
         
         var updatedAssessment = command.Update(updatingAssessment);
+        _stateService.ProceedState(updatedAssessment);
         
         errors = await _validationService.ValidateUpdatingAssessmentAsync(updatedAssessment, token);
         if (errors.HasErrors)
