@@ -88,6 +88,20 @@ export const EmployeeCompetenceHeatmap: React.FC<CompetenceMatrixProps> = ({
                 >
                     Сортировать по {sortBy === 'fullName' ? 'среднему баллу' : 'имени'}
                 </Button>
+
+                <Button
+                    kind="primary"
+                    onClick={async () => {
+                        await assessmentService.exportAssessments({
+                            reportType: '0',
+                            departmentId: selectedDepartment === 'all'
+                                ? undefined
+                                : selectedDepartment,
+                            sortBy
+                        });}}
+                >
+                    Экспорт
+                </Button>
             </div>
 
             <table style={{
@@ -166,8 +180,8 @@ export const EmployeeCompetenceHeatmap: React.FC<CompetenceMatrixProps> = ({
                                         <td key={compName} style={{ padding: '0.75rem', textAlign: 'center' }}>
                                             <Tooltip label={getLevelText(competence.percentage)}>
                                                 <div style={{
-                                                    width: '40px',
-                                                    height: '40px',
+                                                    width: '45px',
+                                                    height: '45px',
                                                     borderRadius: '8px',
                                                     backgroundColor: getColorByLevel(competence.percentage),
                                                     margin: '0 auto',

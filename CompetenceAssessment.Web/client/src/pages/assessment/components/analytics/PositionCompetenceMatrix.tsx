@@ -9,7 +9,7 @@ import {
     Legend,
     ResponsiveContainer
 } from 'recharts';
-import { Accordion, AccordionItem, Tag, Select } from '@carbon/react';
+import {Accordion, AccordionItem, Tag, Select, Button} from '@carbon/react';
 import { assessmentService } from "../../services/assessmentService";
 import { EmployeeData, PositionData, EmployeeCompetenceData } from "../../types/assessment.types";
 
@@ -65,14 +65,15 @@ export const PositionCompetenceMatrix: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <h2>Матрица компетенций по должностям</h2>
 
-            <div style={{ marginBottom: '2rem' }}>
+    <div style={{padding: '2rem', overflowX: 'auto' }}>
+
+            <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <Select
                     id="position-filter"
                     labelText="Выберите должность"
                     value={selectedPosition}
+                    style={{ width: '400px' }}
                     onChange={(e) => setSelectedPosition(e.target.value)}
                 >
                     {positions.map(pos => (
@@ -81,6 +82,18 @@ export const PositionCompetenceMatrix: React.FC = () => {
                         </option>
                     ))}
                 </Select>
+
+                <Button
+                    kind="primary"
+                    onClick={async () => {
+                        await assessmentService.exportAssessments({
+                            reportType: '1',
+                            positionId: positionData?.positionId,
+                        });
+                    }}
+                >
+                    Экспорт
+                </Button>
             </div>
 
             {/* Gap Analysis Chart */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ResponsiveRadar } from '@nivo/radar';
-import { Select, Loading } from "@carbon/react";
+import {Select, Loading, Button} from "@carbon/react";
 import {assessmentService} from "../../services/assessmentService";
 
 interface CompetenceData {
@@ -69,7 +69,7 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
         );
     }
 
-    if (!departments || departments.length === 0) {
+    if (!departments || departments.length == 0) {
         return (
             <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px' }}>
                 <h3>Нет данных о департаментах</h3>
@@ -78,7 +78,7 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
         );
     }
 
-    const selectedDepartment = departments.find(d => d.departmentId === selectedDepartmentId);
+    const selectedDepartment = departments.find(d => d.departmentId == selectedDepartmentId);
     if (!selectedDepartment) return null;
 
     const getMaturityData = () => {
@@ -99,13 +99,12 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
     }));
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <h2>Матрица зрелости компетенций организации</h2>
-
-            <div style={{ marginBottom: '2rem' }}>
+        <div style={{padding: '2rem', overflowX: 'auto' }}>
+            <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <Select
                     id="department-filter"
                     labelText="Выберите департамент"
+                    style={{ width: '400px' }}
                     value={selectedDepartmentId}
                     onChange={(e) => setSelectedDepartmentId(e.target.value)}
                 >
@@ -115,6 +114,18 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
                         </option>
                     ))}
                 </Select>
+
+                <Button
+                    kind="primary"
+                    onClick={async () => {
+                        await assessmentService.exportAssessments({
+                            reportType: '2',
+                            departmentId: selectedDepartmentId
+                        });
+                    }}
+                >
+                    Экспорт
+                </Button>
             </div>
 
             <div style={{
@@ -230,7 +241,7 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                 <span>{item.competence}</span>
                                 <span style={{ color: MATURITY_LEVELS[level].color }}>
-                                    {item.уровеньНазвание} ({item.уровень}%)
+                                    {item.уровеньНазвание} ({item.уровень.toFixed(2)}%)
                                 </span>
                             </div>
                             <div style={{
@@ -266,7 +277,7 @@ export const OrganizationalMaturityMatrix: React.FC = () => {
                             Рекомендуется разработать программу развития и внедрить KPI.
                         </li>
                     ))}
-                    {data.filter(item => item.уровень < 60).length === 0 && (
+                    {data.filter(item => item.уровень < 60).length == 0 && (
                         <li>Отличный результат! Все компетенции на высоком уровне зрелости.</li>
                     )}
                 </ul>

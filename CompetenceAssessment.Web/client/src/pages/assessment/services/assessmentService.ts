@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import {
     Assessment, AssessmentCalcDto, AssessmentCalculation,
     CreateAssessmentDto, EmployeeData, PositionData,
-    UpdateAssessmentDto, CompetenceDevelopmentDto, DepartmentData
+    UpdateAssessmentDto, CompetenceDevelopmentDto, DepartmentData, ExportReportRequest
 } from '../types/assessment.types';
 import {ApiResponse} from "../../../types/common.types";
 
@@ -147,12 +147,50 @@ class AssessmentService {
         return response.data;
     };
 
-    async exportAssessments(): Promise<Blob> {
+    async exportAssessments(request: ExportReportRequest): Promise<void> {
         try {
-            const response = await this.api.get('/assessments/export', {
-                responseType: 'blob',
-            });
-            return response.data;
+            const response = await this.api.post(
+                '/assessments/export',
+                request,
+                {
+                    responseType: 'blob',
+                }
+            );
+
+            const blob = new Blob(
+                [response.data],
+                {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                }
+            );
+            
+            const contentDisposition = response.headers['content-disposition'];
+            let fileName = 'report.xlsx';
+            const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/);
+            if (utf8Match?.[1]) {
+                fileName = decodeURIComponent(utf8Match[1]);
+            } else {
+                const asciiMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+
+                if (asciiMatch?.[1]) {
+                    fileName = asciiMatch[1];
+                }
+            }
+
+            const url = window.URL.createObjectURL(response.data);
+
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.download = fileName;
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             throw this.handleError(error);
         }

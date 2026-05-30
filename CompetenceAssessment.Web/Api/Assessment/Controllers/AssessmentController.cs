@@ -4,6 +4,7 @@ using CompetenceAssessment.Domain.Assessment;
 using CompetenceAssessment.Domain.Export;
 using CompetenceAssessment.Domain.Export.Enumerations;
 using CompetenceAssessment.Domain.Export.Models;
+using CompetenceAssessment.Domain.Notifications;
 using CompetenceAssessment.Domain.UserManagement.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,18 +23,21 @@ public class AssessmentController: ControllerBase
     private readonly IAssessmentAnalyticsService _analyticsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IReportExportService _exportService;
+    private readonly IEmailNotificationService emailService;
 
     public AssessmentController(IAssessmentService assessmentService
         , IAssessmentCalcService calcService
         , IAssessmentAnalyticsService analyticsService
         , IHttpContextAccessor httpContextAccessor
-        , IReportExportService exportService)
+        , IReportExportService exportService
+        , IEmailNotificationService _emailService)
     {
         _assessmentService = assessmentService;
         _calcService = calcService;
         _analyticsService = analyticsService;
         _httpContextAccessor = httpContextAccessor;
         _exportService = exportService;
+        emailService = _emailService;
     }
     
     /// <summary>
@@ -91,9 +95,15 @@ public class AssessmentController: ControllerBase
         var command = new CreateAssessmentCommand(request.TemplateId, (AssessmentType)request.Type
                                                 , request.CandidateId, request.InspectorsIds);
         var errors = await _assessmentService.CreateAssessmentAsync(command, token);
-        return errors.HasErrors 
-            ? BadRequest(errors)
-            : Ok(errors);
+        if (errors.HasErrors)
+        {
+            return BadRequest(errors);
+        }
+
+        emailService.SendTemplatedEmailAsync("AssessmentStart",
+                                  new Dictionary<string, string>()
+                                           , GetCurrUserEmail());
+        return Ok(errors);
     }
 
     /// <summary>
@@ -199,16 +209,16 @@ public class AssessmentController: ControllerBase
         {
             ReportRequest reportRequest = request.ReportType switch
             {
-                ReportType.EmployeeCompetenceHeatmap => new HeatmapReportRequest
+                (int)ReportType.EmployeeCompetenceHeatmap => new HeatmapReportRequest
                 {
                     DepartmentId = request.DepartmentId,
                     SortBy = request.SortBy
                 },
-                ReportType.PositionMatrix => new PositionMatrixReportRequest
+                (int)ReportType.PositionMatrix => new PositionMatrixReportRequest
                 {
                     PositionId = request.PositionId
                 },
-                ReportType.OrganizationalMaturity => new OrganizationalMaturityReportRequest
+                (int)ReportType.OrganizationalMaturity => new OrganizationalMaturityReportRequest
                 {
                     DepartmentId = request.DepartmentId
                 },
@@ -221,9 +231,9 @@ public class AssessmentController: ControllerBase
 
             string fileName = request.ReportType switch
             {
-                ReportType.EmployeeCompetenceHeatmap => "Тепловая_карта_компетенций.xlsx",
-                ReportType.PositionMatrix => "Матрица_должностей.xlsx",
-                ReportType.OrganizationalMaturity => "Матрица_зрелости.xlsx",
+                (int)ReportType.EmployeeCompetenceHeatmap => "Тепловая_карта_компетенций.xlsx",
+                (int)ReportType.PositionMatrix => "Матрица_должностей.xlsx",
+                (int)ReportType.OrganizationalMaturity => "Матрица_зрелости.xlsx",
                 _ => "Отчёт.xlsx"
             };
 
@@ -280,5 +290,12 @@ public class AssessmentController: ControllerBase
         {
             throw new ArgumentNullException(nameof(userId));
         }
+    }
+
+    private string GetCurrUserEmail()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
+        return httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
     }
 }

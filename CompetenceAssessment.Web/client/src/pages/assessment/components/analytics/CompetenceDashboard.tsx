@@ -9,17 +9,13 @@ export const CompetenceDashboard: React.FC = () => {
 
     return (
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
-            <h1>Панель управления компетенциями</h1>
-            <p style={{ color: '#6f6f6f', marginBottom: '2rem' }}>
-                Аналитика и матрицы для администраторов системы
-            </p>
+            <h1>Аналитика по результатам оценки</h1>
 
             <Tabs selectedIndex={selectedTab} onChange={({ selectedIndex }) => setSelectedTab(selectedIndex)}>
                 <TabList>
                     <Tab>Тепловая карта сотрудников</Tab>
                     <Tab>Матрица должностей</Tab>
                     <Tab>Матрица зрелости</Tab>
-                    <Tab>Экспорт отчетов</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>
@@ -33,16 +29,6 @@ export const CompetenceDashboard: React.FC = () => {
                     </TabPanel>
                     <TabPanel>
                         <OrganizationalMaturityMatrix/>
-                    </TabPanel>
-                    <TabPanel>
-                        <div style={{ padding: '2rem' }}>
-                            <h3>Экспорт данных</h3>
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                <Button>Экспорт в Excel</Button>
-                                <Button>Экспорт в PDF</Button>
-                                <Button>Сформировать отчет</Button>
-                            </div>
-                        </div>
                     </TabPanel>
                 </TabPanels>
             </Tabs>
