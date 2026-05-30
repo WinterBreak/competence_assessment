@@ -11,21 +11,24 @@ public class AssessmentQuery
     public AssessmentType Type { get; } = AssessmentType.None;
     
     public AssessmentState State { get; }
+    
+    public bool WithChildren { get; }
 
-    public AssessmentQuery() { }
+    public AssessmentQuery(bool withChildren = true) { }
     
     public AssessmentQuery(List<int> ids = default, List<int> candidateIds = default, List<int> inspectoreIds = default
-        , AssessmentType type = AssessmentType.None, AssessmentState state = AssessmentState.All)
+        , AssessmentType type = AssessmentType.None, AssessmentState state = AssessmentState.All, bool withChildren = true)
     {
         Ids = ids;
         CandidateIds = candidateIds;
         InspectoreIds = inspectoreIds;
         Type = type;
         State = state;
+        WithChildren = withChildren;
     }
     
     public AssessmentQuery(int id = default, AssessmentType type = AssessmentType.None
-        , AssessmentState state = AssessmentState.All)
+        , AssessmentState state = AssessmentState.All, bool withChildren = true)
     {
         if (id != default)
         {
@@ -34,5 +37,6 @@ public class AssessmentQuery
         
         Type = type;
         State = state;
+        WithChildren = withChildren;
     }
 }

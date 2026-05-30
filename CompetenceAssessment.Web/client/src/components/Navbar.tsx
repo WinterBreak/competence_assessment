@@ -59,7 +59,7 @@ function Navbar() {
         ],
         assessment: canAccessAdmin
             ? [{ label: 'Оценка', href: '/' }, { label: 'Аналитика', href: '/analytics' }]
-            : [{ label: 'Оценка', href: '/' }, { label: 'Аналитика', href: '/analytics' },  { label: 'История', href: '/assessment_history'}]
+            : [{ label: 'Оценка', href: '/' }, { label: 'Аналитика', href: '/analytics' }]
     }
 
     const handleSideNavClick = (section: string, defaultPath: string) => {

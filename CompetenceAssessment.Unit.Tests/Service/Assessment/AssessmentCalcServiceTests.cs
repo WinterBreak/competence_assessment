@@ -28,47 +28,6 @@ public class AssessmentCalcServiceTests
             _service.CalculateAsync(1));
     }
 
-    // [Fact]
-    // public async Task CalculateAsync_Should_Calculate_Testing_Assessment()
-    // {
-    //     var assessment = CreateAssessment(AssessmentType.Testing);
-    //
-    //     _repositoryMock
-    //         .Setup(x => x.GetAssessmentAsync(It.IsAny<AssessmentQuery>(), It.IsAny<CancellationToken>()))
-    //         .ReturnsAsync(assessment);
-    //
-    //     var result = await _service.CalculateAsync(1);
-    //
-    //     Assert.NotNull(result);
-    // }
-    //
-    // [Fact]
-    // public async Task CalculateAsync_Should_Calculate_Survey_Assessment()
-    // {
-    //     var assessment = CreateAssessment(AssessmentType.Survey);
-    //
-    //     _repositoryMock
-    //         .Setup(x => x.GetAssessmentAsync(It.IsAny<AssessmentQuery>(), It.IsAny<CancellationToken>()))
-    //         .ReturnsAsync(assessment);
-    //
-    //     var result = await _service.CalculateAsync(1);
-    //
-    //     Assert.NotNull(result);
-    // }
-
-    [Fact]
-    public async Task CalculateAsync_Should_Throw_For_360_Assessment_When_Strategy_Not_Implemented()
-    {
-        var assessment = CreateAssessment(AssessmentType._360Degrees_);
-
-        _repositoryMock
-            .Setup(x => x.GetAssessmentAsync(It.IsAny<AssessmentQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(assessment);
-
-        await Assert.ThrowsAsync<NotImplementedException>(() =>
-            _service.CalculateAsync(1));
-    }
-
     [Fact]
     public async Task CalculateAsync_Should_Throw_When_Assessment_Type_Is_Invalid()
     {

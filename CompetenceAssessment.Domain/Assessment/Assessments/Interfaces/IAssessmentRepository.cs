@@ -6,6 +6,8 @@ public interface IAssessmentRepository
     
     Task<List<Assessment>> GetAssessmentsAsync(AssessmentQuery query, CancellationToken token = default);
     
+    Task<Assessment> GetFullDegreeAssessment(int assessmentId, CancellationToken token = default);
+    
     Task AddAssessmentAsync(Assessment assessment, CancellationToken token = default);
     
     Task UpdateAssessmentAsync(Assessment assessment, CancellationToken token = default);

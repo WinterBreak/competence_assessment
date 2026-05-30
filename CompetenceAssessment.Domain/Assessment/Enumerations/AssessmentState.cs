@@ -15,4 +15,7 @@ public enum AssessmentState
     
     [Description("Завершено")]
     Completed = 3,
+    
+    [Description("В ожидании")]
+    Waiting = 4
 } 

@@ -6,18 +6,15 @@ namespace CompetenceAssessment.Infrastructure.Assessment.Assessments;
 
 public class AssessmentAnalyticsRepository: IAssessmentAnalyticsRepository
 {
-    private readonly AssessmentContext _context;
     private readonly IUserRepository _userRepository;
     private readonly ICompetenceRepository _competenceRepository;
     private readonly IAssessmentRepository _assessmentRepository;
 
     public AssessmentAnalyticsRepository(
-          AssessmentContext context
-        , IUserRepository userRepository
+          IUserRepository userRepository
         , ICompetenceRepository comppetenceRepository
         , IAssessmentRepository assessmentRepository)
     {
-        _context = context;
         _userRepository = userRepository;
         _competenceRepository = comppetenceRepository;
         _assessmentRepository = assessmentRepository;

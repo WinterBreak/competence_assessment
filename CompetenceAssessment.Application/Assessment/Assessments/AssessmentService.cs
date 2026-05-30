@@ -59,7 +59,6 @@ public class AssessmentService: IAssessmentService
         var updatingAssessment = await _repository.GetAssessmentAsync(query, token);
         
         var updatedAssessment = command.Update(updatingAssessment);
-        _stateService.ProceedState(updatedAssessment);
         
         errors = await _validationService.ValidateUpdatingAssessmentAsync(updatedAssessment, token);
         if (errors.HasErrors)
@@ -69,6 +68,7 @@ public class AssessmentService: IAssessmentService
         
         await _repository.UpdateAssessmentAsync(updatedAssessment, token);
         await _repository.SaveAllChangesAsync(token);
+        await _stateService.ProceedStateAsync(updatedAssessment);
         return errors;
     }
 }
