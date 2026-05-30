@@ -101,8 +101,8 @@ public class AssessmentAnalyticsService: IAssessmentAnalyticsService
             return null;
         }
         
-        var score = competencies.Sum(c => c.Score) / participantCount;
-        var percentage = competencies.Sum(c => c.Percentage) / participantCount;
+        var score = competencies.Sum(c => c.Score) / competencies.Count();
+        var percentage = competencies.Sum(c => c.Percentage) / competencies.Count();
         return new PositionCompetencies(positionId, positionName, score, percentage
                                       , competencies, employees);
     }
@@ -117,8 +117,8 @@ public class AssessmentAnalyticsService: IAssessmentAnalyticsService
             return null;
         }
         
-        var score = competencies.Sum(c => c.Score / competencies.Count());
-        var percentage = competencies.Sum(c => c.Percentage / competencies.Count());
+        var score = competencies.Sum(c => c.Score) / competencies.Count();
+        var percentage = competencies.Sum(c => c.Percentage) / competencies.Count();
         return new DepartmentCompetencies(departmentId, departmentName, score, percentage
             , employees.ToList(), competencies.ToList());
     }

@@ -14,4 +14,16 @@
       <ProjectReference Include="..\CompetenceAssessment.Core\CompetenceAssessment.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Notifications\Templates\AssessmentCompletion.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Notifications\Templates\AssessmentReviewing.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Notifications\Templates\AssessmentStart.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

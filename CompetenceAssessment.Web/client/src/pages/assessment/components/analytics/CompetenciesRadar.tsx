@@ -17,8 +17,8 @@ interface CompetenciesRadarProps {
 export const CompetenciesRadar: React.FC<CompetenciesRadarProps> = ({ competencies }) => {
     const data = Array.from(competencies.entries()).map(([name, values]) => ({
         competence: name,
-        эталон: values.reference,
-        получено: values.received,
+        // эталон: values.reference,
+        получено: (values.received * 100 / values.reference).toFixed(2),
         процент: values.percentage
     }));
 
@@ -38,13 +38,13 @@ export const CompetenciesRadar: React.FC<CompetenciesRadarProps> = ({ competenci
                         domain={[0, 100]}
                         tick={{ fill: '#6f6f6f' }}
                     />
-                    <Radar
-                        name="Эталон"
-                        dataKey="эталон"
-                        stroke="#0f62ac"
-                        fill="#0f62ac"
-                        fillOpacity={0.3}
-                    />
+                    {/*<Radar*/}
+                    {/*    name="Эталон"*/}
+                    {/*    dataKey="эталон"*/}
+                    {/*    stroke="#0f62ac"*/}
+                    {/*    fill="#0f62ac"*/}
+                    {/*    fillOpacity={0.3}*/}
+                    {/*/>*/}
                     <Radar
                         name="Получено"
                         dataKey="получено"

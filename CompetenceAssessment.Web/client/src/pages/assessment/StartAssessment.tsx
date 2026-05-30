@@ -79,10 +79,6 @@ export const Assessments: React.FC = observer(() => {
         setIsCreateModalOpen(false);
     };
 
-    const handleExport = async () => {
-        await assessmentStore.exportAssessments();
-    };
-
     const assessmentType = (type: string) => {
         switch (Number(type)){
             case 1: return 'Тестирование';
@@ -182,12 +178,6 @@ export const Assessments: React.FC = observer(() => {
                                             assessmentStore.setSearchTerm(e.toString());
                                         }}
                                     />
-
-                                    <TableToolbarMenu>
-                                        <TableToolbarAction onClick={handleExport}>
-                                            Экспорт
-                                        </TableToolbarAction>
-                                    </TableToolbarMenu>
 
                                     <Button
                                         kind="primary"

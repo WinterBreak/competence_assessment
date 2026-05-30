@@ -1,5 +1,5 @@
 using System.Reflection;
-using System.Security.Claims;
+using CompetenceAssessment.Domain.Notifications;
 using CompetenceAssessment.Infrastructure;
 using CompetenceAssessment.Infrastructure.Database;
 using CompetenceAssessment.Infrastructure.UserManagement;
@@ -15,12 +15,12 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen(c =>
-//     c.SwaggerDoc("v1", new OpenApiInfo 
-//     { 
-//         Title = "Competence assessment", 
-//         Version = "v1" 
-//     }));
+builder.Services.AddSwaggerGen(c =>
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Competence assessment", 
+        Version = "v1" 
+    }));
 builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 
@@ -31,6 +31,9 @@ builder.Services.AddSpaStaticFiles(configuration =>
 {
     configuration.RootPath = "client/build";
 });
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
 
 var assemblies = new[]
 {
@@ -113,13 +116,13 @@ if (!app.Environment.IsDevelopment())
 if (app.Environment.IsDevelopment())
 {
     app.Services.RunMigrations();
-    app.MapOpenApi();
-    // app.UseSwagger();
-    // app.UseSwaggerUI(c => 
-    // {
-    //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence assessment V1");
-    //     c.RoutePrefix = "swagger";
-    // });
+    // app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => 
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Competence assessment V1");
+        c.RoutePrefix = "swagger";
+    });
 }
 
 app.UseStaticFiles();

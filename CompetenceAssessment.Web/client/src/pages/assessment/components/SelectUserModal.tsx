@@ -139,7 +139,7 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
     };
 
     const isRowSelected = (userId: string) => {
-        return selectedRows.some(u => u.id === userId);
+        return selectedRows.some(u => u.id == userId);
     };
 
     const headers = [
@@ -177,7 +177,7 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
             primaryButtonText="Выбрать"
             secondaryButtonText="Отмена"
             onRequestSubmit={handleSubmit}
-            primaryButtonDisabled={multiSelect && maxSelect ? selectedRows.length < (maxSelect === 10 ? 2 : 1) : false}
+            primaryButtonDisabled={multiSelect && maxSelect ? selectedRows.length < (maxSelect == 10 ? 2 : 1) : false}
         >
             <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>
@@ -238,9 +238,9 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
                                 <TableRow>
                                     <TableSelectAll
                                         {...getSelectionProps()}
-                                        checked={selectedRows.length === filteredUsers.length && filteredUsers.length > 0}
+                                        checked={selectedRows.length == filteredUsers.length && filteredUsers.length > 0}
                                         indeterminate={selectedRows.length > 0 && selectedRows.length < filteredUsers.length}
-                                        onSelect={() => handleSelectAll(selectedRows.length === 0)}
+                                        onSelect={() => handleSelectAll(selectedRows.length == 0)}
                                     />
                                     {headers.map(header => (
                                         <TableHeader {...getHeaderProps({ header })} key={header.key}>
@@ -252,9 +252,9 @@ export const SelectUsersModal: React.FC<SelectUsersModalProps> = observer(({
 
                             <TableBody>
                                 {rows.map(row => {
-                                    const user = row.cells.find(c => c.info.header === 'fullName')?.value;
+                                    const user = row.cells.find(c => c.info.header == 'fullName')?.value;
                                     const originalUser = filteredUsers.find(u =>
-                                        `${u.lastName} ${u.firstName} ${u.secondName || ''}` === user
+                                        `${u.lastName} ${u.firstName} ${u.secondName || ''}` == user
                                     );
 
                                     return (

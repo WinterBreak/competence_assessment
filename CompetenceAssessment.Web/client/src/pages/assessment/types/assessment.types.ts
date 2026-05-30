@@ -123,3 +123,10 @@ export interface DepartmentData {
     competencies: CompetenceData[];
     employees: AssessmentParticipant[];
 }
+
+export interface ExportReportRequest {
+    reportType: string;
+    departmentId?: string;
+    positionId?: string;
+    sortBy?: string;
+}

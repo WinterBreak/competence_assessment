@@ -16,6 +16,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="MailKit" Version="4.16.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.9" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.15" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.12" />
@@ -31,6 +32,7 @@
         </PackageReference>
         <PackageReference Include="Nabs.Aspire.ServiceDefaults" Version="9.0.89" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { TotalScoreGauge } from './TotalScoreGauge';
 import { CompetenciesRadar } from './CompetenciesRadar';
 import { CompetencyBar } from './CompetencyBar';
-import { TestingResultsView} from './CompetenciesTable';
-import {Assessment, AssessmentCalculation} from "../../types/assessment.types";
+import { TestingResultsView } from './CompetenciesTable';
+import { Assessment, AssessmentCalculation } from "../../types/assessment.types";
 
 interface AssessmentResultsProps {
     calculation: AssessmentCalculation;
@@ -12,10 +12,10 @@ interface AssessmentResultsProps {
 }
 
 export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
-                                                                        calculation, assessment
+                                                                        calculation,
+                                                                        assessment
                                                                     }) => {
-    const [viewType, setViewType] = useState<'chart' | 'list'>('chart');
-    const [activeTab, setActiveTab] = useState<'radar' | 'detail'>('radar');
+    const [activeTab, setActiveTab] = useState<'radar' | 'detail' | 'answers'>('radar');
 
     const competencies = new Map();
     Object.keys(calculation.competenciesReceivedPercentage).forEach(key => {
@@ -76,36 +76,6 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                 </div>
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-                <button
-                    onClick={() => setViewType('chart')}
-                    style={{
-                        padding: '0.5rem 1rem',
-                        marginRight: '0.5rem',
-                        backgroundColor: viewType === 'chart' ? '#0f62ac' : '#f4f4f4',
-                        color: viewType === 'chart' ? 'white' : '#161616',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Графики
-                </button>
-                <button
-                    onClick={() => setViewType('list')}
-                    style={{
-                        padding: '0.5rem 1rem',
-                        backgroundColor: viewType === 'list' ? '#0f62ac' : '#f4f4f4',
-                        color: viewType === 'list' ? 'white' : '#161616',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Таблица
-                </button>
-            </div>
-
             {/* Кастомные табы вместо Carbon Tabs */}
             <div>
                 <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #e0e0e0' }}>
@@ -123,6 +93,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                     >
                         Радар
                     </button>
+
                     <button
                         onClick={() => setActiveTab('detail')}
                         style={{
@@ -137,28 +108,44 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                     >
                         Детальный список
                     </button>
+
+                    <button
+                        onClick={() => setActiveTab('answers')}
+                        style={{
+                            padding: '0.75rem 1rem',
+                            backgroundColor: 'transparent',
+                            border: 'none',
+                            borderBottom: activeTab === 'answers' ? '2px solid #0f62ac' : 'none',
+                            color: activeTab === 'answers' ? '#0f62ac' : '#161616',
+                            cursor: 'pointer',
+                            fontWeight: activeTab === 'answers' ? 'bold' : 'normal'
+                        }}
+                    >
+                        Ответы
+                    </button>
                 </div>
 
                 <div style={{ marginTop: '1rem' }}>
                     {activeTab === 'radar' && (
                         <CompetenciesRadar competencies={competencies} />
                     )}
+
                     {activeTab === 'detail' && (
-                        viewType === 'chart' ? (
-                            <div>
-                                {Array.from(competencies.entries()).map(([name, data]) => (
-                                    <CompetencyBar
-                                        key={name}
-                                        name={name}
-                                        reference={data.reference}
-                                        received={data.received}
-                                        percentage={data.percentage}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <TestingResultsView currAssessment={assessment} />
-                        )
+                        <div>
+                            {Array.from(competencies.entries()).map(([name, data]) => (
+                                <CompetencyBar
+                                    key={name}
+                                    name={name}
+                                    reference={data.reference}
+                                    received={data.received}
+                                    percentage={data.percentage}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'answers' && (
+                        <TestingResultsView currAssessment={assessment} />
                     )}
                 </div>
             </div>
@@ -178,6 +165,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                             от эталона. Рекомендуется пройти дополнительные курсы и тренинги.
                         </li>
                     ))}
+
                     {weaknesses.length === 0 && (
                         <li>Отличный результат! Все компетенции на высоком уровне.</li>
                     )}

@@ -200,32 +200,32 @@ export class AssessmentStore {
         }
     }
 
-    async exportAssessments(): Promise<void> {
-        this.isLoading = true;
-        this.error = null;
-
-        try {
-            const blob = await assessmentService.exportAssessments();
-            // Создаем ссылку для скачивания
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `assessments_${new Date().toISOString()}.xlsx`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-
-            runInAction(() => {
-                this.isLoading = false;
-            });
-        } catch (error) {
-            runInAction(() => {
-                this.error = error instanceof Error ? error.message : 'Ошибка экспорта';
-                this.isLoading = false;
-            });
-        }
-    }
+    // async exportAssessments(): Promise<void> {
+    //     this.isLoading = true;
+    //     this.error = null;
+    //
+    //     try {
+    //         const blob = await assessmentService.exportAssessments();
+    //         // Создаем ссылку для скачивания
+    //         const url = window.URL.createObjectURL(blob);
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.download = `assessments_${new Date().toISOString()}.xlsx`;
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         document.body.removeChild(link);
+    //         window.URL.revokeObjectURL(url);
+    //
+    //         runInAction(() => {
+    //             this.isLoading = false;
+    //         });
+    //     } catch (error) {
+    //         runInAction(() => {
+    //             this.error = error instanceof Error ? error.message : 'Ошибка экспорта';
+    //             this.isLoading = false;
+    //         });
+    //     }
+    // }
 
     // Утилиты
     clearError() {
