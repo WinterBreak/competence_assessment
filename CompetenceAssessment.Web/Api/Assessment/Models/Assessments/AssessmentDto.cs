@@ -20,6 +20,8 @@ public class AssessmentDto
     
     public int State { get; set; }
     
+    public bool IsParent { get; set; }
+    
     public AssessmentDto() {}
 
     public AssessmentDto(Domain.Assessment.Assessment assessment)
@@ -33,5 +35,6 @@ public class AssessmentDto
         Inspectors = assessment.Inspectors;
         Results = assessment.Results?.Select(a => new AssessmentResultDto(a)).ToList();
         State = (int)assessment.State;
+        IsParent = assessment.IsParent;
     }
 }

@@ -24,11 +24,13 @@ public class Assessment
 
     public string Comment { get; set; }
     
+    public bool IsParent { get; set; }
+    
     public Assessment() {}
 
     public Assessment(int id, DateTime startDate, DateTime? endDate, AssessmentParticipant candidate
         , AssessmentType type, ITemplate template, List<AssessmentParticipant> inspectors
-        , AssessmentState state, string comment, List<AssessmentResult> results = default)
+        , AssessmentState state, string comment, bool isParent, List<AssessmentResult> results = default)
     {
         Id = id;
         StartDate = startDate;
@@ -40,11 +42,12 @@ public class Assessment
         Results = results;
         State = state;
         Comment = comment;
+        IsParent = isParent;
     }
     
     public Assessment(DateTime startDate, DateTime? endDate, AssessmentParticipant candidate
         , AssessmentType type, ITemplate template, List<AssessmentParticipant> inspectors
-        , AssessmentState state, List<AssessmentResult> results = default)
+        , AssessmentState state, bool isParent, List<AssessmentResult> results = default)
     {
         StartDate = startDate;
         EndDate = endDate;
@@ -54,5 +57,6 @@ public class Assessment
         Inspectors = inspectors;
         Results = results;
         State = state;
+        IsParent = isParent;
     }
 }

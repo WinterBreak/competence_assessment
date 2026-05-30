@@ -92,6 +92,7 @@ export const Assessments: React.FC = observer(() => {
             case 1: return 'В процессе';
             case 2: return 'На проверке';
             case 3: return 'Завершено';
+            case 4: return 'В ожидании';
             default: return 'Неизвестно';
         }
     }
@@ -261,7 +262,8 @@ export const Assessments: React.FC = observer(() => {
                                                                     )}
 
                                                                     {/* Кнопка для просмотра результатов (статус "Завершено" и пользователь - аттестуемый) */}
-                                                                    {state == 'Завершено' && isCurrentUserCandidate(assessment) && (
+                                                                    {(state == 'Завершено' && isCurrentUserCandidate(assessment) && assessment?.isParent)
+                                                                        && (
                                                                         <Button
                                                                             kind="tertiary"
                                                                             size="sm"

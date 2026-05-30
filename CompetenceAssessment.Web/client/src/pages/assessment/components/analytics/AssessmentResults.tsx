@@ -27,6 +27,14 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
         });
     });
 
+    const assessmentType = (type: string) => {
+        switch (Number(type)){
+            case 1: return 'Тестирование';
+            case 2: return 'Анкетирование';
+            case 3: return 'Оценка 360 градусов';
+        }
+    }
+    
     const sortedCompetencies = Array.from(competencies.entries())
         .sort((a, b) => b[1].percentage - a[1].percentage);
 
@@ -109,6 +117,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                         Детальный список
                     </button>
 
+                    {assessmentType(assessment.type) == 'Тестирование' && (
                     <button
                         onClick={() => setActiveTab('answers')}
                         style={{
@@ -122,7 +131,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                         }}
                     >
                         Ответы
-                    </button>
+                    </button>)}
                 </div>
 
                 <div style={{ marginTop: '1rem' }}>
@@ -144,7 +153,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                         </div>
                     )}
 
-                    {activeTab === 'answers' && (
+                    {activeTab == 'answers' && (
                         <TestingResultsView currAssessment={assessment} />
                     )}
                 </div>

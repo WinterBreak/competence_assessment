@@ -18,6 +18,9 @@ public class AssessmentConfiguration: IEntityTypeConfiguration<Assessment.Assess
             .HasColumnName("id_user")
             .IsRequired();
         
+        builder.Property(x => x.ParentId)
+            .HasColumnName("parent_id");
+        
         builder.Property(x => x.TemplateId)
             .HasColumnName("id_template")
             .IsRequired();
@@ -40,6 +43,10 @@ public class AssessmentConfiguration: IEntityTypeConfiguration<Assessment.Assess
             .HasColumnName("state")
             .IsRequired();
 
+        builder.HasOne(x => x.Parent)
+            .WithMany()
+            .HasForeignKey(x => x.ParentId);
+            
 
         builder.HasMany(x => x.Inspectors)
             .WithOne(x => x.Assessment)

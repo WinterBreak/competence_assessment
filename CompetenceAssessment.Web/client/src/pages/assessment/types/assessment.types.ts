@@ -11,6 +11,7 @@ export interface Assessment {
     inspectors: AssessmentParticipant[];
     results: AssessmentResult[];
     state: number; // TODO нужна статусная модель
+    isParent: boolean;
 }
 
 export interface AssessmentTemplate {

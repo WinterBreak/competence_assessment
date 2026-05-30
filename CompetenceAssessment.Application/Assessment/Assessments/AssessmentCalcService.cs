@@ -17,6 +17,12 @@ public class AssessmentCalcService: IAssessmentCalcService
         var query = new AssessmentQuery(id: assessmentId);
         var assessment = await _assessmentRepository.GetAssessmentAsync(query, token);
         ArgumentNullException.ThrowIfNull(assessment);
+
+        if (assessment.Type == AssessmentType._360Degrees_) // TODO отдельный запрос на проверку типа, чтобы тянуть оценку 1 раз
+        {
+            assessment = await _assessmentRepository.GetFullDegreeAssessment(assessmentId, token);
+        }
+        
         var strategy = GetCalcStrategy(assessment.Type);
         return strategy.Calculate(assessment);
     }

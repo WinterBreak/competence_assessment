@@ -8,46 +8,31 @@ public class AssessmentStateService: IAssessmentStateService
 {
     private readonly IEmailNotificationService _emailService;
     private readonly IUserService _userService;
+    private readonly IAssessmentStateRepository _repository;
 
     public AssessmentStateService(IEmailNotificationService emailService
-    , IUserService userService)
+    , IUserService userService
+    , IAssessmentStateRepository repository)
     {
         _emailService = emailService;
         _userService = userService;
+        _repository = repository;
     }
     
-    public void ProceedState(Domain.Assessment.Assessment assessment)
+    public async Task ProceedStateAsync(Domain.Assessment.Assessment assessment)
     {
-        switch (assessment.State)
+        var state = _repository.UpdateStateAsync(assessment.Id);
+        switch (state)
         {
-            case AssessmentState.InProgress:
-                InProgressProceed(assessment);
-                break;
             case AssessmentState.Reviewing:
-                ReviewingProceed(assessment);
+                NotifyInspector(assessment, "AssessmentReviewing");
+                break;
+            case AssessmentState.Completed:
+                NotifyCandidate(assessment, "AssessmentCompletion");
                 break;
         }
-    }
 
-    private void InProgressProceed(Domain.Assessment.Assessment assessment)
-    {
-        var needReview = assessment.Template.Weights.Any(w => w.Task.Type == TaskType.OpenQuestion);
-        if (needReview)
-        {
-            assessment.State = AssessmentState.Reviewing;
-            NotifyInspector(assessment, "AssessmentReviewing");
-        }
-        else
-        {
-            assessment.State = AssessmentState.Completed;
-            NotifyCandidate(assessment, "AssessmentCompletion");
-        }
-    }
-
-    private void ReviewingProceed(Domain.Assessment.Assessment assessment)
-    {
-        assessment.State = AssessmentState.Completed;
-        assessment.EndDate = DateTime.UtcNow;
+        await _repository.SaveAllChanges();
     }
 
     private async Task NotifyInspector(Domain.Assessment.Assessment assessment, string templateName)

@@ -45,6 +45,7 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
         var assessments = await _context.Assessments
             .Include(a => a.Inspectors)
             .Where(specification)
+            .Where(a => query.WithChildren || !a.ParentId.HasValue)
             .OrderByDescending(a => a.StartDate).ToListAsync(token);
         
         // TODO убрать этот костыль
@@ -75,9 +76,38 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
                 var template = templates.SingleOrDefault(t => t.Id == a.TemplateId);
                 return new BLL.Assessment(a.Id, a.StartDate, a.EndDate, candidate
                     , (BLL.AssessmentType)a.AssessmentTypeId, template, inspectors, (BLL.AssessmentState)a.State
-                    , a.Comment, res);
+                    , a.Comment, a.ParentId is null, res);
             })
             .ToList();
+    }
+
+    public async Task<BLL.Assessment> GetFullDegreeAssessment(int assessmentId, CancellationToken token = default)
+    {
+        var assessments = _context.Assessments
+            .Where(a => a.Id == assessmentId
+                        || a.ParentId == assessmentId)
+            .Include(assessment => assessment.Inspectors)
+            .ToList();
+        var parentAssessment = assessments.Where(a => !a.ParentId.HasValue);
+        
+        var participants = await GetParticipantsAsync(parentAssessment, token);
+        var templates = await GetTemplatesAsync(parentAssessment, token);
+        var assessmentIds = assessments.Select(a => a.Id).ToList();
+        var resultQuery = new BLL.AssessmentResultQuery(assessmentIds: assessmentIds);
+        var results = await _resultRepository.GetAssessmentsAsync(resultQuery, token);
+        
+        return parentAssessment.Select(a => {
+                var candidate = participants.SingleOrDefault(p => p.Id == a.UserId);
+                var inspectorIds = a.Inspectors.Select(i => i.UserId).ToList();
+                var inspectors = participants
+                    .Where(p => inspectorIds.Contains(p.Id))
+                    .ToList();
+                var template = templates.SingleOrDefault(t => t.Id == a.TemplateId);
+                return new BLL.Assessment(a.Id, a.StartDate, a.EndDate, candidate
+                    , (BLL.AssessmentType)a.AssessmentTypeId, template, inspectors, (BLL.AssessmentState)a.State
+                    , a.Comment, a.ParentId is null, results);
+            })
+            .SingleOrDefault();
     }
 
     public async Task AddAssessmentAsync(BLL.Assessment assessment, CancellationToken token = default)
@@ -87,9 +117,19 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
         var newAssessment = new Assessment.Assessment(assessment.Template.Id, (int)assessment.Type
                                                     , assessment.Candidate.Id, assessment.StartDate
                                                     , assessment.EndDate, (int)assessment.State);
+        await _context.Assessments.AddAsync(newAssessment, token);
+        
         var inspectors = assessment.Inspectors.Select(i 
             => new AssessmentInspector(newAssessment, i.Id)).ToList();
-        await _context.Assessments.AddAsync(newAssessment, token);
+        if (assessment.Type == BLL.AssessmentType._360Degrees_ && inspectors.Any())
+        {
+            var assessmentChildren = inspectors.Select( i =>
+                new Assessment.Assessment(assessment.Template.Id, (int)assessment.Type
+                    , i.UserId, newAssessment, assessment.StartDate
+                    , assessment.EndDate, (int)assessment.State)).ToList();
+            await _context.Assessments.AddRangeAsync(assessmentChildren, token);
+        }
+        
         await _context.AssessmentInspectors.AddRangeAsync(inspectors, token);
     }
 

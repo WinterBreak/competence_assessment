@@ -10,6 +10,8 @@ public class Assessment
     
     public int UserId { get; set; }
     
+    public int? ParentId { get; set; }
+    
     public DateTime StartDate { get; set; }
     
     public DateTime? EndDate { get; set; }
@@ -23,6 +25,8 @@ public class Assessment
     public virtual ICollection<AssessmentInspector> Inspectors { get; set; } = [];
     
     public virtual ICollection<AssessmentResult> Results { get; set; } = [];
+    
+    public virtual Assessment Parent { get; set; }
 
     public Assessment() {}
     
@@ -32,6 +36,19 @@ public class Assessment
         TemplateId = templateId;
         AssessmentTypeId = typeId;
         UserId = userId;
+        ParentId = null;
+        StartDate = startDate;
+        EndDate = endDate;
+        State = state;
+    }
+    
+    public Assessment(int templateId, int typeId, int userId, Assessment parent, DateTime startDate, DateTime? endDate
+        , int state)
+    {
+        TemplateId = templateId;
+        AssessmentTypeId = typeId;
+        UserId = userId;
+        Parent = parent;
         StartDate = startDate;
         EndDate = endDate;
         State = state;
