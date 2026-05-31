@@ -38,6 +38,7 @@ export const Login: React.FC = () => {
             
             localStorage.setItem('userId', response.userId);
             localStorage.setItem('userEmail', response.email);
+            localStorage.setItem('fullName', response.fullName);
             localStorage.setItem('roles', JSON.stringify(response.roles));
             
             navigate('/');

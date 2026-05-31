@@ -12,9 +12,9 @@ public class Position
     
     public Position() {}
     
-    public Position(Guid code, string name)
+    public Position(string name)
     {
-        Code = code;
+        Code = new Guid();
         Name = name;
     }
 }

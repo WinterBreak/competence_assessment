@@ -88,7 +88,7 @@ public class AuthService: IAuthService
                 AllowRefresh = true
             });
             
-            return LoginResult.Success(user.Id, user.Email, user.Roles);
+            return LoginResult.Success(user.Id, user.Email,  user.FullName, user.Roles);
         }
 
         public async Task LogoutAsync(CancellationToken token = default)

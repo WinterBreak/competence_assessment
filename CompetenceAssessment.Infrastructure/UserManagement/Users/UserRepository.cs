@@ -8,10 +8,13 @@ namespace CompetenceAssessment.Infrastructure.UserManagement;
 public class UserRepository: BLL.IUserRepository
 {
     private readonly UserManagementContext _context;
+    private readonly AssessmentContext _assessmentContext; // TODO плохо
 
-    public UserRepository(UserManagementContext context)
+    public UserRepository(UserManagementContext context
+    , AssessmentContext assessmentContext)
     {
         _context = context;
+        _assessmentContext = assessmentContext;
     }
     
     public async Task<BLL.User?> GetUserAsync(BLL.UserQuery query
@@ -21,7 +24,7 @@ public class UserRepository: BLL.IUserRepository
         return users.SingleOrDefault();
     }
 
-    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default) // TODO надо дерево строить
+    public async Task<List<BLL.User>> GetUsersAsync(BLL.UserQuery query, CancellationToken token = default)
     {
         var specification = new UserSpecificationBuilder().WithQuery(query).Build();
         var users =  await GetAllUsersWithData()
@@ -48,6 +51,10 @@ public class UserRepository: BLL.IUserRepository
         ArgumentNullException.ThrowIfNull(user);
         var newUser = new User(user.Email, user.FirstName, user.SecondName, user.LastName
                              , user.BossId, user.PositionId, user.DepartmentId);
+        var hasher = new PasswordHasher<User>();
+        newUser.PasswordHash = hasher.HashPassword(newUser,"123456"); // TODO предполагается, что пароль корпоративный
+        var roleId = _context.Roles.Single(r => r.Name == "Аттестуемый");
+        newUser.RoleLinks.Add(new UserToRolesLink(newUser, roleId));
         _context.Users.Add(newUser);
     }
 
@@ -64,12 +71,21 @@ public class UserRepository: BLL.IUserRepository
         updatingUser.DepartmentId = user.DepartmentId;
         updatingUser.PositionId = user.PositionId;
     }
-
-    // TODO Скорее всего, использоваться не будет? Или в случае отсутствия данных по оценке?
+    
     public async Task RemoveUserAsync(int id, CancellationToken token = default)
     {
         var deletingUser = await _context.Users.SingleOrDefaultAsync(u => u.Id == id, token);
         ArgumentNullException.ThrowIfNull(deletingUser);
+        
+        var inspectors = _assessmentContext.AssessmentInspectors
+            .Where(i => i.UserId == deletingUser.Id);
+        _assessmentContext.AssessmentInspectors.RemoveRange(inspectors);
+        var assessmentResults = _assessmentContext.AssessmentResults
+            .Where(ar => ar.Assessment.UserId == deletingUser.Id);
+        _assessmentContext.AssessmentResults.RemoveRange(assessmentResults);
+        var assessments = _assessmentContext.Assessments.Where(a => a.UserId == deletingUser.Id);
+        _assessmentContext.Assessments.RemoveRange(assessments);
+        _context.UserRoleLinks.RemoveRange(deletingUser.RoleLinks);
         _context.Remove(deletingUser);
     }
     
@@ -86,6 +102,12 @@ public class UserRepository: BLL.IUserRepository
 
     public async Task SaveAllChangesAsync(CancellationToken token = default)
         => await _context.SaveChangesAsync(token);
+    
+    public async Task SaveChangesWithAsssessment(CancellationToken token = default)
+    {
+        await _assessmentContext.SaveChangesAsync(token);
+        await _context.SaveChangesAsync(token);
+    }
     
     private bool VerifyPassword(string password, string storedHash)
     {
