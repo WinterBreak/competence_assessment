@@ -15,4 +15,6 @@ public interface IUserRepository
     Task<bool> ValidatePasswordAsync(int userId, string password, CancellationToken token = default);
     
     Task SaveAllChangesAsync(CancellationToken token = default);
+    
+    Task SaveChangesWithAsssessment(CancellationToken token = default);
 }

@@ -13,10 +13,10 @@ import {
     Theme,
     SideNavLink, Loading,
 } from '@carbon/react';
-import { Logout } from '@carbon/react/icons';
+import { Logout, UserAvatar } from '@carbon/react/icons';
 import {authService} from "../pages/auth/services/authService";
 import {useAuth} from "../hooks/useAuth";
-// TODO разграничение отображения по ролям (мб просто два разных компонента сделать
+
 function Navbar() {
     const { hasRole, isLoading } = useAuth();
     const location = useLocation();
@@ -32,7 +32,13 @@ function Navbar() {
             return false;
         }
     })();
-    
+
+    const fullName = (() => {
+        const name = localStorage.getItem('fullName');
+        if (!name) return '';
+        return name;
+    })();
+
     useEffect(() => {
         if (location.pathname.startsWith('/admin')) {
             if (!canAccessAdmin) {
@@ -48,7 +54,7 @@ function Navbar() {
     if (isLoading) {
         return <Loading description="Проверка доступа..." withOverlay={false} />;
     }
-    
+
     const navigationLinks : Record<string, { label: string; href: string }[]> = {
         admin: [
             { label: 'Шаблоны', href: '/admin/templates' },
@@ -57,9 +63,10 @@ function Navbar() {
             { label: 'Компетенции', href: '/admin/competencies' },
             { label: 'Пользователи', href: '/admin/users' },
         ],
-        assessment: canAccessAdmin
-            ? [{ label: 'Оценка', href: '/' }, { label: 'Аналитика', href: '/analytics' }]
-            : [{ label: 'Оценка', href: '/' }, { label: 'Аналитика', href: '/analytics' }]
+        assessment: [
+            { label: 'Оценка', href: '/' },
+            { label: 'Аналитика', href: '/analytics' }
+        ]
     }
 
     const handleSideNavClick = (section: string, defaultPath: string) => {
@@ -79,12 +86,12 @@ function Navbar() {
     return (<Theme theme="g10">
         <HeaderContainer render={({isSideNavExpanded, onClickSideNavExpand}) => <>
             <Header aria-label="Оценка компетенций">
-                <SkipToContent />
+                <SkipToContent/>
                 <HeaderMenuButton aria-label={isSideNavExpanded ? 'Закрыть меню' : 'Открыть меню'}
                                   onClick={onClickSideNavExpand}
                                   isActive={isSideNavExpanded}
                                   aria-expanded={isSideNavExpanded}
-                                  style={{ display: 'flex' }}/>
+                                  style={{display: 'flex'}}/>
                 <HeaderName href="" prefix="">
                     Оценка компетенций
                 </HeaderName>
@@ -96,27 +103,50 @@ function Navbar() {
                     ))}
                 </HeaderNavigation>
 
+                <div style={{
+                    marginLeft: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingRight: '2rem'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        color: '#161616',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        fontFamily: "IBM Plex Sans, 'Helvetica Neue', Arial, sans-serif",
+                        letterSpacing: 0
+                    }}>
+                        <UserAvatar size={20}/>
+                        <span>{fullName || 'Пользователь'}</span>
+                    </div>
+                </div>
+
                 <SideNav aria-label="Side navigation"
                          expanded={isSideNavExpanded}
                          onOverlayClick={onClickSideNavExpand}
                          isPersistent={false}>
                     <SideNavItems>
-                        <SideNavLink  onClick={() => {
+                        <SideNavLink onClick={() => {
                             handleSideNavClick('assessment', '/');
-                            onClickSideNavExpand();}}
-                                      isActive={activeSection === 'assessment'}>
+                            onClickSideNavExpand();
+                        }}
+                                     isActive={activeSection === 'assessment'}>
                             Оценка
                         </SideNavLink>
 
                         {canAccessAdmin && (
-                        <SideNavLink onClick={() => {
-                            handleSideNavClick('admin', 'admin/templates');
-                            onClickSideNavExpand();}}
-                                     isActive={activeSection === 'admin'}>
-                            Администрирование
-                        </SideNavLink>)}
+                            <SideNavLink onClick={() => {
+                                handleSideNavClick('admin', 'admin/templates');
+                                onClickSideNavExpand();
+                            }}
+                                         isActive={activeSection === 'admin'}>
+                                Администрирование
+                            </SideNavLink>)}
                     </SideNavItems>
-                    
+
                     <div style={{
                         position: 'absolute',
                         bottom: 0,
@@ -132,14 +162,14 @@ function Navbar() {
                                 onClickSideNavExpand();
                             }}
                             renderIcon={Logout}
-                            style={{ cursor: 'pointer' }}
+                            style={{cursor: 'pointer'}}
                         >
                             Выйти
                         </SideNavLink>
                     </div>
                 </SideNav>
             </Header>
-        </>} />
+        </>}/>
     </Theme>);
 }
 

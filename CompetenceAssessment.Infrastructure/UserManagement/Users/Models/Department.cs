@@ -12,9 +12,9 @@ public class Department
 
     public Department() {}
     
-    public Department(Guid code, string name)
+    public Department(string name)
     {
-        Code = code;
+        Code = new Guid();
         Name = name;
     }
 }

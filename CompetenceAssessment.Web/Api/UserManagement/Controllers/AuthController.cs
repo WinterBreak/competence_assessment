@@ -38,6 +38,7 @@ public class AuthController: ControllerBase
             { 
                 userId = result.UserId, 
                 email = result.Email,
+                fullName = result.FullName,
                 roles = result.Roles
             });
         }

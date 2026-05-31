@@ -1,7 +1,10 @@
 using System.Reflection;
 using CompetenceAssessment.Domain.Notifications;
+using CompetenceAssessment.Domain.UserManagement;
 using CompetenceAssessment.Infrastructure;
+using CompetenceAssessment.Infrastructure.BackgroundServices;
 using CompetenceAssessment.Infrastructure.Database;
+using CompetenceAssessment.Infrastructure.Providers;
 using CompetenceAssessment.Infrastructure.UserManagement;
 using CompetenceAssessment.Web.Attributes;
 using CompetenceAssessment.Web.Handlers;
@@ -34,6 +37,8 @@ builder.Services.AddSpaStaticFiles(configuration =>
 
 builder.Services.Configure<SmtpSettings>(
     builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<UserSynchronizationOptions>(builder.Configuration.GetSection("UserSynchronization"));
+builder.Services.Configure<TxtFileProviderOptions>(builder.Configuration.GetSection("TxtFileProvider"));
 
 var assemblies = new[]
 {
@@ -47,6 +52,10 @@ builder.Services.RegisterBySuffix( "Provider");
 builder.Services.RegisterBySuffix("Repository");
 builder.Services.RegisterBySuffix( "Service");
 builder.Services.RegisterBySuffix( "Queries");
+
+builder.Services.AddScoped<IExternalUserProvider, TxtFileUserProvider>();
+builder.Services.AddScoped<IUserSynchronizationService, UserSynchronizationService>();
+builder.Services.AddHostedService<UserSynchronizationBackgroundService>();
 
 var connectionString = builder.Configuration.GetConnectionString("CompetenceAssessment");
 builder.Services.AddDbContext<UserManagementContext>(options =>
