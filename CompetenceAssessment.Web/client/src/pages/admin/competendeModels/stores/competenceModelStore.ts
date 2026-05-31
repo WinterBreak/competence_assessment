@@ -47,9 +47,9 @@ export class CompetenceModelStore {
             });
 
             runInAction(() => {
-                this.competenceModels = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
+                this.competenceModels = response.items;
+                this.totalItems = response.totalCount;
+                this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {
@@ -67,7 +67,7 @@ export class CompetenceModelStore {
         try {
             const result = await competenceModelService.createCompetenceModel(data);
             runInAction(async () => {
-                if (result.hasErrors){
+                if (!result.hasErrors){
                     await this.loadCompetenceModels();
                 }
                 this.totalItems++;
@@ -90,7 +90,7 @@ export class CompetenceModelStore {
         try {
             const result = await competenceModelService.updateCompetenceModel(data);
             runInAction( async () => {
-                if (result.hasErrors){
+                if (!result.hasErrors){
                     await this.loadCompetenceModels();
                 }
                 this.isLoading = false;
@@ -112,7 +112,7 @@ export class CompetenceModelStore {
         try {
             const result = await competenceModelService.deleteCompetenceModel(id);
             runInAction(async () => {
-                if (result.hasErrors){
+                if (!result.hasErrors){
                     await this.loadCompetenceModels();
                 }
                 this.totalItems--;

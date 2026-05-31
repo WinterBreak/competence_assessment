@@ -2,6 +2,10 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public class TemplateQuery
 {
+    public int Page { get; set; }
+    
+    public int PageSize { get; set; }
+    
     public List<int> Ids { get; set; } = [];
     
     public List<int> CompetenceIds { get; set; } = [];
@@ -9,6 +13,12 @@ public class TemplateQuery
     public TemplateType Type { get; set; } = TemplateType.None;
     
     public TemplateQuery() {}
+
+    public TemplateQuery(int page, int pageSize)
+    {
+        Page = page;
+        PageSize = pageSize;
+    }
 
     public TemplateQuery(List<int> ids = default, List<int> competenceIds = default
                        , TemplateType type = TemplateType.None)

@@ -73,9 +73,9 @@ export class AssessmentStore {
             });
 
             runInAction(() => {
-                this.assessments = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
+                this.assessments = response.items;
+                this.totalItems = response.totalCount;
+                this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {

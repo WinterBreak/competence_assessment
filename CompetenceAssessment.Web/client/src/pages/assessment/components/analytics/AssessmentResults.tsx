@@ -117,7 +117,7 @@ export const AssessmentResults: React.FC<AssessmentResultsProps> = ({
                         Детальный список
                     </button>
 
-                    {assessmentType(assessment.type) == 'Тестирование' && (
+                    {assessmentType(assessment?.type) == 'Тестирование' && (
                     <button
                         onClick={() => setActiveTab('answers')}
                         style={{

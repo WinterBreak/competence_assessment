@@ -268,9 +268,9 @@ export const Templates: React.FC = observer(() => {
             </DataTable>
 
             <Pagination
-                page={competenceModelStore.currentPage}
-                pageSize={competenceModelStore.pageSize}
-                totalItems={competenceModelStore.totalItems}
+                page={templateStore.currentPage}
+                pageSize={templateStore.pageSize}
+                totalItems={templateStore.totalItems}
                 backwardText="Назад"
                 forwardText="Вперед"
                 itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
@@ -278,10 +278,10 @@ export const Templates: React.FC = observer(() => {
                 pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
                 pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
-                    if (pageSize !== competenceModelStore.pageSize) {
-                        competenceModelStore.setPageSize(pageSize);
+                    if (pageSize !== templateStore.pageSize) {
+                        templateStore.setPageSize(pageSize);
                     } else {
-                        competenceModelStore.setCurrentPage(page);
+                        templateStore.setCurrentPage(page);
                     }
                 }}
             />

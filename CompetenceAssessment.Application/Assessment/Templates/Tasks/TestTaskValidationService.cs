@@ -9,7 +9,16 @@ public class TestTaskValidationService(ITaskValidationQueries queries): ITaskVal
         => await ValidateAsync(task, token);
 
     public async Task<ValidationErrors> ValidateUpdatingTaskAsync(ITask task, CancellationToken token = default)
-        => await ValidateAsync(task, token);
+    {
+        var errors = new ValidationErrors();
+        await new TaskInTemplateValidation(queries).ValidateAsync(task, errors, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
+        return await ValidateAsync(task, token);
+    }
 
     public async Task<ValidationErrors> ValidateDeletingTaskAsync(int id, CancellationToken token = default)
     {

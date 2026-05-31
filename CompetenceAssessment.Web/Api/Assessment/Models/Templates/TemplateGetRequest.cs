@@ -1,6 +1,6 @@
 namespace CompetenceAssessment.Web.Assessment;
 
-public class AssessmentGetRequest
+public class TemplateGetRequest
 {
     public int Page { get; set; } = 1;
 

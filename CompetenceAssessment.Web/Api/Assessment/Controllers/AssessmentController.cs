@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using CompetenceAssessment.Core.Extensions;
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Domain.Assessment;
 using CompetenceAssessment.Domain.Export;
 using CompetenceAssessment.Domain.Export.Enumerations;
@@ -57,17 +58,26 @@ public class AssessmentController: ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Policy = "Authenticated")]
-    public async Task<IActionResult> GetAssessmentsAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetAssessmentsAsync([FromQuery] AssessmentGetRequest req
+        , CancellationToken token = default)
     {
         var query = IsAdmin()
-            ? new AssessmentQuery(withChildren: false)
+            ? new AssessmentQuery(withChildren: false, page: req.Page, pageSize: req.PageSize)
             : IsExpert() ? new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() },
-                    inspectoreIds: new List<int> { GetCurrUserId() }, withChildren: true)
-                : new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, state: AssessmentState.All, withChildren: true);
+                    inspectoreIds: new List<int> { GetCurrUserId() }, withChildren: true, page: req.Page, pageSize: req.PageSize)
+                : new AssessmentQuery(candidateIds: new List<int> { GetCurrUserId() }, state: AssessmentState.All
+                    , withChildren: true, page: req.Page, pageSize: req.PageSize);
         
-        var assessments = await _assessmentService.GetAssessmentsAsync(query, token);
-        var dtos = assessments.Select(a => new AssessmentDto(a)).ToList();
-        return Ok(dtos);
+        var assessments = await _assessmentService.GetPaginatedUsersAsync(query, token);
+        var dtos = assessments.Items.Select(a => new AssessmentDto(a)).ToList();
+        var response = new PaginatedResponse<AssessmentDto>()
+        {
+            PageSize = assessments.PageSize,
+            CurrentPage = assessments.CurrentPage,
+            TotalCount = assessments.TotalCount,
+            Items = dtos,
+        };
+        return Ok(response);
     }
 
     /// Получение оценок

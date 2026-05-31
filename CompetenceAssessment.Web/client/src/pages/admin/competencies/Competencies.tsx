@@ -25,7 +25,6 @@ import { Edit, TrashCan, Add } from '@carbon/react/icons';
 import { competenceStore } from './stores/competenceStore';
 import {Competence, CreateCompetencyDto, UpdateCompetencyDto} from "./types/competence.types";
 import { CompetenceModal } from './components/CompetenceModal';
-import {competenceModelStore} from "../competendeModels/stores/competenceModelStore";
 
 export const Competencies: React.FC = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -229,9 +228,9 @@ export const Competencies: React.FC = observer(() => {
             </DataTable>
 
             <Pagination
-                page={competenceModelStore.currentPage}
-                pageSize={competenceModelStore.pageSize}
-                totalItems={competenceModelStore.totalItems}
+                page={competenceStore.currentPage}
+                pageSize={competenceStore.pageSize}
+                totalItems={competenceStore.totalItems}
                 backwardText="Назад"
                 forwardText="Вперед"
                 itemRangeText={(min, max, total) => `${ min }–${ max } из ${ total } элементов`}
@@ -239,10 +238,10 @@ export const Competencies: React.FC = observer(() => {
                 pageRangeText={(_current, total) => `из ${ total } ${ total === 1 ? 'страницы' : 'страниц' }`}
                 pageSizes={[10, 20, 50]}
                 onChange={({ page, pageSize }) => {
-                    if (pageSize !== competenceModelStore.pageSize) {
-                        competenceModelStore.setPageSize(pageSize);
+                    if (pageSize !== competenceStore.pageSize) {
+                        competenceStore.setPageSize(pageSize);
                     } else {
-                        competenceModelStore.setCurrentPage(page);
+                        competenceStore.setCurrentPage(page);
                     }
                 }}
             />

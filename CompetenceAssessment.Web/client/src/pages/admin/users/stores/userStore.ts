@@ -34,8 +34,7 @@ export class UserStore {
         this.currentPage = 1;
         this.loadUsers();
     }
-
-    // API вызовы с бизнес-логикой
+    
     async loadUsers() {
         this.isLoading = true;
         this.error = null;
@@ -47,9 +46,9 @@ export class UserStore {
             });
 
             runInAction(() => {
-                this.users = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
+                this.users = response.items;
+                this.totalItems = response.totalCount;
+                this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {

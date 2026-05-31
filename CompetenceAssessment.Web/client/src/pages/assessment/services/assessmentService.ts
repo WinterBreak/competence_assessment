@@ -4,7 +4,7 @@ import {
     CreateAssessmentDto, EmployeeData, PositionData,
     UpdateAssessmentDto, CompetenceDevelopmentDto, DepartmentData, ExportReportRequest
 } from '../types/assessment.types';
-import {ApiResponse} from "../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../types/common.types";
 
 class AssessmentService {
     private api: AxiosInstance;
@@ -46,9 +46,14 @@ class AssessmentService {
     async getAssessments(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<Assessment[]> {
+    }): Promise<PaginatedResponse<Assessment>> {
         try {
-            const response = await this.api.get('/assessments');
+            const response = await this.api.get('/assessments', {
+                params: {
+                    page: params?.page || 1,
+                    pageSize: params?.pageSize || 10,
+                }
+            });
             return response.data;
         } catch (error) {
             throw this.handleError(error);

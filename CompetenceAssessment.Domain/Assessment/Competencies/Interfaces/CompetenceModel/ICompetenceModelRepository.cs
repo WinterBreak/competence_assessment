@@ -1,3 +1,5 @@
+using CompetenceAssessment.Core.Models;
+
 namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ICompetenceModelRepository
@@ -6,6 +8,9 @@ public interface ICompetenceModelRepository
         , CancellationToken token = default);
     
     Task<List<CompetenceModel>> GetCompetenceModelsAsync(CompetenceModelQuery query
+        , CancellationToken token = default);
+    
+    Task<PaginatedResponse<CompetenceModel>> GetPaginatedModelsAsync(CompetenceModelQuery query
         , CancellationToken token = default);
     
     Task AddCompetenceModelAsync(CompetenceModel competenceModel, CancellationToken token = default);

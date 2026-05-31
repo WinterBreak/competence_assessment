@@ -47,9 +47,9 @@ export class CompetenceStore {
             });
 
             runInAction(() => {
-                this.competencies = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
+                this.competencies = response.items;
+                this.totalItems = response.totalCount;
+                this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {

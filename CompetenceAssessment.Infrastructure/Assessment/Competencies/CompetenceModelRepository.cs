@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using BLL = CompetenceAssessment.Domain.Assessment;
 using Microsoft.EntityFrameworkCore;
 using A = System.Threading.Tasks;
@@ -41,6 +42,38 @@ public class CompetenceModelRepository: BLL.ICompetenceModelRepository
                 return new BLL.CompetenceModel(cm.Id, cm.Name, cm.Description, cm.CreationDate, modelWeights);
             })
             .ToList();
+    }
+
+    public async Task<PaginatedResponse<BLL.CompetenceModel>> GetPaginatedModelsAsync(BLL.CompetenceModelQuery query
+        , CancellationToken token = default)
+    {
+        var specification = new CompetenceModelSpecificationBuilder().WithQuery(query).Build();
+        var models = await GetAllModels()
+            .Where(specification)
+            .OrderBy(cm => cm.Name)
+            .Skip(query.PageSize * (query.Page - 1))
+            .Take(query.PageSize)
+            .ToListAsync(token);
+        
+        var modelIds = models.Select(model => model.Id).ToList();
+        var weights = await GetWeights(modelIds, token);
+        
+        var bllModels = models
+            .Select(cm =>
+            {
+                var modelWeights = weights.Where(w => w.ModelId == cm.Id).ToList();
+                return new BLL.CompetenceModel(cm.Id, cm.Name, cm.Description, cm.CreationDate, modelWeights);
+            })
+            .ToList();
+        
+        var totalCount = _context.CompetenceModels.Where(specification).Count();
+        return new PaginatedResponse<BLL.CompetenceModel>()
+        {
+            Items = bllModels,
+            CurrentPage = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async A.Task AddCompetenceModelAsync(BLL.CompetenceModel competenceModel

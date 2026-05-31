@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import {
     User
 } from '../types/user.types';
-import {ApiResponse} from "../../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../../types/common.types";
 
 class UserService {
     private api: AxiosInstance;
@@ -44,9 +44,15 @@ class UserService {
     async getUsers(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<User[]> {
+    }): Promise<PaginatedResponse<User>> {
         try {
-            const response = await this.api.get('/users');
+            const response = await this.api.get('/users',
+                {
+                    params:{
+                        page: params?.page || 1,
+                        pageSize: params?.pageSize || 10,
+                    }
+                });
             return response.data;
         } catch (error) {
             throw this.handleError(error);

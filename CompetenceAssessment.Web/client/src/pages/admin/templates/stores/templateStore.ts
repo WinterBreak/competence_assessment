@@ -47,9 +47,9 @@ export class TemplateStore {
             });
 
             runInAction(() => {
-                this.templates = response;
-                // this.totalItems = response.total;
-                // this.totalPages = response.totalPages;
+                this.templates = response.items;
+                this.totalItems = response.totalCount;
+                this.totalPages = response.totalPages;
                 this.isLoading = false;
             });
         } catch (error) {

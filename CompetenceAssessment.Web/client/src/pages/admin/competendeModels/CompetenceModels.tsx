@@ -1,4 +1,3 @@
-// src/pages/CompetenceModels/CompetenceModels.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import {
     DataTable,
@@ -39,7 +38,7 @@ export const CompetenceModels: React.FC = observer(() => {
     }, []);
 
     const handleEdit = (id: string) => {
-        const model = competenceModelStore.competenceModels.find(m => m.id.toString() === id);
+        const model = competenceModelStore.competenceModels.find(m => m.id.toString() == id);
         if (model) {
             setEditingCompetenceModel(model);
             setIsModalOpen(true);
@@ -107,7 +106,7 @@ export const CompetenceModels: React.FC = observer(() => {
         [competenceModelStore.competenceModels]
     );
 
-    if (competenceModelStore.isLoading && competenceModelStore.competenceModels.length === 0) {
+    if (competenceModelStore.isLoading && competenceModelStore.competenceModels.length == 0) {
         return <Loading description="Загрузка..." withOverlay />;
     }
 

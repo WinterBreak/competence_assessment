@@ -4,6 +4,10 @@ namespace CompetenceAssessment.Domain.Assessment;
 
 public class CompetenceModelQuery
 {
+    public int PageSize { get; set; }
+    
+    public int Page { get; set; }
+    
     public List<int> Ids { get; } = [];
     
     public List<string> Names { get; } = [];
@@ -11,6 +15,12 @@ public class CompetenceModelQuery
     public List<int> CompetenceIds { get; } = [];
 
     public CompetenceModelQuery() {}
+
+    public CompetenceModelQuery(int pageSize, int pageNumber)
+    {
+        PageSize = pageSize;
+        Page = pageNumber;
+    }
     
     public CompetenceModelQuery(int id = default, string name = default, int competenceId = default)
     {

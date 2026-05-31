@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Core.Validations;
 
 namespace CompetenceAssessment.Domain.Assessment;
@@ -9,6 +10,9 @@ public interface ICompetenceModelService
     
     Task<List<CompetenceModel>> GetCompetenceModelsAsync(CompetenceModelQuery query
         , CancellationToken token = default);
+    
+    Task<PaginatedResponse<CompetenceModel>> GetPaginatedModelsAsync(CompetenceModelQuery query
+    , CancellationToken token = default);
     
     Task<ValidationErrors> CreateCompetenceModelAsync(CreateCompetenceModelCommand command
         , CancellationToken token = default);

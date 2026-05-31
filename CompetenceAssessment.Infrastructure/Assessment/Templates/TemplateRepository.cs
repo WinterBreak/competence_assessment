@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Domain.Assessment;
 using Microsoft.EntityFrameworkCore;
 using A = System.Threading.Tasks;
@@ -48,6 +49,43 @@ public class TemplateRepository: ITemplateRepository
                                    , model, templateWeights);
             })
             .ToList();
+    }
+
+    public async Task<PaginatedResponse<ITemplate>> GetPaginatedTemplatesAsync(TemplateQuery query
+        , CancellationToken token = default)
+    {
+        var specification = new TemplateSpecificationBuilder().WithQuery(query).Build();
+        var templates = await GetAllTemplates()
+            .Where(specification)
+            .OrderBy(cm => cm.Name)
+            .Skip(query.PageSize * (query.Page - 1))
+            .Take(query.PageSize)
+            .ToListAsync(token);
+        
+        var details = templates.SelectMany(t => t.TemplateDetails).ToList();
+        var weights = await GetWeights(details, token);
+        var modelIds = templates.Select(t => t.CompetenceModelId).Distinct().ToList();
+        var modelQuery = new CompetenceModelQuery(ids: modelIds);
+        var models =  await _competenceModelRepository.GetCompetenceModelsAsync(modelQuery, token);
+        
+        var bllTemplates = templates
+            .Select(t =>
+            {
+                var templateWeights = weights.Where(w => w.TemplateId == t.Id).ToList();
+                var model = models.Single(m => m.Id == t.CompetenceModelId);
+                return new ITemplate(t.Id, t.Name, (TemplateType)t.TemplateTypeId, (ScaleType)t.ScaleId, t.CreationDate
+                    , model, templateWeights);
+            })
+            .ToList();
+        
+        var totalCount = _context.Templates.Where(specification).Count();
+        return new PaginatedResponse<ITemplate>()
+        {
+            Items = bllTemplates,
+            CurrentPage = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async A.Task AddTemplateAsync(ITemplate template, CancellationToken token = default)

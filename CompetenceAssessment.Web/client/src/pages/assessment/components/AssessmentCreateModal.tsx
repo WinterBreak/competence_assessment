@@ -66,11 +66,11 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
     const showInspectorsSelection = (): boolean => {
         if (!assessmentType || !selectedTemplate) return false;
 
-        if (assessmentType === '3') {
+        if (assessmentType == '3') {
             return true;
         }
 
-        if (assessmentType === '1' && hasOpenTasks(selectedTemplate)) {
+        if (assessmentType == '1' && hasOpenTasks(selectedTemplate)) {
             return true;
         }
 
@@ -78,14 +78,14 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
     };
     
     const getUsersModalTitle = (): string => {
-        if (assessmentType === '3') {
+        if (assessmentType == '3') {
             return 'Выбор участников оценки (до 10 человек)';
         }
         return 'Выбор проверяющего';
     };
     
     const isMultiSelect = (): boolean => {
-        return assessmentType === '3';
+        return assessmentType == '3';
     };
     
     const validate = (): boolean => {
@@ -105,7 +105,7 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
         }
 
         if (showInspectorsSelection()) {
-            if (assessmentType === '3') {
+            if (assessmentType == '3') {
                 if (selectedInspectors.length < 2) {
                     setError('Для оценки 360 градусов необходимо выбрать минимум 2 участников');
                     return false;
@@ -114,7 +114,7 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
                     setError('Максимум 10 участников для оценки 360 градусов');
                     return false;
                 }
-            } else if (selectedInspectors.length === 0) {
+            } else if (selectedInspectors.length == 0) {
                 setError('Выберите проверяющего');
                 return false;
             }
@@ -294,14 +294,14 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
                     )}
 
                     {showInspectorsSelection() && selectedCandidate && selectedTemplate && (
-                        <FormGroup legendText={assessmentType === '3' ? 'Участники оценки' : 'Проверяющий'}>
-                            {selectedInspectors.length === 0 ? (
+                        <FormGroup legendText={assessmentType == '3' ? 'Участники оценки' : 'Проверяющий'}>
+                            {selectedInspectors.length == 0 ? (
                                 <Button
                                     kind="secondary"
                                     onClick={() => setIsSelectInspectorsOpen(true)}
                                     renderIcon={Add}
                                 >
-                                    {assessmentType === '3' ? 'Выбрать участников' : 'Выбрать проверяющего'}
+                                    {assessmentType == '3' ? 'Выбрать участников' : 'Выбрать проверяющего'}
                                 </Button>
                             ) : (
                                 <div>
@@ -329,9 +329,9 @@ export const AssessmentCreateModal: React.FC<AssessmentCreateModalProps> = obser
                                         onClick={() => setIsSelectInspectorsOpen(true)}
                                         style={{ marginTop: '0.5rem' }}
                                     >
-                                        {assessmentType === '3' ? 'Изменить состав' : 'Изменить проверяющего'}
+                                        {assessmentType == '3' ? 'Изменить состав' : 'Изменить проверяющего'}
                                     </Button>
-                                    {assessmentType === '3' && (
+                                    {assessmentType == '3' && (
                                         <div style={{ fontSize: '0.75rem', color: '#6f6f6f', marginTop: '0.5rem' }}>
                                             Выбрано: {selectedInspectors.length} / 10 (минимум 2)
                                         </div>
