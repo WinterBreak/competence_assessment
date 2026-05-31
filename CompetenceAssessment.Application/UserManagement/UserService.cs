@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.UserManagement;
 
@@ -17,6 +18,9 @@ public class UserService: IUserService
 
     public async Task<List<User>> GetUsersAsync(UserQuery query, CancellationToken token = default)
         => await _repository.GetUsersAsync(query, token);
+
+    public async Task<PaginatedResponse<User>> GetPaginatedUsersAsync(UserQuery query, CancellationToken token = default)
+        => await _repository.GetPaginatedUsersAsync(query, token);
 
     public async Task<ValidationErrors> UpdateUserAsync(UpdateUserCommand command, CancellationToken token = default)
     {

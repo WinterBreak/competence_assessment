@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Domain.Assessment.DTO;
 using CompetenceAssessment.Domain.Ports;
 using CompetenceAssessment.Infrastructure.Assessment;
@@ -79,6 +80,67 @@ internal class AssessmentRepository: BLL.IAssessmentRepository
                     , a.Comment, a.ParentId is null, res);
             })
             .ToList();
+    }
+
+    public async Task<PaginatedResponse<BLL.Assessment>> GetPaginatedUsersAsync(BLL.AssessmentQuery query
+        , CancellationToken token = default)
+    {
+        var specification = new AssessmentSpecificationBuilder().WithQuery(query).Build();
+        var assessments = await _context.Assessments
+            .Include(a => a.Inspectors)
+            .Where(specification)
+            .Where(a => query.WithChildren || !a.ParentId.HasValue)
+            .OrderByDescending(a => a.StartDate).ToListAsync(token);
+        
+        // TODO убрать этот костыль
+        if (query.InspectoreIds != null && query.InspectoreIds.Any())
+        {
+            var candidateSpecification = new AssessmentSpecificationBuilder()
+                .WithInspectors(query.InspectoreIds)
+                .WithStatus((int)BLL.AssessmentState.Reviewing).Build();
+            var candidateAssessments = await _context.Assessments
+                .Where(candidateSpecification)
+                .ToListAsync(token);
+            assessments = assessments.Union(candidateAssessments).ToList()
+                .OrderByDescending(a => a.StartDate)
+                .Skip(query.PageSize * (query.Page - 1))
+                .Take(query.PageSize).ToList();
+        }
+        else
+        {
+            assessments = assessments
+                .Skip(query.PageSize * (query.Page - 1))
+                .Take(query.PageSize).ToList();
+        }
+        
+        var participants = await GetParticipantsAsync(assessments, token);
+        var templates = await GetTemplatesAsync(assessments, token);
+        var assessmentIds = assessments.Select(a => a.Id).ToList();
+        var resultQuery = new BLL.AssessmentResultQuery(assessmentIds: assessmentIds);
+        var results = await _resultRepository.GetAssessmentsAsync(resultQuery, token);
+        
+        var bllAssessments = assessments.Select(a => {
+                var candidate = participants.SingleOrDefault(p => p.Id == a.UserId);
+                var inspectorIds = a.Inspectors.Select(i => i.UserId).ToList();
+                var inspectors = participants
+                    .Where(p => inspectorIds.Contains(p.Id))
+                    .ToList();
+                var res = results.Where(r => r.AssessmentId == a.Id).ToList();
+                var template = templates.SingleOrDefault(t => t.Id == a.TemplateId);
+                return new BLL.Assessment(a.Id, a.StartDate, a.EndDate, candidate
+                    , (BLL.AssessmentType)a.AssessmentTypeId, template, inspectors, (BLL.AssessmentState)a.State
+                    , a.Comment, a.ParentId is null, res);
+            })
+            .ToList();
+        
+        var totalCount = _context.Assessments.Where(specification).Count();
+        return new PaginatedResponse<BLL.Assessment>()
+        {
+            Items = bllAssessments,
+            CurrentPage = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<BLL.Assessment> GetFullDegreeAssessment(int assessmentId, CancellationToken token = default)

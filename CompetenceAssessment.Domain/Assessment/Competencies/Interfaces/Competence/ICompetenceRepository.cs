@@ -1,3 +1,5 @@
+using CompetenceAssessment.Core.Models;
+
 namespace CompetenceAssessment.Domain.Assessment;
 
 public interface ICompetenceRepository
@@ -5,8 +7,9 @@ public interface ICompetenceRepository
     Task<Competence?> GetCompetenceAsync(CompetenceQuery query, CancellationToken token = default);
     
     Task<List<Competence>> GetCompetenciesAsync(CompetenceQuery query, CancellationToken token = default);
-    
-    // AddCompetenciesAsync - для импорта из файла
+
+    Task<PaginatedResponse<Competence>> GetPaginatedCompetenciesAsync(CompetenceQuery query
+        , CancellationToken token = default);
     
     Task AddCompetenceAsync(Competence competence, CancellationToken token = default);
     

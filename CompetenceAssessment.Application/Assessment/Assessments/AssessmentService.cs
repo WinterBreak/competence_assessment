@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.Assessment;
 
@@ -28,6 +29,10 @@ public class AssessmentService: IAssessmentService
     public async Task<List<Domain.Assessment.Assessment>> GetAssessmentsAsync(AssessmentQuery query
                                                                             , CancellationToken token = default)
         => await _repository.GetAssessmentsAsync(query, token);
+
+    public async Task<PaginatedResponse<Domain.Assessment.Assessment>> GetPaginatedUsersAsync(AssessmentQuery query
+        , CancellationToken token = default)
+        => await _repository.GetPaginatedUsersAsync(query, token);
 
     public async Task<ValidationErrors> CreateAssessmentAsync(CreateAssessmentCommand command
                                                             , CancellationToken token = default)

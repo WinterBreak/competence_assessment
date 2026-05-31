@@ -1,3 +1,5 @@
+using CompetenceAssessment.Core.Models;
+
 namespace CompetenceAssessment.Domain.Assessment;
 
 public interface IAssessmentRepository
@@ -5,6 +7,8 @@ public interface IAssessmentRepository
     Task<Assessment?> GetAssessmentAsync(AssessmentQuery query, CancellationToken token = default);
     
     Task<List<Assessment>> GetAssessmentsAsync(AssessmentQuery query, CancellationToken token = default);
+    
+    Task<PaginatedResponse<Assessment>> GetPaginatedUsersAsync(AssessmentQuery query, CancellationToken token = default);
     
     Task<Assessment> GetFullDegreeAssessment(int assessmentId, CancellationToken token = default);
     

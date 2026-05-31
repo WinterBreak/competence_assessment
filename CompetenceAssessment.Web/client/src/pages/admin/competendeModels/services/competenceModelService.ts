@@ -4,7 +4,7 @@ import {
     CreateCompetenceModelDto,
     UpdateCompetenceModelDto,
 } from '../types/model.types';
-import {ApiResponse} from "../../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../../types/common.types";
 
 class CompetenceModelService {
     private api: AxiosInstance;
@@ -48,9 +48,15 @@ class CompetenceModelService {
     async getCompetenceModels(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<CompetenceModel[]> {
+    }): Promise<PaginatedResponse<CompetenceModel>> {
         try {
-            const response = await this.api.get('/competence_models');
+            const response = await this.api.get('/competence_models',
+                {
+                    params:{
+                        page: params?.page || 1,
+                        pageSize: params?.pageSize || 10,
+                    }
+                });
             return response.data;
         } catch (error) {
             throw this.handleError(error);

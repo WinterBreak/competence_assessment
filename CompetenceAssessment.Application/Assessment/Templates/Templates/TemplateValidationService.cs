@@ -10,8 +10,17 @@ public class TemplateValidationService(ITemplateValidationQueries queries): ITem
         => await ValidateAsync(template, token);
 
     public async Task<ValidationErrors> ValidateUpdatingTemplateAsync(ITemplate template
-                                                                    , CancellationToken token = default)
-        => await ValidateAsync(template, token);
+        , CancellationToken token = default)
+    {
+        var errors = new ValidationErrors();
+        await new TemplateInAssessmentValidation(queries).ValidateAsync(template, errors, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
+        return await ValidateAsync(template, token);
+    }
 
     public async Task<ValidationErrors> ValidateDeletingTemplateAsync(int id, CancellationToken token = default)
     {

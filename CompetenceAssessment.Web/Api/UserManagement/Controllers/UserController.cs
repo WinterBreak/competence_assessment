@@ -22,12 +22,12 @@ public class UserController: ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Policy = "Admin")]
-    public async Task<IActionResult> GetUsersAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetUsersAsync([FromQuery] UserGetRequest req, CancellationToken token = default)
     {
-        var query = new UserQuery();
-        var users = await _userService.GetUsersAsync(query, token);
-        var dtos = users.Select(u => new UserDto(u)).ToList();
-        return Ok(dtos);
+        var query = new UserQuery(page: req.Page, pageSize: req.PageSize);
+        var users = await _userService.GetPaginatedUsersAsync(query, token);
+        // var dtos = users.Select(u => new UserDto(u)).ToList();
+        return Ok(users);
     }
     
     /// <summary>

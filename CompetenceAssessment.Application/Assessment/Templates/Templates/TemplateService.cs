@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Core.Validations;
 using CompetenceAssessment.Domain.Assessment;
 
@@ -23,6 +24,10 @@ public class TemplateService: ITemplateService
 
     public async Task<List<ITemplate>> GetTemplatesAsync(TemplateQuery query, CancellationToken token = default)
         => await _repository.GetTemplatesAsync(query, token);
+
+    public async Task<PaginatedResponse<ITemplate>> GetPaginatedTemplatesAsync(TemplateQuery query
+        , CancellationToken token = default)
+        => await _repository.GetPaginatedTemplatesAsync(query, token);
 
     public async Task<ValidationErrors> CreateTemplateAsync(CreateTemplateCommand command
                                                           , CancellationToken token = default)

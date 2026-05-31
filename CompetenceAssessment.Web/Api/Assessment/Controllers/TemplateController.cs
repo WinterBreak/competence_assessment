@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using CompetenceAssessment.Domain.Assessment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,12 +24,21 @@ public class TemplateController: ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Policy = "Authenticated")]
-    public async Task<IActionResult> GetTemplatesAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetTemplatesAsync([FromQuery] TemplateGetRequest req
+        , CancellationToken token = default)
     {
-        var query = new TemplateQuery();
-        var templates = await _assessmentService.GetTemplatesAsync(query, token);
-        var dtos = templates.Select(template => new TemplateDto(template)).ToList();
-        return Ok(dtos);
+        var query = new TemplateQuery(page: req.Page, pageSize: req.PageSize);
+        var templates = await _assessmentService.GetPaginatedTemplatesAsync(query, token);
+        var dtos = templates.Items.Select(template => new TemplateDto(template)).ToList();
+        
+        var response = new PaginatedResponse<TemplateDto>()
+        {
+            PageSize = templates.PageSize,
+            CurrentPage = templates.CurrentPage,
+            TotalCount = templates.TotalCount,
+            Items = dtos,
+        };
+        return Ok(response);
     }
 
     /// <summary>

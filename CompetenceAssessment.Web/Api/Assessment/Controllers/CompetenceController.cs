@@ -23,10 +23,11 @@ public class CompetenceController: ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Policy = "Authenticated")]
-    public async Task<IActionResult> GetCompetencesAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetCompetencesAsync([FromQuery] CompetenceGetRequest req
+        , CancellationToken token = default)
     {
-        var query = new CompetenceQuery();
-        var competencies = await _competenceService.GetCompetenciesAsync(query, token);
+        var query = new CompetenceQuery(pageSize: req.PageSize, page: req.Page);
+        var competencies = await _competenceService.GetPaginatedCompetenciesAsync(query, token);
         return Ok(competencies);
     }
 

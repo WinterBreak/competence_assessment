@@ -1,3 +1,4 @@
+using CompetenceAssessment.Core.Models;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,40 @@ public class UserRepository: BLL.IUserRepository
                 , u.Email, u.PositionId, u.Position.Name, u.DepartmentId, u.Department.Name, bossName
                 , roles);
         }).ToList();
+    }
+
+    public async Task<PaginatedResponse<BLL.User>> GetPaginatedUsersAsync(BLL.UserQuery query
+        , CancellationToken token = default)
+    {
+        var specification = new UserSpecificationBuilder().WithQuery(query).Build();
+        var users =  await GetAllUsersWithData()
+            .Where(specification)
+            .OrderBy(u => u.LastName)
+            .ThenBy(u => u.FirstName)
+            .ThenBy(u => u.SecondName)
+            .Skip(query.PageSize * (query.Page - 1))
+            .Take(query.PageSize)
+            .ToListAsync(token);
+        
+        var bllUsers = users.Select(u =>
+        {
+            var bossName = u.Boss is null
+                ? string.Empty
+                : $"{u.Boss.LastName} {u.Boss.FirstName} {u.Boss.SecondName}";
+            var roles = u.RoleLinks.Select(rl => rl.Role.Name).ToList();
+            return new BLL.User(u.Id, u.FirstName, u.SecondName, u.LastName, u.BossId
+                , u.Email, u.PositionId, u.Position.Name, u.DepartmentId, u.Department.Name, bossName
+                , roles);
+        }).ToList();
+        
+        var totalCount = _context.Users.Where(specification).Count();
+        return new PaginatedResponse<BLL.User>()
+        {
+            Items = bllUsers,
+            CurrentPage = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task AddUserAsync(BLL.User user, CancellationToken token = default)

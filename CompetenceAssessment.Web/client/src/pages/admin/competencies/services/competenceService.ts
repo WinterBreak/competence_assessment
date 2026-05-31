@@ -2,10 +2,9 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import {
     Competence,
     CreateCompetencyDto,
-    UpdateCompetencyDto,
-    PaginatedResponse
+    UpdateCompetencyDto
 } from '../types/competence.types';
-import { ApiResponse} from "../../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../../types/common.types";
 
 class CompetenceService {
     private api: AxiosInstance;
@@ -49,9 +48,13 @@ class CompetenceService {
     async getCompetencies(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<Competence[]> {
+    }): Promise<PaginatedResponse<Competence>> {
         try {
-            const response = await this.api.get('/competencies');
+            const response = await this.api.get('/competencies', {
+                params: {
+                    page: params?.page || 1, 
+                    pageSize: params?.pageSize || 10,
+            }});
             return response.data;
         } catch (error) {
             throw this.handleError(error);

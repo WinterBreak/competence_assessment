@@ -21,6 +21,13 @@ public class CompetenceValidationService: ICompetenceValidationService
     public async Task<ValidationErrors> ValidateUpdatingCompetenceAsync(Competence competence
         , CancellationToken token = default)
     {
+        var errors = new ValidationErrors();
+        await new CompetenceInModelValidation(_queries).ValidateAsync(competence, errors, token);
+        if (errors.HasErrors)
+        {
+            return errors;
+        }
+        
         return await ValidateAsync(competence, token);
     }
          

@@ -1,3 +1,5 @@
+using CompetenceAssessment.Core.Models;
+
 namespace CompetenceAssessment.Domain.UserManagement;
 
 public interface IUserRepository
@@ -5,6 +7,8 @@ public interface IUserRepository
     Task<User?> GetUserAsync(UserQuery query, CancellationToken token = default);
     
     Task<List<User>> GetUsersAsync(UserQuery query, CancellationToken token = default);
+    
+    Task<PaginatedResponse<User>> GetPaginatedUsersAsync(UserQuery query, CancellationToken token = default);
     
     Task AddUserAsync(User user, CancellationToken token = default);
     

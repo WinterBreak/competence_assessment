@@ -23,12 +23,12 @@ public class CompetenceModelController: ControllerBase
     /// </summary>
     [HttpGet]
     [Authorize(Policy = "Authenticated")]
-    public async Task<IActionResult> GetCompetenceModelsAsync(CancellationToken token = default)
+    public async Task<IActionResult> GetCompetenceModelsAsync([FromQuery] CompetenceModelGetRequest req
+        , CancellationToken token = default)
     {
-        var query = new CompetenceModelQuery();
-        var models = await _competenceService.GetCompetenceModelsAsync(query, token);
-        var dtos = models.Select(m => new CompetenceModelGetDto(m)).ToList();
-        return Ok(dtos);
+        var query = new CompetenceModelQuery(pageSize: req.PageSize, pageNumber: req.Page);
+        var models = await _competenceService.GetPaginatedModelsAsync(query, token);
+        return Ok(models);
     }
 
     /// <summary>

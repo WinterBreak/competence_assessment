@@ -4,7 +4,7 @@ import {
     CreateTemplateDto,
     UpdateTemplateDto,
 } from '../types/template.types';
-import {ApiResponse} from "../../../../types/common.types";
+import {ApiResponse, PaginatedResponse} from "../../../../types/common.types";
 
 class TemplateService {
     private api: AxiosInstance;
@@ -46,9 +46,16 @@ class TemplateService {
     async getTemplates(params?: {
         page?: number;
         pageSize?: number;
-    }): Promise<Template[]> {
+    }): Promise<PaginatedResponse<Template>> {
         try {
-            const response = await this.api.get('/templates');
+            const response = await this.api.get('/templates',
+                {
+                    params:
+                        {
+                            page: params?.page || 1,
+                            pageSize: params?.pageSize || 10,
+                        }
+                });
             return response.data;
         } catch (error) {
             throw this.handleError(error);
